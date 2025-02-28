@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Form</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="../public/js/color_config.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-gray-100 w-100 h-100 overflow-hidden">
+    <div class="text-gray-600 overflow-hidden">
+        <i data-lucide="plug" class="absolute top-24 left-60 rotate-[330deg] z-0"></i>
+        <i data-lucide="library-big" class="absolute top-[500px] right-20 z-0"></i>
+        <i data-lucide="car" class="absolute top-[400px] left-[30vw] rotate-[330deg] z-0"></i>
+        <i data-lucide="wrench" class="absolute top-[500px] left-40 rotate-[10deg] z-0"></i>
+        <i data-lucide="party-popper" class="absolute top-[250px] left-[50%] z-0"></i>
+        </div>
+
+    <h2 style="font-size: 17px;" class="absolute text-primary top-0">&nbsp;EZService</h2>
+    <!-- main page code -->
+    <main class="flex items-center justify-center border-dashed border-primary m-5 mt-20 p-2 border-2 md:m-10 md:p-5 lg:m-14 lg:p-20 rounded-lg bg-white">
+        <div class="mx-2 mt-10 w-[550px] hidden md:block">
+            <h1 class="text-5xl font-bold tracking-wide">Get Any Service at Your<span class="bg-primary text-gray-100"> Doorsteps</span></h1>
+            <p class="text-gray-500 mt-4">Welcome to EZService, your trusted doorstep service provider. We bring convenience to your home with fast, reliable, and professional solutions. Book now and enjoy hassle-free services at your doorstep!</p>
+        </div>
+    <div class="max-w-md w-full space-y-8 p-10 bg-gray-200 rounded-xl shadow border">
+        <div class="text-center">
+            <h2 class="mt-2 text-3xl font-extrabold">
+                Login to your account
+            </h2>
+        </div>
+        <form id="formsubmit" class="mt-8 space-y-6 text-sm" action="submit" method="POST">
+            <div class="rounded-md shadow-sm -space-y-px">
+                <p id="errormsg" class="text-red-600 -mt-3">Error message print here</p>
+                <div class="pt-2">
+                    <label for="user_id" class="sr-only">Email Address</label>
+                    <input id="email" name="email" type="text" required class="appearance-none relative block w-full px-3 py-2 border border-gray-400 bg-gray-50 tracking-wide placeholder-gray-700 rounded focus:outline-none focus:border-primary focus:z-10 sm:text-sm lowercase" placeholder="email" value="">
+                </div><br>
+                <div>
+                    <label for="password" class="sr-only">Password</label>
+                    <input id="password" name="password" type="password" required class="appearance-none relative block w-full px-3 py-2 border border-gray-400 bg-gray-50 placeholder-gray-700 tracking-wide rounded focus:outline-none focus:border-primary focus:z-10 sm:text-sm" placeholder="Password" value="">
+                </div>
+            </div>
+            <a class="text-sm text-red-500">Forgot Password?</a>
+            <div>
+                <button id="formbtn" type="submit" class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-primary focus:outline-none mb-5">LogIn Now</button>
+            </div>
+        </form>
+    </div>
+    </main>
+    
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>

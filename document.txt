@@ -1,0 +1,7 @@
+EZService.com
+
+--pages--
+(userside)
+home, login, signup, find service, about, complaint, account, ranking(service ranking), particular service providers details.
+
+----- end -----
