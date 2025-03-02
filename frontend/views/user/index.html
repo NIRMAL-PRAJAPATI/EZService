@@ -25,12 +25,12 @@
                     <a href="services.html" class="text-gray-600 hover:text-gray-900">Services</a>
                     <a href="service_ranking.html" class="text-gray-600 hover:text-gray-900">Ranking</a>
                     <a href="#" class="text-gray-600 hover:text-gray-900">Complaint</a>
-                    <a href="#" class="text-gray-600 hover:text-gray-900">About</a>
+                    <a href="about.html" class="text-gray-600 hover:text-gray-900">About</a>
                 </div>
                 <div class="flex space-x-1">
-                    <a href="login.html" class="px-4 py-2 text-primary hover:bg-green-50 rounded-md">Login</a>
-                    <a href="registration.html" class="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90">Sign Up</a>
-                    <a href="user_profile.html" class="px-2 py-1 my-1 border border-primary text-primary rounded-md flex"><i data-lucide="user-round" class="h-4 w-4 mt-1 mr-1"></i>Account</a>
+                    <a href="login.html" class="px-4 py-2 text-primary hover:bg-green-50 rounded">Login</a>
+                    <a href="registration.html" class="px-4 py-2 bg-primary text-white rounded hover:bg-primary/90">Sign Up</a>
+                    <a href="user_profile.html" class="px-3 py-2 border border-primary text-primary rounded flex"><i data-lucide="user-round" class="h-4 w-4 mt-1 mr-1"></i>Account</a>
                 </div>
             </div>
         </div>
@@ -63,10 +63,10 @@
                     Connect with trusted service providers in your area and do your work quickly and efficiently.
                 </p>
                 <div class="flex flex-col sm:flex-row gap-4 justify-center mb-10">
-                    <a href="#" class="px-6 py-3 bg-primary text-white font-medium rounded-md hover:bg-[#6c58ff]">
+                    <a href="#" class="px-6 py-3 bg-primary text-white font-medium rounded">
                         Find Services
                     </a>
-                    <a href="error.html" class="px-6 py-3 bg-transparent border-2 border-primary text-white font-medium rounded-md hover:bg-white/10">
+                    <a href="error.html" class="px-6 py-3 bg-transparent border-2 border-primary text-white font-medium rounded hover:bg-white/10">
                         Become a Provider
                     </a>
                 </div>
@@ -84,34 +84,46 @@
     </section>
 
     <!-- Categories Section -->
-    <section class="py-16 bg-gray-100">
-        <div class="container mx-auto px-4">
+    <section class="py-12 bg-gray-100">
+        <div class="px-4">
             <h2 class="text-3xl font-bold text-center mb-8">Popular Categories</h2>
-            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-                <button class="p-6 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow hover:border-primary border">
-                    Home Servant
-                </button>
-                <button class="p-6 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow hover:border-primary border">
-                    Laboure
-                </button>
-                <button class="p-6 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow hover:border-primary border">
-                    Health & Fitness
-                </button>
-                <button class="p-6 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow hover:border-primary border">
-                    Education
-                </button>
-                <button class="p-6 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow hover:border-primary border">
-                    Events
-                </button>
-                <button class="p-6 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow hover:border-primary border">
-                    Beauty & Wellness
-                </button>
+            <div class="overflow-x-auto">
+                <div class="flex space-x-2 w-max">
+                    <button type="submit" class="w-[200px] p-6 bg-white rounded-md shadow-sm hover:shadow-md transition-shadow hover:border-primary border">
+                        Home Servant
+                    </button>
+                    <button type="submit" class="w-[200px] p-6 bg-white rounded-md shadow-sm hover:shadow-md transition-shadow hover:border-primary border">
+                        Laboure
+                    </button>
+                    <button type="submit" class="w-[200px] p-6 bg-white rounded-md shadow-sm hover:shadow-md transition-shadow hover:border-primary border">
+                        Health & Fitness
+                    </button>
+                    <button type="submit" class="w-[200px] p-6 bg-white rounded-md shadow-sm hover:shadow-md transition-shadow hover:border-primary border">
+                        Education
+                    </button>
+                    <button type="submit" class="w-[200px] p-6 bg-white rounded-md shadow-sm hover:shadow-md transition-shadow hover:border-primary border">
+                        Events
+                    </button>
+                    <button type="submit" class="w-[200px] p-6 bg-white rounded-md shadow-sm hover:shadow-md transition-shadow hover:border-primary border">
+                        Beauty & Wellness
+                    </button>
+                    <button type="submit" class="w-[200px] p-6 bg-white rounded-md shadow-sm hover:shadow-md transition-shadow hover:border-primary border">
+                        Eletronics
+                    </button>
+                    <button type="submit" class="w-[200px] p-6 bg-white rounded-md shadow-sm hover:shadow-md transition-shadow hover:border-primary border">
+                        Mechanics
+                    </button>
+                    <button type="submit" class="w-[200px] p-6 bg-white rounded-md shadow-sm hover:shadow-md transition-shadow hover:border-primary border">
+                        Plumbing
+                    </button>
+                </div>
             </div>
         </div>
-    </section> 
+    </section>
+     
 
     <!-- Featured Services -->
-    <section class="py-16">
+    <section class="py-12">
         <div class="container mx-auto px-4">
             <h2 class="text-3xl font-bold text-center mb-8">Top Performed Service Providers</h2>
             <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -187,54 +199,220 @@
         </div>
     </section>
 
-    <!-- How It Works -->
-    <main class="container mx-auto px-4 md:pb-5 relative" id="main_id">
-        <h2 class="text-3xl font-bold text-center mb-5">How Process go through</h2>
-        <!-- card 1 -->
-    <div class="flex flex-col md:flex-row items-center gap-8 mx-auto bg-white p-7 md:p-10 shadow-lg h-full rounded my-5 hover:border-b border-primary">
-        <div class="w-full md:w-2/3 space-y-6">
-          <h1 class="text-4xl font-bold text-gray-800 -mb-4">
-            Choose Service
-          </h1>
-          <p class="text-gray-600 text-lg">
-            Find Service is a platform that connects users with professional service providers across various industries. It allows users to search, compare, and book services effortlessly while ensuring transparency through reviews and ratings.
-          </p>
-        </div>
-        <div class="relative w-full md:w-1/3 h-[170px] flex justify-center items-center md:flex">
-          <img src="../public/img/service img1.svg" alt="Electric Car" class="max-w-full max-h-full object-contain" />
-        </div>
-      </div>
+    <section>
+        <div class="sm:p-6 mb-4">
+                <div class="flex items-center mb-4">
+                    <h2 class="text-2xl font-bold text-gray-900">Explore City Services</h2>
+                    <span class="ml-2 mt-1 px-2 py-0.5 text-xs font-semibold text-white bg-primary rounded">NEW</span>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <!-- Mumbai Card -->
+                    <div class="bg-white border hover:border-primary rounded-lg overflow-hidden">
+                        <div class="flex">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Mumbai_03-2016_31_Gateway_of_India.jpg/1200px-Mumbai_03-2016_31_Gateway_of_India.jpg" alt="Gateway of India, Mumbai" class="w-24 h-24 object-cover">
+                            <div class="p-4">
+                                <h3 class="font-bold text-lg">MUMBAI</h3>
+                                <a href="#" class="text-blue-500 flex items-center mt-1">
+                                    Explore</a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Bangalore Card -->
+                    <div class="bg-white border hover:border-primary rounded-lg overflow-hidden">
+                        <div class="flex">
+                            <img src="https://lp-cms-production.imgix.net/2019-06/9483508eeee2b78a7356a15ed9c337a1-bengaluru-bangalore.jpg?sharp=10&vib=20&w=1200&w=600&h=400" alt="Vidhana Soudha, Bangalore" class="w-24 h-24 object-cover">
+                            <div class="p-4">
+                                <h3 class="font-bold text-lg">BANGALORE</h3>
+                                <a href="#" class="text-blue-500 flex items-center mt-1">
+                                    Explore</a>
+                            </div>
+                        </div>
+                    </div>
 
-      <!-- card 2 -->
-    <div class="flex flex-col md:flex-row items-center gap-8 mx-auto bg-white p-7 md:p-10 shadow-lg h-full rounded my-5 hover:border-b border-primary">
-        <div class="w-full md:w-2/3 space-y-6">
-          <h1 class="text-4xl font-bold text-gray-800 -mb-4">
-            Take Conversation
-          </h1>
-          <p class="text-gray-600 text-lg">
-            Took conversation is a convenient platform that allows users to schedule conversations with service providers effortlessly. It streamlines the booking process by providing real-time availability, reminders, and easy rescheduling options..
-          </p>
-        </div>
-        <div class="relative w-full md:w-1/3 h-[170px] flex justify-center items-center md:flex">
-          <img src="../public/img/service img2.svg" alt="Electric Car" class="max-w-full max-h-full object-contain" />
-        </div>
-      </div>
+                    <!-- Ahmedabad card -->
+                    <div class="bg-white border hover:border-primary rounded-lg overflow-hidden">
+                        <div class="flex">
+                            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQmDsYk9xCsC-0joEtEaWQLX33hTr_gVvanrw&s" alt="Vidhana Soudha, Bangalore" class="w-24 h-24 object-cover">
+                            <div class="p-4">
+                                <h3 class="font-bold text-lg">AHMEDABAD</h3>
+                                <a href="#" class="text-blue-500 flex items-center mt-1">
+                                    Explore</a>
+                            </div>
+                        </div>
+                    </div>
 
-      <!-- card 3 -->
-    <div class="flex flex-col md:flex-row items-center gap-8 mx-auto bg-white p-7 md:p-10 shadow-lg h-full rounded my-5 hover:border-b border-primary">
-        <div class="w-full md:w-2/3 space-y-6">
-          <h1 class="text-4xl font-bold text-gray-800 -mb-4">
-            Get Service
-          </h1>
-          <p class="text-gray-600 text-lg">
-            Get Service is a reliable platform that helps users find and access professional services quickly. It connects customers with verified service providers, ensuring quality and convenience. With easy booking, real-time availability, and customer reviews, it simplifies the process of getting the right service when needed.
-          </p>
+                    <!-- gurgaon card -->
+                    <div class="bg-white border hover:border-primary rounded-lg overflow-hidden">
+                        <div class="flex">
+                            <img src="https://www.zricks.com/img/UpdatesBlog/f2c31dfe-8016-4757-969a-639f1c6fbecd36-facts-about-gurgaon-1689152261[1].jpeg" alt="Vidhana Soudha, Bangalore" class="w-24 h-24 object-cover">
+                            <div class="p-4">
+                                <h3 class="font-bold text-lg">GURGAON</h3>
+                                <a href="#" class="text-blue-500 flex items-center mt-1">
+                                    Explore</a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Delhi Card -->
+                    <div class="bg-white border hover:border-primary rounded-lg overflow-hidden">
+                        <div class="flex">
+                            <img src="https://plus.unsplash.com/premium_photo-1697730429201-381b71f61427?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8ZGVsaGklMjBpbmRpYXxlbnwwfHwwfHx8MA%3D%3D" alt="India Gate, Delhi" class="w-24 h-24 object-cover">
+                            <div class="p-4">
+                                <h3 class="font-bold text-lg">DELHI</h3>
+                                <a href="#" class="text-blue-500 flex items-center mt-1">
+                                    Explore</a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Kolkata Card -->
+                    <div class="bg-white border hover:border-primary rounded-lg overflow-hidden">
+                        <div class="flex">
+                            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4IEdJgLkpe-AprM9i-Z8G0l4c7UvPrLZXeg&s" alt="Victoria Memorial, Kolkata" class="w-24 h-24 object-cover">
+                            <div class="p-4">
+                                <h3 class="font-bold text-lg">KOLKATA</h3>
+                                <a href="#" class="text-blue-500 flex items-center mt-1">
+                                    Explore</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
         </div>
-        <div class="relative w-full md:w-1/3 h-[170px] flex justify-center items-center md:flex">
-          <img src="../public/img/service img3.svg" alt="Electric Car" class="max-w-full max-h-full object-contain" />
+    </section>
+
+    <section class="bg-white py-12">
+        <div class="mx-4 md:mx-8">
+            <h2 class="text-2xl font-bold text-gray-900 mb-3">Explore Template Services</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                <!-- Wedding Requisites Section -->
+                <div class="bg-gray-50 rounded-lg border p-4">
+                    <h2 class="text-xl font-bold text-gray-900 mb-4">Wedding Requisites</h2>
+                    
+                    <div class="grid grid-cols-3 gap-4">
+                        <!-- Banquet Halls -->
+                        <div class="flex flex-col items-center">
+                            <div class="rounded-lg overflow-hidden mb-2 w-full">
+                                <img 
+                                    src="https://image.wedmegood.com/resized/720X/uploads/member/25616/1727946389_234217240.jpg?crop=6,84,1010,568" 
+                                    alt="Banquet Halls" 
+                                    class="w-full h-28 object-cover">
+                            </div>
+                            <span class="text-sm font-medium text-center">Banquet Halls</span>
+                        </div>
+                        
+                        <!-- Bridal Requisite -->
+                        <div class="flex flex-col items-center">
+                            <div class="rounded-lg overflow-hidden mb-2 w-full">
+                                <img 
+                                    src="https://img.weddingbazaar.com/shaadisaga_production/photos/pictures/001/887/534/new_medium/pinterest.jpg?1598019283" 
+                                    alt="Bridal Requisite" 
+                                    class="w-full h-28 object-cover">
+                            </div>
+                            <span class="text-sm font-medium text-center">Bridal Requisite</span>
+                        </div>
+                        
+                        <!-- Caterers -->
+                        <div class="flex flex-col items-center">
+                            <div class="rounded-lg overflow-hidden mb-2 w-full">
+                                <img 
+                                    src="https://www.shaadibaraati.com/vendors-profile/f79f778a75e54a9cfedc3400d4e3752e.jpg" 
+                                    alt="Caterers" 
+                                    class="w-full h-28 object-cover"
+                                >
+                            </div>
+                            <span class="text-sm font-medium text-center">Caterers</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Home Appliances -->
+                <div class="bg-gray-50 rounded-lg border p-6">
+                    <h2 class="text-xl font-bold text-gray-900 mb-4">Home Appliances</h2>
+                    
+                    <div class="grid grid-cols-3 gap-4">
+                        <!-- Furniture -->
+                        <div class="flex flex-col items-center">
+                            <div class="rounded-lg overflow-hidden mb-2 w-full">
+                                <img 
+                                    src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSUERsvgGvwn7koz-j5g90k0rNHMPSikdwTBg&s" 
+                                    alt="Furniture" 
+                                    class="w-full h-28 object-cover">
+                            </div>
+                            <span class="text-sm font-medium text-center">Furniture</span>
+                        </div>
+                        
+                        <!-- Kitchen -->
+                        <div class="flex flex-col items-center">
+                            <div class="rounded-lg overflow-hidden mb-2 w-full">
+                                <img 
+                                    src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRTxt3P5--WYWnZF0Ea0oFJ1JFaz4ujSOH3FA&s" 
+                                    alt="Kitchen" 
+                                    class="w-full h-28 object-cover">
+                            </div>
+                            <span class="text-sm font-medium text-center">Kitchen</span>
+                        </div>
+                        
+                        <!-- Eletronics -->
+                        <div class="flex flex-col items-center">
+                            <div class="rounded-lg overflow-hidden mb-2 w-full">
+                                <img 
+                                    src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQxgNdCCTxJme1_1366d9Zpk0iKt4LCN55XIw&s" 
+                                    alt="Eletronics" 
+                                    class="w-full h-28 object-cover"
+                                >
+                            </div>
+                            <span class="text-sm font-medium text-center">Eletronics</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Beauty & Spa Section -->
+                <div class="bg-gray-50 rounded-lg border p-6">
+                    <h2 class="text-xl font-bold text-gray-900 mb-4">Beauty & Spa</h2>
+                    
+                    <div class="grid grid-cols-3 gap-4">
+                        <!-- Beauty Parlours -->
+                        <div class="flex flex-col items-center">
+                            <div class="rounded-lg overflow-hidden mb-2 w-full">
+                                <img 
+                                    src="https://img1.exportersindia.com/product_images/bc-full/2020/4/6999593/professional-party-makeup-bridal-makeup-services-1586158030-5359314.jpg" 
+                                    alt="Beauty Parlours" 
+                                    class="w-full h-28 object-cover"
+                                >
+                            </div>
+                            <span class="text-sm font-medium text-center">Beauty Parlours</span>
+                        </div>
+                        
+                        <!-- Spa & Massages -->
+                        <div class="flex flex-col items-center">
+                            <div class="rounded-lg overflow-hidden mb-2 w-full">
+                                <img 
+                                    src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQW1BFyxfk-iT99dT0n6gl71wrZECve-sVO4g&s" 
+                                    alt="Spa & Massages" 
+                                    class="w-full h-28 object-cover"
+                                >
+                            </div>
+                            <span class="text-sm font-medium text-center">Spa & Massages</span>
+                        </div>
+                        
+                        <!-- Salons -->
+                        <div class="flex flex-col items-center">
+                            <div class="rounded-lg overflow-hidden mb-2 w-full">
+                                <img 
+                                    src="https://salonbizsoftware.com/wp-content/uploads/2024/02/Stylists-doing-hair-at-salon-stations.jpg" 
+                                    alt="Salons" 
+                                    class="w-full h-28 object-cover"
+                                >
+                            </div>
+                            <span class="text-sm font-medium text-center">Salons</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
-      </main>
+    </section>
 
       <!-- customer review -->
     <section id="testimonials" class="bg-gray-50 mt-5 mb-10">
@@ -267,8 +445,8 @@
 
     <!-- CTA Section -->
     <hr>
-    <section class="py-10 px-5 m-5 md:mx-20 md:mb-10 bg-green-50 text-dark border-primary border-dashed border-2 rounded-xl">
-        <div class="container mx-auto text-center">
+    <section class="bg-white p-10">
+        <div class="py-10 px-5 text-center border-primary border-dashed border-2 rounded-md">
             <h2 class="text-3xl md:text-4xl font-bold mb-2">Ready to Get Started?</h2>
             <p class="text-md mb-5 text-gray-700">
                 Join thousands of satisfied customers and service providers on our platform
@@ -285,9 +463,9 @@
     </section>
 
     <!-- Footer -->
-    <footer class="bg-gray-900 text-white py-12">
+    <footer class="bg-gray-900 text-white pt-12 pb-5">
         <div class="container mx-auto px-4">
-            <div class="grid md:grid-cols-4 gap-8">
+            <div class="grid sm:grid-cols-2 md:grid-cols-4 gap-8">
                 <div>
                     <h3 class="text-lg font-semibold mb-4">About Us</h3>
                     <p class="text-gray-400">
@@ -297,19 +475,19 @@
                 <div>
                     <h3 class="text-lg font-semibold mb-4">Quick Links</h3>
                     <ul class="space-y-2">
-                        <li><a href="#" class="text-gray-400 hover:text-white">Find Services</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white">Become a Provider</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white">How It Works</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white">Contact Us</a></li>
+                        <li><a href="#" class="text-gray-500 hover:text-primary">Find Services</a></li>
+                        <li><a href="#" class="text-gray-500 hover:text-primary">Become a Provider</a></li>
+                        <li><a href="#" class="text-gray-500 hover:text-primary">How It Works</a></li>
+                        <li><a href="#" class="text-gray-500 hover:text-primary">Contact Us</a></li>
                     </ul>
                 </div>
                 <div>
                     <h3 class="text-lg font-semibold mb-4">Categories</h3>
                     <ul class="space-y-2">
-                        <li><a href="#" class="text-gray-400 hover:text-white">Home Services</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white">Professional Services</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white">Health & Fitness</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white">Education</a></li>
+                        <li><a href="#" class="text-gray-500 hover:text-primary">Home Services</a></li>
+                        <li><a href="#" class="text-gray-500 hover:text-primary">Professional Services</a></li>
+                        <li><a href="#" class="text-gray-500 hover:text-primary">Health & Fitness</a></li>
+                        <li><a href="#" class="text-gray-500 hover:text-primary">Education</a></li>
                     </ul>
                 </div>
                 <div>
