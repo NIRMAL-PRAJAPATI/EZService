@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Service Provider Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Custom Tailwind Configuration -->
+    <script src="/frontend/public/js/color_config.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-gray-50">
+    <main class="max-w-7xl mx-auto z-0">
+    <!-- Current Orders -->
+    <div class="mt-5">
+            <h2 class="text-lg leading-6 font-medium text-gray-900">Orders</h2>
+        <div class="mt-4 bg-white shadow overflow-hidden sm:rounded-md">
+            <ul role="list" class="divide-y divide-gray-200">
+                <li>
+                    <div class="px-4 py-4 sm:px-6">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <p class="font-bold text-primary tracking-wide text-xl">
+                                    Rajesh Prajapati
+                                </p>
+                            </div>
+                            <div class="ml-2 flex-shrink-0 flex">
+                                <p class="text-sm text-gray-500">
+                                    Plumbing
+                                </p>
+                            </div>
+                        </div>
+                        <div class="mt-2 sm:flex sm:justify-between">
+                            <div class="sm:flex">
+                                <p class="flex items-center text-sm text-gray-500 font-medium">
+                                    <i data-lucide="file-digit" class="flex-shrink-0 mr-1.5 h-5 w-5 text-primary/60"></i>
+                                    <span>Order No: #12346</span>
+                                </p>
+                                <p class="mt-2 flex items-center text-sm text-gray-500 sm:mt-0 sm:ml-6">
+                                    <i data-lucide="map-pin" class="flex-shrink-0 mr-1.5 h-5 w-5 text-primary/60"></i>
+                                    <span class="w-full sm:w-[25vw] truncate">Krishnapark socity Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolore veniam reprehenderit iure officia velit impedit iste distinctio fugiat, nobis libero voluptatum aspernatur? Ex dolor sed nihil! Ducimus soluta distinctio consectetur.</span>
+                                </p>
+                            </div>
+                            <div class="mt-2 flex items-center text-sm text-gray-500 sm:mt-0">
+                                <i data-lucide="calendar" class="flex-shrink-0 mr-1.5 h-5 w-5 text-primary/60"></i>
+                                <p>Tomorrow after 10:00 AM</p>
+                            </div>
+                        </div>
+                        <div class="mt-2 flex justify-end space-x-2">
+                            <button class="inline-flex items-center px-4 py-2 border border-primary font-medium rounded text-primary">Decline</button>
+                            <button class="inline-flex items-center px-4 py-2 border border-transparent font-medium rounded text-white bg-primary">Accept order</button>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+    </main>
+
+    <script>
+        lucide.createIcons();
+    </script>
+    </body>
+    </html>

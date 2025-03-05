@@ -4,4 +4,6 @@ EZService.com
 (userside)
 home, login, signup, find service, about, complaint, account, ranking(service ranking), particular service providers details.
 
+(provider side)
+dashboard page, login, business registration page, transaction details page, services page(where provider can see there provided services and also add, delete, edit new/old services too), account, complaints page(whatever users are complaint against them is displayed here, provider can see and reply against to that coplaint)
 ----- end -----
