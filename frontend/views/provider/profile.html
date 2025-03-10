@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Custom Tailwind Configuration -->
+    <script src="/frontend/public/js/color_config.js"></script>
+    <!-- Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-gray-100 font-sans">
+    <!-- bussiness Details -->
+    <div class="container mx-auto py-5 max-w-4xl">
+        <div class="bg-white rounded-lg shadow px-4 sm:px-10 py-8">
+            <p class="font-bold text-xl flex mb-3"><i data-lucide="clipboard-list" class="text-primary mt-0.5"></i>&nbsp;Bussiness Information</p>
+            <form>
+            <div class="my-2">
+                <p class="ml-1 text-gray-500 text-sm">Bussiness Owner Name</p>
+                <input type="text" name="name" class="border outline-none focus:border-primary rounded w-full p-2 text-gray-600">
+            </div>
+            <div class="my-2">
+                <p class="ml-1 text-gray-500 text-sm">Bussiness Email</p>
+                <input type="text" name="email" class="border outline-none focus:border-primary rounded w-full p-2 text-gray-600">
+            </div>
+            <div class="my-2">
+                <p class="ml-1 text-gray-500 text-sm">Bussiness Mobile No.</p>
+                <input type="text" name="mobile" class="border outline-none focus:border-primary rounded w-full p-2 text-gray-600">
+            </div>
+            <div class="my-2">
+                <p class="ml-1 text-gray-500 text-sm">Bussiness Address</p>
+                <Textarea rows="3" class="resize-none border outline-none focus:border-primary rounded w-full p-2 text-gray-600"></Textarea>
+            </div>
+            <div class="sm:grid sm:grid-cols-3 sm:gap-2">
+            <div class="my-2">
+                <p class="ml-1 text-gray-500 text-sm">City</p>
+                <input type="text" name="city" class="border outline-none focus:border-primary rounded w-full p-2 text-gray-600">
+            </div>
+            <div class="my-2">
+                <p class="ml-1 text-gray-500 text-sm">State</p>
+                <input type="text" name="state" class="border outline-none focus:border-primary rounded w-full p-2 text-gray-600">
+            </div>
+            <div class="my-2">
+                <p class="ml-1 text-gray-500 text-sm">Country</p>
+                <input type="text" name="country" class="border outline-none focus:border-primary rounded w-full p-2 text-gray-600">
+            </div>
+            </div>
+            <button class="bg-primary py-2 px-4 rounded text-white mt-3">Edit Bussiness Details</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Transaction Details -->
+    <div class="container mx-auto py-5 max-w-4xl">
+        <div class="bg-white rounded-lg shadow px-4 sm:px-10 py-8">
+            <p class="font-bold text-xl flex mb-3"><i data-lucide="landmark" class="text-primary mt-0.5"></i>&nbsp;Bank Details</p>
+            <form>
+            <div class="my-2">
+                <p class="ml-1 text-gray-500 text-sm">Account Holder Name</p>
+                <input type="text" name="name" class="border outline-none focus:border-primary rounded w-full p-2 text-gray-600">
+            </div>
+            <div class="my-2">
+                <p class="ml-1 text-gray-500 text-sm">Bank Account Number</p>
+                <input type="text" name="email" class="border outline-none focus:border-primary rounded w-full p-2 text-gray-600">
+            </div>
+            <div class="my-2">
+                <p class="ml-1 text-gray-500 text-sm">Bank Name</p>
+                <select class="border outline-none focus:border-primary rounded-sm w-full p-2 text-gray-600">
+                    <option>Select</option>
+                    <option>State Bank of India</option>
+                    <option>HDFC Bank</option>
+                </select>
+            </div>
+            
+            <div class="my-2">
+                <p class="ml-1 text-gray-500 text-sm">IFSC Code</p>
+                <input type="text" name="email" class="border outline-none focus:border-primary rounded w-full p-2 text-gray-600">
+            </div>
+            <div class="my-2">
+                <p class="ml-1 text-gray-500 text-sm">Registered Mobile No.</p>
+                <input type="text" name="email" class="border outline-none focus:border-primary rounded w-full p-2 text-gray-600">
+            </div>
+            <button class="bg-primary py-2 px-4 rounded text-white mt-3">Edit Bank Details</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- UPI Details -->
+    <div class="container mx-auto py-5 max-w-4xl">
+        <div class="bg-white rounded-lg shadow px-4 sm:px-10 py-8">
+            <p class="font-bold text-xl flex mb-3"><i data-lucide="scan-qr-code" class="text-primary mt-0.5"></i>&nbsp;UPI Details</p>
+            <form>
+            <div class="my-2">
+                <p class="ml-1 text-gray-500 text-sm">UPI ID</p>
+                <input type="text" name="name" class="border outline-none focus:border-primary rounded w-full p-2 text-gray-600">
+            </div>
+            <div class="my-2">
+                <p class="ml-1 text-gray-500 text-sm">Name of The Receiver</p>
+                <input type="text" name="text" class="border outline-none focus:border-primary rounded w-full p-2 text-gray-600">
+            </div>
+            <div class="my-2">
+                <p class="ml-1 text-gray-500 text-sm">Mobile No.</p>
+                <input type="text" name="number" class="border outline-none focus:border-primary rounded w-full p-2 text-gray-600">
+            </div>
+            <div class="my-2">
+                <p class="ml-1 text-gray-500 text-sm">QR Code</p>
+                <input type="file" name="number" class="border outline-none focus:border-primary rounded w-full p-2 text-gray-600">
+            </div>
+            <button class="bg-primary py-2 px-4 rounded text-white mt-3">Edit UPI Details</button>
+            </form>
+        </div>
+    </div>
+    
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+    </script>
+</body>
+</html>

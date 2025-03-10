@@ -15,42 +15,45 @@
         <!-- Main grid container -->
         <div class="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-5 gap-1">
             <!-- Left Sidebar - Services List -->
-            <div class="lg:col-span-1 bg-white p-1 shadow-md h-fit">
+            <div id="serviceDiv" class="lg:col-span-1 bg-white p-1 shadow-md h-fit absolute md:relative z-10 hidden md:block">
+                <div class="flex justify-between">
                 <h2 class="text-xl font-bold ml-4 mb-4 text-gray-800">Our Services</h2>
-                <ul class="space-y-1 overflow-y-scroll h-[90vh]">
-                    <li class="p-2 border-b border-primary bg-primary/10 rounded-md cursor-pointer hover:bg-gray-50 transition-colors">
+                <i data-lucide="x" id="closeServiceDivBtn" class="md:hidden text-gray-500 hover:text-primary cursor-pointer"></i>
+                </div>
+                <ul class="space-y-1 overflow-y-scroll h-[91vh]">
+                    <li class="p-2 border-b border-primary bg-primary/10 rounded-t cursor-pointer hover:bg-gray-50 transition-colors">
                         <h3 class="font-semibold text-primary">Home Cleaning</h3>
                         <p class="text-sm text-gray-600">Professional cleaning services for your home needs</p>
                     </li>
-                    <li class="p-2 hover:bg-gray-50 rounded-md cursor-pointer transition-colors">
+                    <li class="p-2 hover:bg-gray-50 rounded-t cursor-pointer transition-colors">
                         <h3 class="font-semibold text-gray-800">Plumbing Services</h3>
                         <p class="text-sm text-gray-600">Expert plumbing solutions for all requirements</p>
                     </li>
-                    <li class="p-2 hover:bg-gray-50 rounded-md cursor-pointer transition-colors">
+                    <li class="p-2 hover:bg-gray-50 rounded-t cursor-pointer transition-colors">
                         <h3 class="font-semibold text-gray-800">Electrical Work</h3>
                         <p class="text-sm text-gray-600">Certified electricians for your electrical needs</p>
                     </li>
-                    <li class="p-2 hover:bg-gray-50 rounded-md cursor-pointer transition-colors">
+                    <li class="p-2 hover:bg-gray-50 rounded-t cursor-pointer transition-colors">
                         <h3 class="font-semibold text-gray-800">Carpentry</h3>
                         <p class="text-sm text-gray-600">Custom woodwork and furniture repair services</p>
                     </li>
-                    <li class="p-2 hover:bg-gray-50 rounded-md cursor-pointer transition-colors">
+                    <li class="p-2 hover:bg-gray-50 rounded-t cursor-pointer transition-colors">
                         <h3 class="font-semibold text-gray-800">Painting</h3>
                         <p class="text-sm text-gray-600">Professional painting services for your space</p>
                     </li>
-                    <li class="p-2 hover:bg-gray-50 rounded-md cursor-pointer transition-colors">
+                    <li class="p-2 hover:bg-gray-50 rounded-t cursor-pointer transition-colors">
                         <h3 class="font-semibold text-gray-800">Plumbing Services</h3>
                         <p class="text-sm text-gray-600">Expert plumbing solutions for all requirements</p>
                     </li>
-                    <li class="p-2 hover:bg-gray-50 rounded-md cursor-pointer transition-colors">
+                    <li class="p-2 hover:bg-gray-50 rounded-t cursor-pointer transition-colors">
                         <h3 class="font-semibold text-gray-800">Electrical Work</h3>
                         <p class="text-sm text-gray-600">Certified electricians for your electrical needs</p>
                     </li>
-                    <li class="p-2 hover:bg-gray-50 rounded-md cursor-pointer transition-colors">
+                    <li class="p-2 hover:bg-gray-50 rounded-t cursor-pointer transition-colors">
                         <h3 class="font-semibold text-gray-800">Carpentry</h3>
                         <p class="text-sm text-gray-600">Custom woodwork and furniture repair services</p>
                     </li>
-                    <li class="p-2 hover:bg-gray-50 rounded-md cursor-pointer transition-colors">
+                    <li class="p-2 hover:bg-gray-50 rounded-t cursor-pointer transition-colors">
                         <h3 class="font-semibold text-gray-800">Painting</h3>
                         <p class="text-sm text-gray-600">Professional painting services for your space</p>
                     </li>
@@ -58,10 +61,11 @@
             </div>
 
             <!-- Right Content Area -->
-            <div class="md:col-span-3 lg:col-span-4 space-y-4 overflow-y-scroll h-[97vh]">
+            <div class="md:col-span-3 lg:col-span-4 space-y-4 overflow-y-scroll h-[100vh] z-0">
                 <!-- Search and Filter Section -->
-                <div class="bg-white py-2 px-4 rounded-lg absolute sm:w-[75vw] md:w-[72vw] w-[95vw]">
+                <div class="bg-white py-2 px-4 rounded-lg w-100 m-2">
                     <div class="flex gap-4">
+                        <i data-lucide="align-left" id="openServiceDivBtn" class="md:hidden mt-2 text-gray-500 hover:text-primary cursor-pointer"></i>
                         <!-- Search Box -->
                         <div class="flex-1">
                             <div class="relative">
@@ -71,12 +75,12 @@
                             </div>
                         </div>
                         <!-- Filter Dropdown -->
-                        <i data-lucide="list-filter" class="mt-2 text-gray-500 hover:text-primary cursor-pointer"></i>
+                        <i data-lucide="sliders-horizontal" class="mt-2 text-gray-500 hover:text-primary cursor-pointer"></i>
                     </div>
                 </div>
 
                 <!-- Service Providers Grid -->
-                <div class="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-4 px-2 md:px-0 sm:m-2 pt-12">
+                <div class="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-4 px-2 md:px-0 sm:m-2">
                     <!-- Service Provider Card 1 -->
                     <a href="/frontend/views/user/service_profile.html" class="bg-white overflow-hidden rounded-lg shadow-sm">
                         <div class="flex items-start space-x-4">
@@ -127,15 +131,16 @@
             </div>
         </div>
     </div>
-
-    <!-- Note: In a real application, you would need JavaScript to handle:
-    1. Service selection and content loading
-    2. Search functionality
-    3. Filter implementation
-    4. Pagination
-    5. Dynamic loading of service provider data -->
     <script>
         lucide.createIcons();
+
+        document.querySelector('#openServiceDivBtn').addEventListener("click", () => {
+            document.querySelector('#serviceDiv').classList.remove('hidden');
+        })
+
+        document.querySelector('#closeServiceDivBtn').addEventListener("click", () => {
+            document.querySelector('#serviceDiv').classList.add('hidden');
+        })
     </script>
 </body>
 </html>

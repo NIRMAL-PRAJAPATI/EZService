@@ -19,41 +19,29 @@
                         <img src="/frontend/public/img/ezservice logo.png" class="h-6 w-6 mr-2">
                         <span class="text-xl font-bold">EZService</span>
                     </div>
-                    <div class="hidden sm:ml-6 sm:flex sm:space-x-4">
-                        <a href="#" class="border-primary text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                    <div id="navMenuDiv" class="absolute sm:relative sm:ml-6 flex flex-col sm:flex-row sm:space-x-4 bg-primary sm:bg-transparent p-5 sm:p-0 space-y-1 sm:space-y-0 right-[100vw] sm:right-0 top-16 sm:top-0 w-[60vw] sm:w-full">
+                        <a href="#" class="border-transparent text-gray-200 sm:text-gray-500 hover:border-gray-300 hover:border-b hover:text-white pb-2 sm:pb-0 sm:hover:text-gray-700 inline-flex items-center px-1 pt-1 sm:border-b-2 text-sm tracking-wide md:font-medium">
                             Dashboard
                         </a>
-                        <a href="orderlist.html" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                        <a href="profile.html" class="border-transparent text-gray-200 sm:text-gray-500 hover:border-gray-300 hover:border-b hover:text-white pb-2 sm:pb-0 sm:hover:text-gray-700 inline-flex items-center px-1 pt-1 sm:border-b-2 text-sm tracking-wide md:font-medium">
+                            Profile
+                        </a>
+                        <a href="orderlist.html" class="border-transparent text-gray-200 sm:text-gray-500 hover:border-gray-300 hover:border-b hover:text-white pb-2 sm:pb-0 sm:hover:text-gray-700 inline-flex items-center px-1 pt-1 sm:border-b-2 text-sm tracking-wide md:font-medium">
                             Orders
                         </a>
-                        <a href="#" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                        <a href="service.html" class="border-transparent text-gray-200 sm:text-gray-500 hover:border-gray-300 hover:border-b hover:text-white pb-2 sm:pb-0 sm:hover:text-gray-700 inline-flex items-center px-1 pt-1 sm:border-b-2 text-sm tracking-wide md:font-medium">
                             Services
                         </a>
-                        <a href="#" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
-                            Analytics
+                        <a href="complaint.html" class="border-transparent text-gray-200 sm:text-gray-500 hover:border-gray-300 hover:border-b hover:text-white pb-2 sm:pb-0 sm:hover:text-gray-700 inline-flex items-center px-1 pt-1 sm:border-b-2 text-sm tracking-wide md:font-medium">
+                            Complaints
                         </a>
                     </div>
                 </div>
                 <div class="flex items-center">
-                    <div class="flex-shrink-0">
-                        <div class="relative">
-                            <button type="button" class="bg-primary p-1 rounded-full text-white hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
-                                <span class="sr-only">View notifications</span>
-                                <i data-lucide="bell" class="h-5 w-5"></i>
-                            </button>
-                            <span class="absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-400 ring-2 ring-white"></span>
-                        </div>
-                    </div>
-                    <div class="ml-3 relative">
-                        <div>
-                            <button type="button" class="bg-white rounded-full flex text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary" id="user-menu-button">
-                                <span class="sr-only">Open user menu</span>
-                                <img class="h-8 w-8 rounded-full" src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" alt="">
-                            </button>
-                        </div>
-                    </div>
+                    <i data-lucide="align-center" id="navMenuBtn" class="h-8 w-8 block sm:hidden hover:text-primary"></i>
                 </div>
             </div>
+            
         </div>
     </nav>
 
@@ -83,6 +71,36 @@
                     <div class="p-4">
                         <div class="flex items-center">
                             <div class="flex-shrink-0 bg-primary rounded-md p-2 sm:p-3">
+                                <i data-lucide="telescope" class="h-4 sm:h-5 w-4 sm:w-5 text-white"></i>
+                            </div>
+                            <div class="ml-2 sm:ml-5 w-0 flex-1">
+                                <dl>
+                                    <dt class="text-[12px] sm:text-sm font-medium text-gray-500 truncate">
+                                        Total Visitors
+                                    </dt>
+                                    <dd>
+                                        <div class="sm:text-2xl font-bold text-gray-900">
+                                            8
+                                        </div>
+                                    </dd>
+                                </dl>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-gray-50 px-4 py-4 sm:px-6">
+                        <div class="text-sm">
+                            <a href="#" class="font-medium text-primary hover:text-primary/80">
+                                View all visitors
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="bg-white overflow-hidden shadow rounded-lg">
+                    <div class="p-4">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0 bg-primary rounded-md p-2 sm:p-3">
                                 <i data-lucide="shopping-cart" class="h-4 sm:h-5 w-4 sm:w-5 text-white"></i>
                             </div>
                             <div class="ml-2 sm:ml-5 w-0 flex-1">
@@ -103,36 +121,6 @@
                         <div class="text-sm">
                             <a href="#" class="font-medium text-primary hover:text-primary/80">
                                 View all orders
-                            </a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Card 2 -->
-                <div class="bg-white overflow-hidden shadow rounded-lg">
-                    <div class="p-4">
-                        <div class="flex items-center">
-                            <div class="flex-shrink-0 bg-primary rounded-md p-2 sm:p-3">
-                                <i data-lucide="check-circle" class="h-4 sm:h-5 w-4 sm:w-5 text-white"></i>
-                            </div>
-                            <div class="ml-2 sm:ml-5 w-0 flex-1">
-                                <dl>
-                                    <dt class="text-[12px] sm:text-sm font-medium text-gray-500 truncate">
-                                        Completed Today
-                                    </dt>
-                                    <dd>
-                                        <div class="sm:text-2xl font-bold text-gray-900">
-                                            8
-                                        </div>
-                                    </dd>
-                                </dl>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="bg-gray-50 px-4 py-4 sm:px-6">
-                        <div class="text-sm">
-                            <a href="#" class="font-medium text-primary hover:text-primary/80">
-                                View completed
                             </a>
                         </div>
                     </div>
@@ -203,49 +191,87 @@
         <!-- Performance Metrics -->
         <div class="mt-8">
             <h2 class="text-lg leading-6 font-medium text-gray-900 px-4 sm:px-0">Performance Metrics</h2>
-            <div class="mt-2 grid grid-cols-1 gap-5 sm:grid-cols-2">
-                <!-- Completion Rate -->
+            <div class="mt-2 grid grid-cols-1 gap-2 sm:gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                <!-- orders -->
                 <div class="bg-white overflow-hidden shadow rounded-lg">
                     <div class="p-4">
-                        <h3 class="text-lg leading-6 font-medium text-gray-900">Completion Rate</h3>
+                        <h3 class="leading-6 font-medium text-gray-900">Orders</h3>
                         <div class="mt-2 flex justify-between items-baseline">
-                            <div class="text-5xl font-semibold text-primary">
-                                98%
+                            <div class="text-2xl font-semibold text-primary">
+                                19%
                             </div>
-                            <div class="text-sm text-green-600 flex items-center">
-                                <i data-lucide="arrow-up" class="h-4 w-4 mr-1"></i>
-                                2% from last month
+                            <div class="text-[12px] text-red-600 flex items-center">
+                                <i data-lucide="arrow-down" class="h-4 w-4 mr-1"></i>
+                                -12.9% from last month
                             </div>
                         </div>
-                        <div class="mt-4">
-                            <div class="relative pt-1">
-                                <div class="overflow-hidden h-2 text-xs flex rounded bg-primary-100">
-                                    <div style="width: 98%" class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-primary"></div>
+                        <div class="mt-2 bg-gray-200">
+                                <div class="overflow-hidden h-1 text-xs flex rounded bg-primary-100">
+                                    <div style="width: 19%" class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-primary"></div>
                                 </div>
-                            </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Response Time -->
+                <!-- Completion Rate -->
                 <div class="bg-white overflow-hidden shadow rounded-lg">
                     <div class="p-4">
-                        <h3 class="text-lg leading-6 font-medium text-gray-900">Average Response Time</h3>
+                        <h3 class="leading-6 font-medium text-gray-900">Completion Rate</h3>
                         <div class="mt-2 flex justify-between items-baseline">
-                            <div class="text-5xl font-semibold text-primary">
-                                15 min
+                            <div class="text-2xl font-semibold text-primary">
+                                95%
                             </div>
-                            <div class="text-sm text-green-600 flex items-center">
-                                <i data-lucide="arrow-down" class="h-4 w-4 mr-1"></i>
-                                3 min from last month
+                            <div class="text-[12px] text-green-600 flex items-center">
+                                <i data-lucide="arrow-up" class="h-4 w-4 mr-1"></i>
+                                2% from last month
                             </div>
                         </div>
-                        <div class="mt-4">
-                            <div class="relative pt-1">
-                                <div class="overflow-hidden h-2 text-xs flex rounded bg-primary-100">
-                                    <div style="width: 75%" class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-primary"></div>
+                        <div class="mt-2 bg-gray-200">
+                                <div class="overflow-hidden h-1 text-xs flex rounded bg-primary-100">
+                                    <div style="width: 95%" class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-primary"></div>
                                 </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Completion Rate -->
+                <div class="bg-white overflow-hidden shadow rounded-lg">
+                    <div class="p-4">
+                        <h3 class="leading-6 font-medium text-gray-900">Customer Satisfaction</h3>
+                        <div class="mt-2 flex justify-between items-baseline">
+                            <div class="text-2xl font-semibold text-primary">
+                                68%
                             </div>
+                            <div class="text-[12px] text-red-600 flex items-center">
+                                <i data-lucide="arrow-down" class="h-4 w-4 mr-1"></i>
+                                -6% from last month
+                            </div>
+                        </div>
+                        <div class="mt-2 bg-gray-200">
+                                <div class="overflow-hidden h-1 text-xs flex rounded bg-primary-100">
+                                    <div style="width: 68%" class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-primary"></div>
+                                </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Completion Rate -->
+                <div class="bg-white overflow-hidden shadow rounded-lg">
+                    <div class="p-4">
+                        <h3 class="leading-6 font-medium text-gray-900">Repeat Customers</h3>
+                        <div class="mt-2 flex justify-between items-baseline">
+                            <div class="text-2xl font-semibold text-primary">
+                                43%
+                            </div>
+                            <div class="text-[12px] text-green-600 flex items-center">
+                                <i data-lucide="arrow-up" class="h-4 w-4 mr-1"></i>
+                                3.4% from last month
+                            </div>
+                        </div>
+                        <div class="mt-2 bg-gray-200">
+                                <div class="overflow-hidden h-1 text-xs flex rounded bg-primary-100">
+                                    <div style="width: 43%" class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-primary"></div>
+                                </div>
                         </div>
                     </div>
                 </div>
@@ -256,7 +282,7 @@
         <div class="mt-8">
             <div class="flex items-center justify-between px-4 sm:px-0">
                 <h2 class="text-lg leading-6 font-medium text-gray-900">Recent Reviews</h2>
-                <a href="#" class="text-sm font-medium text-primary hover:text-indigo-700">
+                <a href="reviews.html" class="text-sm font-medium text-primary hover:text-indigo-700">
                     View all
                 </a>
             </div>
@@ -327,6 +353,20 @@
 
     <script>
         lucide.createIcons();
+
+        // navigation functionality
+        let clicked = 0;
+
+        document.querySelector('#navMenuBtn').addEventListener('click', () => {
+            document.querySelector('#navMenuDiv').style.transition = 'all 0.1s';
+            if (clicked == 0) {
+            document.querySelector('#navMenuDiv').style.right = '0vw';
+            clicked = 1;
+            } else {
+                document.querySelector('#navMenuDiv').style.right = '100vw';
+                clicked = 0;
+            }
+        })
     </script>
 </body>
 </html>
