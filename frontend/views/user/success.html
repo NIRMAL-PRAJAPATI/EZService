@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>success</title>
+    <link rel="icon" type="image/png" href="/frontend/public/img/ezservice logo.png">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Custom Tailwind Configuration -->
+    <script src="/frontend/public/js/color_config.js"></script>
+    <!-- Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+    <main  class="text-center flex justify-center items-center w-full h-[100vh] bg-primary/90 p-3">
+        <div class="bg-gray-50 border-dashed border-2 border-primary p-4 sm:p-10">
+            <i data-lucide="circle-check-big" class="mx-auto h-14 w-14 text-primary"></i>
+            <h1 class="text-3xl font-extrabold text-gray-800">Service Request Sent</h1>
+            <p class="text-gray-600 mt-1">Your service request has been sent successfully. Service provider will give there answer soon. you'le be ready to take your service</p>
+            <div class="gap-2 mt-6 flex flex-col sm:block">
+                <a href="index.html" class="text-white bg-primary px-5 py-3 font-semibold rounded">Go Back to Home</a>
+                <a href="user_servicelist.html" class="border border-primary text-primary px-5 py-3 font-semibold rounded">See Orders</a>
+            </div>
+            <p class="mt-5">You will be redirected to main page in <span id="secondCounter" class="border border-red-500 text-red-500 tracking-tight font-bold"></span> seconds</p>
+        </div>
+    </main>
+
+    <script>
+        lucide.createIcons();
+
+        let secondCounter = document.getElementById('secondCounter');
+        let counter = 15;
+
+        setInterval(() => {
+            counter--;
+            secondCounter.textContent = counter;
+            if (counter === 0) {
+                window.location.href = "index.html";
+            }
+        }, 1000)
+    </script>
+</body>
+</html>

@@ -11,8 +11,18 @@
     <script src="/frontend/public/js/color_config.js"></script>
     <!-- Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="/frontend/public/css/loader.css">
 </head>
 <body class="min-h-screen bg-gray-50">
+    <!-- loader -->
+    <div class="fixed bg-gray-100/50 w-full min-h-screen hidden items-center justify-center z-50">
+        <div>
+            <img src="/frontend/public/img/ezservice logo.png"
+                alt="Loading logo" class="w-16 h-16 loading-animation" />
+            <p class="tracking-wide" style="font-family:Verdana, Geneva, Tahoma, sans-serif">loading...</p>
+        </div>
+    </div>
+
     <!-- Navigation -->
     <nav class="bg-white shadow-sm">
         <div class="mx-auto py-3 px-4">
@@ -331,7 +341,7 @@
                   <img src="https://images.unsplash.com/photo-1542013936693-884638332954?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=100&h=100&q=80" alt="Work sample" class="w-16 h-16 object-cover rounded-md">
                   <img src="https://images.unsplash.com/photo-1615266508040-7c47f7339963?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=100&h=100&q=80" alt="Work sample" class="w-16 h-16 object-cover rounded-md">
                 </div>
-                <button class="w-full bg-primary rounded py-2 mt-3 text-white tracking-wide">Visit Profile</button>
+                <a href="success.html"><button class="w-full bg-primary rounded py-2 mt-3 text-white tracking-wide">Visit Profile</button></a>
               </div>
             </div>
         </div>
@@ -568,7 +578,7 @@
     <!-- Initialize Lucide Icons -->
     <script>
         lucide.createIcons();
-    </script>
+      </script>
     <script>
         // text changing functionality in mainpage
         const messages = [
