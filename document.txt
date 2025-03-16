@@ -8,11 +8,14 @@ home, login, signup, find service, about, complaint, account, ranking(service ra
 dashboard page, login, business registration page, transaction details page, services page(where provider can see there provided services and also add, delete, edit new/old services too), account, complaints page(whatever users are complaint against them is displayed here, provider can see and reply against to that coplaint)
 ----- end -----
 
+
+
+
 ----- Database -----
 [userside]
-1. users table (name, email, mobile no, password, address, customer ID(which is unique for each user))
+1. users table (name, email, mobile no, password, customer ID(which is unique for each user))
 
-2. orders table (customer ID, serice name, service type, order number, location(where are they provide service), date(which date customer get service), charge, status(service is panding or fullfilled), description(what is the issue a cusomer writes))
+2. orders table (customer ID, service ID, order number, location(where are they provide service), date(which date customer get service), charge, status(service is panding or fullfilled), description(what is the issue a cusomer writes))
 
 3. complaint table (cutomer ID, complaint ID, subject, service type, service provider name, complaint type, description, date, status(complaint is closed by customer, solved by service provider/EZService))
 
@@ -26,7 +29,7 @@ dashboard page, login, business registration page, transaction details page, ser
 
 4.1. servicelist(service ID, service name, description, ranking(based on ranking it desides with service perform and prefer more from customer))
 
-4.2. service(provider ID, service ID, service name, service type, cover image, visiting charge, description, location(where are they provide service), experience, services provided(which type of service they provides), working images, bedge status, city, state, country)
+4.2. service(provider ID, service ID, service name, service type, cover image, visiting charge, description, location(where are they provide service), experience, services provided(which type of service they provides), working images, bedge status)
 
 5. service reviews & ratings(provider ID, service ID, customer name, comment, rating, date, customer setisfaction, service reliability --some other parameters may add--)
 
