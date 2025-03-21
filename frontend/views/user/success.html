@@ -13,16 +13,25 @@
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body>
-    <main  class="text-center flex justify-center items-center w-full h-[100vh] bg-primary/90 p-3">
-        <div class="bg-gray-50 border-dashed border-2 border-primary p-4 sm:p-10">
-            <i data-lucide="circle-check-big" class="mx-auto h-14 w-14 text-primary"></i>
-            <h1 class="text-3xl font-extrabold text-gray-800">Service Request Sent</h1>
-            <p class="text-gray-600 mt-1">Your service request has been sent successfully. Service provider will give there answer soon. you'le be ready to take your service</p>
-            <div class="gap-2 mt-6 flex flex-col sm:block">
-                <a href="index.html" class="text-white bg-primary px-5 py-3 font-semibold rounded">Go Back to Home</a>
-                <a href="user_servicelist.html" class="border border-primary text-primary px-5 py-3 font-semibold rounded">See Orders</a>
+    <main  class="text-center flex justify-center items-center w-full h-[100vh] p-3"><!-- icons -->
+        <div class="text-gray-400 overflow-hidden">
+       <i data-lucide="plug" class="absolute top-[5%] left-60 rotate-[330deg] z-0"></i>
+       <i data-lucide="party-popper" class="absolute top-[40%] right-20 z-0"></i>
+       <i data-lucide="wrench" class="absolute top-[90%] right-60 rotate-[10deg] z-0"></i>
+       <i data-lucide="cake" class="absolute top-[15%] right-[25vw] rotate-[330deg] z-0"></i>
+       <i data-lucide="dumbbell" class="absolute top-[77%] left-20 rotate-[330deg] z-0"></i>
+       <i data-lucide="scan-heart" class="absolute top-[30%] left-10 rotate-[330deg] z-0"></i>
+       </div>
+
+        <div class="bg-primary border-dashed border-2 border-primary p-4 sm:p-10 z-10 border-dashed border-white">
+            <i data-lucide="circle-check-big" class="mx-auto mb-2 h-16 w-16 text-white"></i>
+            <h1 class="text-3xl font-extrabold text-white tracking-wide">Service Request Sent</h1>
+            <p class="text-gray-100 mt-1">Your service request has been sent successfully. Service provider will give there answer soon. you'le be ready to take your service</p>
+            <div class="gap-2 mt-10 flex flex-col sm:block">
+                <a href="index.html" class="text-primary bg-white px-5 py-3 font-semibold rounded">Go Back to Home</a>
+                <a href="user_servicelist.html" class="border border-white text-white px-5 py-3 font-semibold rounded">See Orders</a>
             </div>
-            <p class="mt-5">You will be redirected to main page in <span id="secondCounter" class="border border-red-500 text-red-500 tracking-tight font-bold"></span> seconds</p>
+            <p class="mt-5 text-gray-300">You will be redirected to main page in <span id="secondCounter" class="border bg-red-500 border-red-500 text-white tracking-tight font-bold">15</span> seconds</p>
         </div>
     </main>
 
