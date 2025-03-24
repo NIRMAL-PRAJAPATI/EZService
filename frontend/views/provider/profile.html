@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,31 +13,39 @@
     <!-- Icons -->
     <!-- <script src="https://unpkg.com/lucide@latest"></script> -->
 </head>
-<body class="bg-gray-50 font-sans">
+
+<body class="bg-gray-100 font-sans">
     <main class="max-w-7xl mx-auto py-10 sm:px-6 lg:px-8">
-            <div class="md:grid md:grid-cols-3 md:gap-6">
-                <div class="md:col-span-1 flex justify-between">
-                    <div class="px-4 sm:px-0">
-                        <h3 class="text-xl font-medium text-gray-900"> Bussiness Information </h3>
-                        <p class="mt-1 text-gray-600"> Update your account's bussiness information and
-                            email address. </p>
-                    </div>
-                    <div class="px-4 sm:px-0"></div>
+        <div class="md:grid md:grid-cols-3 md:gap-6">
+            <div class="md:col-span-1 flex justify-between">
+                <div class="px-4 sm:px-0">
+                    <h3 class="text-xl font-medium text-gray-900"> Bussiness Information </h3>
+                    <p class="mt-1 text-gray-600"> Update your account's bussiness information and
+                        email address. </p>
                 </div>
-                <div class="mt-5 md:col-span-2 md:mt-0">
-                    <form>
-                        <div class="bg-white px-4 py-5 shadow sm:p-6 sm:rounded-tl-md sm:rounded-tr-md">
-                            <div class="grid grid-cols-6 gap-6">
-                                <div class="col-span-6 sm:col-span-4"><label
-                                        class="block font-semibold text-sm text-gray-700"
-                                        for="name"><span>Name</span></label><input
-                                        class="max-w-full outline-none border-b focus:border-primary text-gray-700 block pl-1 w-full"
-                                        id="name" type="text" autocomplete="name">
-                                    <div class="mt-2" style="display: none;">
-                                        <p class="text-sm text-red-600"></p>
-                                    </div>
+                <div class="px-4 sm:px-0"></div>
+            </div>
+            <div class="mt-5 md:col-span-2 md:mt-0">
+                <form>
+                    <div class="bg-white px-4 py-5 shadow sm:p-6 sm:rounded-tl-md sm:rounded-tr-md">
+                        <div class="grid grid-cols-6 gap-6">
+                            <div class="col-span-6 sm:col-span-4"><input id="photo" type="file" class="hidden">
+                                <div class="mt-2"><img
+                                        src="https://ui-avatars.com/api/?bold=true&amp;name=n+p&amp;color=4c51bf&amp;background=82efe3"
+                                        alt="nirmal prajapati" class="h-20 w-20 rounded-full object-cover"></div>
+                                <button type="button" class="inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest shadow-sm hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:ring focus:ring-blue-200 active:text-gray-800 active:bg-gray-50 disabled:opacity-25 transition mr-2 mt-2">
+                                    Select A New Photo </button>
+                            </div>
+                            <div class="col-span-6 sm:col-span-4"><label
+                                    class="block font-semibold text-sm text-gray-700"
+                                    for="name"><span>Name</span></label><input
+                                    class="max-w-full outline-none border-b focus:border-primary text-gray-700 block pl-1 w-full"
+                                    id="name" type="text" autocomplete="name">
+                                <div class="mt-2" style="display: none;">
+                                    <p class="text-sm text-red-600"></p>
                                 </div>
-                                <div class="col-span-6 sm:col-span-4"><label
+                            </div>
+                            <div class="col-span-6 sm:col-span-4"><label
                                     class="block font-semibold text-sm text-gray-700"
                                     for="name"><span>Email</span></label><input
                                     class="max-w-full outline-none border-b focus:border-primary text-gray-700 block pl-1 w-full"
@@ -46,92 +55,76 @@
                                 </div>
                             </div>
                             <div class="col-span-6 sm:col-span-4"><label
-                                class="block font-semibold text-sm text-gray-700"
-                                for="name"><span>Mobile</span></label><input
-                                class="max-w-full outline-none border-b focus:border-primary text-gray-700 block pl-1 w-full"
-                                id="name" type="number" autocomplete="name">
-                            <div class="mt-2" style="display: none;">
-                                <p class="text-sm text-red-600"></p>
-                            </div>
-                        </div>
-                        <div class="col-span-6 sm:col-span-4"><label
-                            class="block font-semibold text-sm text-gray-700"
-                            for="name"><span>Address</span></label><textarea rows="3"
-                            class="max-w-full outline-none border-b focus:border-primary text-gray-700 block pl-1 w-full"
-                            id="name" type="number" autocomplete="name"></textarea>
-                        <div class="mt-2" style="display: none;">
-                            <p class="text-sm text-red-600"></p>
-                        </div>
-                    </div>
-                    <div class="sm:grid sm:grid-cols-3 sm:gap-2 col-span-6 sm:col-span-4 gap-6">
-                        <div class="my-2">
-                            <label
-                            class="block font-semibold text-sm text-gray-700"
-                            for="name"><span>City</span></label>
-                            <input type="text" name="city" class="border-b outline-none focus:border-primary w-full text-gray-700">
-                        </div>
-                        <div class="my-2">
-                            <label
-                            class="block font-semibold text-sm text-gray-700"
-                            for="name"><span>State</span></label>
-                            <input type="text" name="state" class="border-b outline-none focus:border-primary w-full text-gray-700">
-                        </div>
-                        <div class="my-2">
-                            <label
-                            class="block font-semibold text-sm text-gray-700"
-                            for="name"><span>Country</span></label>
-                            <input type="text" name="country" class="border-b outline-none focus:border-primary w-full text-gray-700">
-                        </div>
-                        </div>
-                            </div>
-                        </div>
-                        <div class="flex items-center justify-end bg-gray-50 px-4 py-3 text-end shadow sm:rounded-bl-md sm:rounded-br-md sm:px-6"><a href="/frontend/views/provider/registration.html" type="submit"
-                                class="inline-flex items-center rounded-md border border-transparent bg-indigo-500 px-4 py-2 text-sm font-medium tracking-wide text-white transition hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-50 disabled:opacity-50">
-                                Edit Details </a>
-                        </div>
-                    </form>
-                </div>
-            </div>
-            <div class="hidden sm:block">
-                <div class="py-8">
-                    <div class="border-t border-gray-200"></div>
-                </div>
-            </div>
-
-            <div class="md:grid md:grid-cols-3 md:gap-6">
-                <div class="md:col-span-1 flex justify-between mt-10 md:mt-0">
-                    <div class="px-4 sm:px-0">
-                        <h3 class="text-xl font-medium text-gray-900"> Banking Information </h3>
-                        <p class="mt-1 text-gray-600"> Update your account's bussiness information and
-                            email address. </p>
-                    </div>
-                    <div class="px-4 sm:px-0"></div>
-                </div>
-                <div class="mt-5 md:col-span-2 md:mt-0">
-                    <form>
-                        <div class="bg-white px-4 py-5 shadow sm:p-6 sm:rounded-tl-md sm:rounded-tr-md">
-                            <div class="grid grid-cols-6 gap-6">
-                                <div class="col-span-6 sm:col-span-4"><label
                                     class="block font-semibold text-sm text-gray-700"
-                                    for="name"><span>Bank Name</span></label><input
+                                    for="name"><span>Mobile</span></label><input
                                     class="max-w-full outline-none border-b focus:border-primary text-gray-700 block pl-1 w-full"
-                                    id="name" type="text" autocomplete="name">
+                                    id="name" type="number" autocomplete="name">
                                 <div class="mt-2" style="display: none;">
                                     <p class="text-sm text-red-600"></p>
                                 </div>
                             </div>
-                                <div class="col-span-6 sm:col-span-4"><label
-                                        class="block font-semibold text-sm text-gray-700"
-                                        for="name"><span>Account Holder Name</span></label><input
-                                        class="max-w-full outline-none border-b focus:border-primary text-gray-700 block pl-1 w-full"
-                                        id="name" type="text" autocomplete="name">
-                                    <div class="mt-2" style="display: none;">
-                                        <p class="text-sm text-red-600"></p>
-                                    </div>
-                                </div>
-                                <div class="col-span-6 sm:col-span-4"><label
+                            <div class="col-span-6 sm:col-span-4"><label
                                     class="block font-semibold text-sm text-gray-700"
-                                    for="name"><span>Account Number</span></label><input
+                                    for="name"><span>Address</span></label><textarea rows="3"
+                                    class="max-w-full outline-none border-b focus:border-primary text-gray-700 block pl-1 w-full"
+                                    id="name" type="number" autocomplete="name"></textarea>
+                                <div class="mt-2" style="display: none;">
+                                    <p class="text-sm text-red-600"></p>
+                                </div>
+                            </div>
+                            <div class="sm:grid sm:grid-cols-3 sm:gap-2 col-span-6 sm:col-span-4 gap-6">
+                                <div class="my-2">
+                                    <label class="block font-semibold text-sm text-gray-700"
+                                        for="name"><span>City</span></label>
+                                    <input type="text" name="city"
+                                        class="border-b outline-none focus:border-primary w-full text-gray-700">
+                                </div>
+                                <div class="my-2">
+                                    <label class="block font-semibold text-sm text-gray-700"
+                                        for="name"><span>State</span></label>
+                                    <input type="text" name="state"
+                                        class="border-b outline-none focus:border-primary w-full text-gray-700">
+                                </div>
+                                <div class="my-2">
+                                    <label class="block font-semibold text-sm text-gray-700"
+                                        for="name"><span>Country</span></label>
+                                    <input type="text" name="country"
+                                        class="border-b outline-none focus:border-primary w-full text-gray-700">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div
+                        class="flex items-center justify-end bg-gray-50 px-4 py-3 text-end shadow sm:rounded-bl-md sm:rounded-br-md sm:px-6">
+                        <a href="/frontend/views/provider/registration.html" type="submit"
+                            class="inline-flex items-center rounded-md border border-transparent bg-indigo-500 px-4 py-2 text-sm font-medium tracking-wide text-white transition hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-50 disabled:opacity-50">
+                            Edit Details </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="hidden sm:block">
+            <div class="py-8">
+                <div class="border-t border-gray-200"></div>
+            </div>
+        </div>
+
+        <div class="md:grid md:grid-cols-3 md:gap-6">
+            <div class="md:col-span-1 flex justify-between mt-10 md:mt-0">
+                <div class="px-4 sm:px-0">
+                    <h3 class="text-xl font-medium text-gray-900"> Banking Information </h3>
+                    <p class="mt-1 text-gray-600"> Update your account's bussiness information and
+                        email address. </p>
+                </div>
+                <div class="px-4 sm:px-0"></div>
+            </div>
+            <div class="mt-5 md:col-span-2 md:mt-0">
+                <form>
+                    <div class="bg-white px-4 py-5 shadow sm:p-6 sm:rounded-tl-md sm:rounded-tr-md">
+                        <div class="grid grid-cols-6 gap-6">
+                            <div class="col-span-6 sm:col-span-4"><label
+                                    class="block font-semibold text-sm text-gray-700" for="name"><span>Bank
+                                        Name</span></label><input
                                     class="max-w-full outline-none border-b focus:border-primary text-gray-700 block pl-1 w-full"
                                     id="name" type="text" autocomplete="name">
                                 <div class="mt-2" style="display: none;">
@@ -139,46 +132,66 @@
                                 </div>
                             </div>
                             <div class="col-span-6 sm:col-span-4"><label
-                                class="block font-semibold text-sm text-gray-700"
-                                for="name"><span>Account Type</span></label><input
-                                class="max-w-full outline-none border-b focus:border-primary text-gray-700 block pl-1 w-full"
-                                id="name" type="number" autocomplete="name">
-                            <div class="mt-2" style="display: none;">
-                                <p class="text-sm text-red-600"></p>
+                                    class="block font-semibold text-sm text-gray-700" for="name"><span>Account Holder
+                                        Name</span></label><input
+                                    class="max-w-full outline-none border-b focus:border-primary text-gray-700 block pl-1 w-full"
+                                    id="name" type="text" autocomplete="name">
+                                <div class="mt-2" style="display: none;">
+                                    <p class="text-sm text-red-600"></p>
+                                </div>
+                            </div>
+                            <div class="col-span-6 sm:col-span-4"><label
+                                    class="block font-semibold text-sm text-gray-700" for="name"><span>Account
+                                        Number</span></label><input
+                                    class="max-w-full outline-none border-b focus:border-primary text-gray-700 block pl-1 w-full"
+                                    id="name" type="text" autocomplete="name">
+                                <div class="mt-2" style="display: none;">
+                                    <p class="text-sm text-red-600"></p>
+                                </div>
+                            </div>
+                            <div class="col-span-6 sm:col-span-4"><label
+                                    class="block font-semibold text-sm text-gray-700" for="name"><span>Account
+                                        Type</span></label><input
+                                    class="max-w-full outline-none border-b focus:border-primary text-gray-700 block pl-1 w-full"
+                                    id="name" type="number" autocomplete="name">
+                                <div class="mt-2" style="display: none;">
+                                    <p class="text-sm text-red-600"></p>
+                                </div>
+                            </div>
+                            <div class="col-span-6 sm:col-span-4"><label
+                                    class="block font-semibold text-sm text-gray-700" for="name"><span>IFSC
+                                        Code</span></label><input
+                                    class="max-w-full outline-none border-b focus:border-primary text-gray-700 block pl-1 w-full"
+                                    id="name" type="number" autocomplete="name">
+                                <div class="mt-2" style="display: none;">
+                                    <p class="text-sm text-red-600"></p>
+                                </div>
+                            </div>
+                            <div class="col-span-6 sm:col-span-4"><label
+                                    class="block font-semibold text-sm text-gray-700"
+                                    for="name"><span>Branch</span></label><input
+                                    class="max-w-full outline-none border-b focus:border-primary text-gray-700 block pl-1 w-full"
+                                    id="name" type="text" autocomplete="name">
+                                <div class="mt-2" style="display: none;">
+                                    <p class="text-sm text-red-600"></p>
+                                </div>
                             </div>
                         </div>
-                        <div class="col-span-6 sm:col-span-4"><label
-                            class="block font-semibold text-sm text-gray-700"
-                            for="name"><span>IFSC Code</span></label><input
-                            class="max-w-full outline-none border-b focus:border-primary text-gray-700 block pl-1 w-full"
-                            id="name" type="number" autocomplete="name">
-                        <div class="mt-2" style="display: none;">
-                            <p class="text-sm text-red-600"></p>
-                        </div>
                     </div>
-                    <div class="col-span-6 sm:col-span-4"><label
-                        class="block font-semibold text-sm text-gray-700"
-                        for="name"><span>Branch</span></label><input
-                        class="max-w-full outline-none border-b focus:border-primary text-gray-700 block pl-1 w-full"
-                        id="name" type="text" autocomplete="name">
-                    <div class="mt-2" style="display: none;">
-                        <p class="text-sm text-red-600"></p>
+                    <div
+                        class="flex items-center justify-end bg-gray-50 px-4 py-3 text-end shadow sm:rounded-bl-md sm:rounded-br-md sm:px-6">
+                        <button type="submit"
+                            class="inline-flex items-center rounded-md border border-transparent bg-indigo-500 px-4 py-2 text-sm font-medium tracking-wide text-white transition hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-50 disabled:opacity-50">
+                            Edit Details </button>
                     </div>
-                </div>
-                            </div>
-                        </div>
-                        <div class="flex items-center justify-end bg-gray-50 px-4 py-3 text-end shadow sm:rounded-bl-md sm:rounded-br-md sm:px-6"><button type="submit"
-                                class="inline-flex items-center rounded-md border border-transparent bg-indigo-500 px-4 py-2 text-sm font-medium tracking-wide text-white transition hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-50 disabled:opacity-50">
-                                Edit Details </button>
-                        </div>
-                    </form>
-                </div>
+                </form>
             </div>
-            <div class="hidden sm:block">
-                <div class="py-8">
-                    <div class="border-t border-gray-200"></div>
-                </div>
+        </div>
+        <div class="hidden sm:block">
+            <div class="py-8">
+                <div class="border-t border-gray-200"></div>
             </div>
+        </div>
         <div>
             <div class="md:grid md:grid-cols-3 md:gap-6 mt-10 sm:mt-0">
                 <div class="md:col-span-1 flex justify-between">
@@ -197,15 +210,14 @@
                                         class="block font-semibold text-sm text-gray-700"
                                         for="current_password"><span>Current Password</span></label><input
                                         class="max-w-full outline-none border-b focus:border-primary text-gray-700 block pl-1 w-full"
-                                        id="current_password" type="password" autocomplete="current-password"
-                                        value="">
+                                        id="current_password" type="password" autocomplete="current-password" value="">
                                     <div class="mt-2" style="display: none;">
                                         <p class="text-sm text-red-600"></p>
                                     </div>
                                 </div>
                                 <div class="col-span-6 sm:col-span-4"><label
-                                        class="block font-semibold text-sm text-gray-700"
-                                        for="password"><span>New Password</span></label><input
+                                        class="block font-semibold text-sm text-gray-700" for="password"><span>New
+                                            Password</span></label><input
                                         class="max-w-full outline-none border-b focus:border-primary text-gray-700 block pl-1 w-full"
                                         id="password" type="password" autocomplete="new-password" value="">
                                     <div class="mt-2" style="display: none;">
@@ -216,8 +228,7 @@
                                         class="block font-semibold text-sm text-gray-700"
                                         for="password_confirmation"><span>Confirm Password</span></label><input
                                         class="max-w-full outline-none border-b focus:border-primary text-gray-700 block pl-1 w-full"
-                                        id="password_confirmation" type="password" autocomplete="new-password"
-                                        value="">
+                                        id="password_confirmation" type="password" autocomplete="new-password" value="">
                                     <div class="mt-2" style="display: none;">
                                         <p class="text-sm text-red-600"></p>
                                     </div>
@@ -225,7 +236,8 @@
                             </div>
                         </div>
                         <div
-                            class="flex items-center justify-end bg-gray-50 px-4 py-3 text-end shadow sm:rounded-bl-md sm:rounded-br-md sm:px-6"><button type="submit"
+                            class="flex items-center justify-end bg-gray-50 px-4 py-3 text-end shadow sm:rounded-bl-md sm:rounded-br-md sm:px-6">
+                            <button type="submit"
                                 class="inline-flex items-center rounded-md border border-transparent bg-indigo-500 px-4 py-2 text-sm font-medium tracking-wide text-white transition hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-50 disabled:opacity-50">
                                 Save </button>
                         </div>
@@ -255,9 +267,10 @@
                     <div class="mt-5"><button type="button"
                             class="inline-flex items-center justify-center px-4 py-2 border border-red-600 rounded-md font-semibold text-xs text-red-600 uppercase tracking-widest disabled:opacity-25 transition">
                             Logout</button>
-                            <button type="button"
+                        <button type="button"
                             class="inline-flex items-center justify-center px-4 py-2 bg-red-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-red-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-50 focus:ring-red-500 active:bg-red-600 disabled:opacity-25 transition">
-                            Delete Account </button></div>
+                            Delete Account </button>
+                    </div>
                     <dialog
                         class="z-50 m-0 min-h-full min-w-full overflow-y-auto bg-transparent backdrop:bg-transparent">
                         <div class="fixed inset-0 z-50 overflow-y-auto px-4 py-6 sm:px-0" scroll-region="">
@@ -271,11 +284,12 @@
                 </div>
             </div>
         </div>
-</main>
-    
+    </main>
+
     <script>
         // Initialize Lucide icons
         lucide.createIcons();
     </script>
 </body>
+
 </html>
