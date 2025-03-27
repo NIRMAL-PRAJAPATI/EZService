@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Step-by-Step Registration</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Custom Tailwind Configuration -->
+    <script src="/frontend/public/js/color_config.js"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+</head>
+
+<body>
+    <!-- icons -->
+    <div class="text-gray-400 overflow-hidden">
+        <i data-lucide="plug" class="absolute top-24 left-60 rotate-[330deg] z-0"></i>
+        <i data-lucide="library-big" class="absolute top-[30vh] right-20 z-0"></i>
+        <i data-lucide="car" class="absolute top-[50vh] left-[30vw] rotate-[330deg] z-0"></i>
+        <i data-lucide="wrench" class="absolute top-[80vh] right-60 rotate-[10deg] z-0"></i>
+        <i data-lucide="briefcase-business" class="absolute top-24 right-[25vw] rotate-[330deg] z-0"></i>
+        <i data-lucide="dumbbell" class="absolute top-[90vh] left-20 rotate-[330deg] z-0"></i>
+        <i data-lucide="scan-heart" class="absolute top-[35vh] left-10 rotate-[330deg] z-0"></i>
+        <i data-lucide="party-popper" class="absolute top-[40vh] right-[35%] rotate-[330deg] z-0"></i>
+    </div>
+
+    <!-- Progress bar -->
+    <div class="w-full bg-gray-200 h-1">
+        <div id="progress-bar" class="bg-primary h-1 transition-all duration-300" style="width: 20%"></div>
+    </div>
+    <div class="bg-gray-50 h-[90vh] flex items-center justify-center p-4">
+        <div class="w-full max-w-4xl rounded-lg overflow-hidden z-10 bg-gray-50">
+            <!-- Form container -->
+            <div class="p-6">
+                <h1 class="text-5xl font-extrabold tracking-tight text-center mb-6">Create Your Account</h1>
+
+                <form id="registration-form" class="space-y-4">
+                    <!-- Step 1: name -->
+                    <div id="step-1" class="step active">
+                        <div class="mb-2 flex items-center">
+                            <i data-lucide="user" class="w-5 h-5 mr-2 text-gray-600"></i>
+                            <label for="name" class="block text-sm font-medium text-gray-700">Name</label>
+                        </div>
+                        <input type="name" id="fullname"
+                            class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:border-primary"
+                            placeholder="Enter your name">
+                        <p class="error-message text-red-500 text-sm mt-1 hidden"></p>
+                    </div>
+
+                    <!-- Step 1: Email -->
+                    <div id="step-2" class="step hidden">
+                        <div class="mb-2 flex items-center">
+                            <i data-lucide="mail" class="w-5 h-5 mr-2 text-gray-600"></i>
+                            <label for="email" class="block text-sm font-medium text-gray-700">Email Address</label>
+                        </div>
+                        <input type="email" id="email"
+                            class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:border-primary"
+                            placeholder="Enter your email">
+                        <p class="error-message text-red-500 text-sm mt-1 hidden"></p>
+                    </div>
+
+                    <!-- Step 4: Phone Number -->
+                    <div id="step-3" class="step hidden">
+                        <div class="mb-2 flex items-center">
+                            <i data-lucide="phone" class="w-5 h-5 mr-2 text-gray-600"></i>
+                            <label for="phone" class="block text-sm font-medium text-gray-700">Phone Number</label>
+                        </div>
+                        <input type="tel" id="phone"
+                            class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:border-primary"
+                            placeholder="Enter your phone number">
+                        <p class="error-message text-red-500 text-sm mt-1 hidden"></p>
+                    </div>
+
+                    <!-- Step 2: Password -->
+                    <div id="step-4" class="step hidden">
+                        <div class="mb-2 flex items-center">
+                            <i data-lucide="lock" class="w-5 h-5 mr-2 text-gray-600"></i>
+                            <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+                        </div>
+                        <input type="password" id="password"
+                            class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:border-primary"
+                            placeholder="Create a password">
+                        <div class="mb-2 flex items-center mt-3">
+                            <i data-lucide="lock" class="w-5 h-5 mr-2 text-gray-600"></i>
+                            <label for="confirmpassword" class="block text-sm font-medium text-gray-700">Confirm
+                                Password</label>
+                        </div>
+                        <input type="password" id="confirmpassword"
+                            class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:border-primary"
+                            placeholder="Create a password">
+                        <p class="text-xs text-gray-500 mt-1">Must be at least 8 characters with a number and special
+                            character</p>
+                        <p class="error-message text-red-500 text-sm mt-1 hidden"></p>
+                    </div>
+
+                    <!-- Step 3: address -->
+                    <div id="step-5" class="step hidden">
+                        <div class="mb-2 flex items-center">
+                            <i data-lucide="map-pin" class="w-5 h-5 mr-2 text-gray-600"></i>
+                            <label for="address" class="block text-sm font-medium text-gray-700">Address</label>
+                        </div>
+                        <textarea id="address" rows="3"
+                            class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:border-primary"
+                            placeholder="Enter your full name"></textarea>
+                        <div class="sm:grid sm:grid-cols-3 sm:gap-2 col-span-6 sm:col-span-4 gap-6">
+                            <div class="my-2">
+                                <label class="block font-semibold text-sm text-gray-700"
+                                    for="name"><span>City</span></label>
+                                <input type="text" id="city"
+                                    class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:border-primary"
+                                    placeholder="City">
+                            </div>
+                            <div class="my-2">
+                                <label class="block font-semibold text-sm text-gray-700"
+                                    for="name"><span>State</span></label>
+                                <input type="text" id="state"
+                                    class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:border-primary"
+                                    placeholder="State">
+                            </div>
+                            <div class="my-2">
+                                <label class="block font-semibold text-sm text-gray-700"
+                                    for="name"><span>Country</span></label>
+                                <input type="text" id="country"
+                                    class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:border-primary"
+                                    placeholder="Country">
+                            </div>
+                        </div>
+                        <p class="error-message text-red-500 text-sm mt-1 hidden"></p>
+                    </div>
+
+                    <!-- Success Message -->
+                    <div id="success" class="step hidden text-center">
+                        <div class="flex justify-center mb-4">
+                            <div class="rounded-full bg-green-100 p-3">
+                                <i data-lucide="check" class="w-8 h-8 text-green-500"></i>
+                            </div>
+                        </div>
+                        <h2 class="text-xl font-bold text-gray-800 mb-2">Registration Complete!</h2>
+                        <p class="text-gray-600">Your account has been successfully created.</p>
+                    </div>
+
+                    <!-- Navigation buttons -->
+                    <div class="flex justify-between mt-6">
+                        <button type="button" id="prev-btn"
+                            class="px-4 py-3 font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 hidden">
+                            <div class="flex items-center">
+                                <i data-lucide="arrow-left" class="w-4 h-4 mr-1"></i>
+                                Back
+                            </div>
+                        </button>
+
+                        <button type="button" id="next-btn"
+                            class="ml-auto px-4 py-3 font-medium text-white bg-primary rounded-md hover:bg-primary/90">
+                            <div class="flex items-center">
+                                Next
+                                <i data-lucide="arrow-right" class="w-4 h-4 ml-1"></i>
+                            </div>
+                        </button>
+
+                        <button type="button" id="finish-btn"
+                            class="px-4 py-2 text-sm font-medium text-white bg-green-500 rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 hidden">
+                            <div class="flex items-center">
+                                Complete
+                                <i data-lucide="check" class="w-4 h-4 ml-1"></i>
+                            </div>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // Form navigation and validation
+        document.addEventListener('DOMContentLoaded', function () {
+            const steps = document.querySelectorAll('.step');
+            const nextBtn = document.getElementById('next-btn');
+            const prevBtn = document.getElementById('prev-btn');
+            const finishBtn = document.getElementById('finish-btn');
+            const progressBar = document.getElementById('progress-bar');
+
+            let currentStep = 0;
+            const totalSteps = steps.length - 1; // Excluding success step
+
+            // Validation functions
+            const validators = {
+                email: (value) => {
+                    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                    return emailRegex.test(value) ? '' : 'Please enter a valid email address';
+                },
+                password: (value) => {
+                    const passwordRegex = /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{8,}$/;
+                    return passwordRegex.test(value) ? '' : 'Password must be at least 8 characters with a number and special character';
+                },
+                fullname: (value) => {
+                    return value.trim().length >= 3 ? '' : 'Please enter your full name (at least 3 characters)';
+                },
+                phone: (value) => {
+                    const phoneRegex = /^\+?[0-9]{10,15}$/;
+                    return phoneRegex.test(value.replace(/\s+/g, '')) ? '' : 'Please enter a valid phone number';
+                }
+            };
+
+            // Field IDs in order
+            const fieldIds = ['fullname', 'email', 'phone', 'password', 'address'];
+
+            // Update progress bar
+            function updateProgressBar() {
+                const progress = ((currentStep + 1) / totalSteps) * 100;
+                progressBar.style.width = `${progress}%`;
+            }
+
+            // Show error message
+            function showError(stepIndex, message) {
+                const errorElement = steps[stepIndex].querySelector('.error-message');
+                errorElement.textContent = message;
+                errorElement.classList.remove('hidden');
+            }
+
+            // Hide error message
+            function hideError(stepIndex) {
+                const errorElement = steps[stepIndex].querySelector('.error-message');
+                errorElement.classList.add('hidden');
+            }
+
+            // Validate current step
+            function validateCurrentStep() {
+                if (currentStep >= totalSteps) return true;
+
+                const fieldId = fieldIds[currentStep];
+                const field = document.getElementById(fieldId);
+                const value = field.value;
+                const errorMessage = validators[fieldId](value);
+
+                if (errorMessage) {
+                    showError(currentStep, errorMessage);
+                    field.focus();
+                    return false;
+                }
+
+                hideError(currentStep);
+                return true;
+            }
+
+            // Go to next step
+            function goToNextStep() {
+                if (!validateCurrentStep()) return;
+
+                steps[currentStep].classList.add('hidden');
+                steps[currentStep].classList.remove('active');
+
+                currentStep++;
+
+                if (currentStep < totalSteps) {
+                    steps[currentStep].classList.remove('hidden');
+                    steps[currentStep].classList.add('active');
+                    prevBtn.classList.remove('hidden');
+
+                    // Show finish button on last input step
+                    if (currentStep === totalSteps - 1) {
+                        nextBtn.classList.add('hidden');
+                        finishBtn.classList.remove('hidden');
+                    }
+                } else {
+                    // Show success message
+                    steps[totalSteps].classList.remove('hidden');
+                    nextBtn.classList.add('hidden');
+                    prevBtn.classList.add('hidden');
+                    finishBtn.classList.add('hidden');
+                }
+
+                updateProgressBar();
+            }
+
+            // Go to previous step
+            function goToPrevStep() {
+                steps[currentStep].classList.add('hidden');
+                steps[currentStep].classList.remove('active');
+
+                currentStep--;
+
+                steps[currentStep].classList.remove('hidden');
+                steps[currentStep].classList.add('active');
+
+                if (currentStep === 0) {
+                    prevBtn.classList.add('hidden');
+                }
+
+                // Ensure next button is visible when going back
+                if (currentStep < totalSteps - 1) {
+                    nextBtn.classList.remove('hidden');
+                    finishBtn.classList.add('hidden');
+                }
+
+                updateProgressBar();
+            }
+
+            // Event listeners
+            nextBtn.addEventListener('click', goToNextStep);
+            prevBtn.addEventListener('click', goToPrevStep);
+            finishBtn.addEventListener('click', goToNextStep);
+
+            // Allow pressing Enter to proceed
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter' && document.querySelector('.step.active')) {
+                    e.preventDefault();
+                    if (currentStep < totalSteps - 1) {
+                        goToNextStep();
+                    } else if (currentStep === totalSteps - 1) {
+                        goToNextStep();
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

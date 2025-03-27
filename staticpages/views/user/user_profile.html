@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>profile</title>
+    <link rel="icon" type="image/png" href="/frontend/public/img/ezservice logo.png">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Custom Tailwind Configuration -->
+    <script src="/frontend/public/js/color_config.js"></script>
+    <!-- Icons -->
+    <!-- <script src="https://unpkg.com/lucide@latest"></script> -->
+</head>
+
+<body class="bg-gray-100 font-sans">
+    <div class="bg-white mx-2 sm:mx-20 my-5 px-5 py-3 rounded-lg overflow-x-scroll sm:overflow-x-hidden flex gap-2">
+        <p><a href="#" class="text-gray-600 hover:text-primary mr-2">profile</a>/</p>
+        <p><a href="user_servicelist.html" class="text-gray-600 hover:text-primary mr-2">order</a>/</p>
+        <p><a href="#" class="text-gray-600 hover:text-primary mr-2">notification</a>/</p>
+        <p><a href="user_complaintlist.html" class="text-gray-600 hover:text-primary mr-2">complaint</a>/</p>
+    </div>
+        <main class="max-w-7xl mx-auto py-4 sm:px-6 lg:px-8">
+                <div>
+                    <div class="md:grid md:grid-cols-3 md:gap-6">
+                        <div class="md:col-span-1 flex justify-between">
+                            <div class="px-4 sm:px-0">
+                                <h3 class="text-xl font-medium text-gray-900"> Profile Information </h3>
+                                <p class="mt-1 text-gray-600"> Update your account's profile information and
+                                    email address. </p>
+                            </div>
+                            <div class="px-4 sm:px-0"></div>
+                        </div>
+                        <div class="mt-5 md:col-span-2 md:mt-0">
+                            <form>
+                                <div class="bg-white px-4 py-5 shadow sm:p-6 sm:rounded-tl-md sm:rounded-tr-md">
+                                    <div class="grid grid-cols-6 gap-6">
+                                        <div class="col-span-6 sm:col-span-4"><input id="photo" type="file" class="hidden">
+                                            <div class="mt-2"><img
+                                                    src="https://ui-avatars.com/api/?bold=true&amp;name=n+p&amp;color=4c51bf&amp;background=82efe3"
+                                                    alt="nirmal prajapati" class="h-20 w-20 rounded-full object-cover"></div>
+                                            <button type="button" class="inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest shadow-sm hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:ring focus:ring-blue-200 active:text-gray-800 active:bg-gray-50 disabled:opacity-25 transition mr-2 mt-2">
+                                                Select A New Photo </button>
+                                        </div>
+                                        <div class="col-span-6 sm:col-span-4"><label
+                                                class="block font-semibold text-sm text-gray-700"
+                                                for="name"><span>Name</span></label><input
+                                                class="max-w-full outline-none border-b focus:border-primary text-gray-700 block pl-1 w-full"
+                                                id="name" type="text" autocomplete="name">
+                                            <div class="mt-2" style="display: none;">
+                                                <p class="text-sm text-red-600"></p>
+                                            </div>
+                                        </div>
+                                        <div class="col-span-6 sm:col-span-4"><label
+                                            class="block font-semibold text-sm text-gray-700"
+                                            for="name"><span>Email</span></label><input
+                                            class="max-w-full outline-none border-b focus:border-primary text-gray-700 block pl-1 w-full"
+                                            id="name" type="text" autocomplete="name">
+                                        <div class="mt-2" style="display: none;">
+                                            <p class="text-sm text-red-600"></p>
+                                        </div>
+                                    </div>
+                                    <div class="col-span-6 sm:col-span-4"><label
+                                        class="block font-semibold text-sm text-gray-700"
+                                        for="name"><span>Mobile</span></label><input
+                                        class="max-w-full outline-none border-b focus:border-primary text-gray-700 block pl-1 w-full"
+                                        id="name" type="number" autocomplete="name">
+                                    <div class="mt-2" style="display: none;">
+                                        <p class="text-sm text-red-600"></p>
+                                    </div>
+                                </div>
+                                    </div>
+                                </div>
+                                <div class="flex items-center justify-end bg-gray-50 px-4 py-3 text-end shadow sm:rounded-bl-md sm:rounded-br-md sm:px-6"><button type="submit"
+                                        class="inline-flex items-center rounded-md border border-transparent bg-indigo-500 px-4 py-2 text-sm font-medium tracking-wide text-white transition hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-50 disabled:opacity-50">
+                                        Edit Details</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="hidden sm:block">
+                        <div class="py-8">
+                            <div class="border-t border-gray-200"></div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div class="md:grid md:grid-cols-3 md:gap-6 mt-10 sm:mt-0">
+                        <div class="md:col-span-1 flex justify-between">
+                            <div class="px-4 sm:px-0">
+                                <h3 class="text-xl font-medium text-gray-900"> Update Password </h3>
+                                <p class="mt-1 text-gray-600"> Ensure your account is using a long, random
+                                    password to stay secure. </p>
+                            </div>
+                            <div class="px-4 sm:px-0"></div>
+                        </div>
+                        <div class="mt-5 md:col-span-2 md:mt-0">
+                            <form>
+                                <div class="bg-white px-4 py-5 shadow sm:p-6 sm:rounded-tl-md sm:rounded-tr-md">
+                                    <div class="grid grid-cols-6 gap-6">
+                                        <div class="col-span-6 sm:col-span-4"><label
+                                                class="block font-semibold text-sm text-gray-700"
+                                                for="current_password"><span>Current Password</span></label><input
+                                                class="max-w-full outline-none border-b focus:border-primary text-gray-700 block pl-1 w-full"
+                                                id="current_password" type="password" autocomplete="current-password"
+                                                value="">
+                                            <div class="mt-2" style="display: none;">
+                                                <p class="text-sm text-red-600"></p>
+                                            </div>
+                                        </div>
+                                        <div class="col-span-6 sm:col-span-4"><label
+                                                class="block font-semibold text-sm text-gray-700"
+                                                for="password"><span>New Password</span></label><input
+                                                class="max-w-full outline-none border-b focus:border-primary text-gray-700 block pl-1 w-full"
+                                                id="password" type="password" autocomplete="new-password" value="">
+                                            <div class="mt-2" style="display: none;">
+                                                <p class="text-sm text-red-600"></p>
+                                            </div>
+                                        </div>
+                                        <div class="col-span-6 sm:col-span-4"><label
+                                                class="block font-semibold text-sm text-gray-700"
+                                                for="password_confirmation"><span>Confirm Password</span></label><input
+                                                class="max-w-full outline-none border-b focus:border-primary text-gray-700 block pl-1 w-full"
+                                                id="password_confirmation" type="password" autocomplete="new-password"
+                                                value="">
+                                            <div class="mt-2" style="display: none;">
+                                                <p class="text-sm text-red-600"></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div
+                                    class="flex items-center justify-end bg-gray-50 px-4 py-3 text-end shadow sm:rounded-bl-md sm:rounded-br-md sm:px-6"><button type="submit"
+                                        class="inline-flex items-center rounded-md border border-transparent bg-indigo-500 px-4 py-2 text-sm font-medium tracking-wide text-white transition hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-50 disabled:opacity-50">
+                                        Save </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="hidden sm:block">
+                    <div class="py-8">
+                        <div class="border-t border-gray-200"></div>
+                    </div>
+                </div>
+                <div class="md:grid md:grid-cols-3 md:gap-6 mt-10 sm:mt-0">
+                    <div class="md:col-span-1 flex justify-between">
+                        <div class="px-4 sm:px-0">
+                            <h3 class="text-xl font-medium text-gray-900">Logout & Delete Account </h3>
+                            <p class="mt-1 text-gray-600"> Logout or Permanently delete your account. </p>
+                        </div>
+                        <div class="px-4 sm:px-0"></div>
+                    </div>
+                    <div class="mt-5 md:mt-0 md:col-span-2">
+                        <div class="px-4 py-5 sm:p-6 bg-white shadow sm:rounded-lg">
+                            <div class="max-w-xl text-sm text-gray-600"> Once your account is deleted, all of its
+                                resources and data will be permanently deleted. Before deleting your account, please
+                                download any data or information that you wish to retain. </div>
+                            <div class="mt-5"><button type="button"
+                                    class="inline-flex items-center justify-center px-4 py-2 border border-red-600 rounded-md font-semibold text-xs text-red-600 uppercase tracking-widest disabled:opacity-25 transition">
+                                    Logout</button>
+                                    <button type="button"
+                                    class="inline-flex items-center justify-center px-4 py-2 bg-red-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-red-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-50 focus:ring-red-500 active:bg-red-600 disabled:opacity-25 transition">
+                                    Delete Account </button></div>
+                            <dialog
+                                class="z-50 m-0 min-h-full min-w-full overflow-y-auto bg-transparent backdrop:bg-transparent">
+                                <div class="fixed inset-0 z-50 overflow-y-auto px-4 py-6 sm:px-0" scroll-region="">
+                                    <div class="fixed inset-0 transform transition-all" style="display: none;">
+                                        <div class="absolute inset-0 bg-gray-500 opacity-75 dark:bg-gray-900"></div>
+                                    </div>
+                                    <div class="mb-6 transform overflow-hidden rounded-lg bg-white shadow-xl transition-all sm:mx-auto sm:w-full dark:bg-gray-800 sm:max-w-2xl"
+                                        style="display: none;"><!----></div>
+                                </div>
+                            </dialog>
+                        </div>
+                    </div>
+                </div>
+    </main>
+
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+    </script>
+</body>
+
+</html>
