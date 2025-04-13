@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { ChevronDown, ChevronUp , UserRound} from "lucide-react";
+import { ChevronDown, ChevronUp , UserRound , AlignRight} from "lucide-react";
 import resources from "../resource";
 
 const Navbar = () => {
@@ -15,7 +15,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="bg-white shadow-sm fixed top-0 left-0 w-full z-50">
+    <nav className="bg-white shadow-sm top-0 left-0 w-full z-50">
       <div className="mx-auto py-3 px-4">
         <div className="flex items-center justify-between">
           {/* Logo and Brand */}
@@ -29,19 +29,14 @@ const Navbar = () => {
           </div>
 
           {/* Hamburger Icon */}
-          <i
-            data-lucide="align-right"
-            id="navMenuBtn"
-            onClick={toggleMenu}
-            className="md:hidden h-8 w-8 text-gray-800 hover:text-primary cursor-pointer"
-          />
+          <AlignRight className="md:hidden h-8 w-8 text-gray-800 hover:text-primary cursor-pointer" onClick={toggleMenu} id="navMenuBtn"/>
 
           {/* Navigation Menu */}
           <div
             id="navMenuDiv"
             className={`md:flex items-center justify-between absolute md:w-full md:relative z-10 top-14 md:top-0 w-[70vw] sm:w-[50vw] ${
               menuOpen ? "right-0" : "right-[100vw]"
-            } md:right-0 bg-white md:bg-transparent p-6 md:p-0 z-20 border md:border-none transition-all duration-300`}
+            } md:right-0 bg-white text-left md:bg-transparent p-6 md:p-0 z-20 border md:border-none transition-all duration-300`}
           >
             <div></div>
             {/* Links */}
