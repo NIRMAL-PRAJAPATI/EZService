@@ -1,4 +1,5 @@
 import React from "react";
+import { UserCheck, MapPin, Star, BriefcaseBusiness ,Tag} from "lucide-react";
 
 export default function Services() {
   return (
@@ -30,17 +31,14 @@ export default function Services() {
                   </span>
                 </div>
                 <div className="flex items-center gap-2 mt-4">
-                  <i
-                    data-lucide="star"
-                    className="h-4 w-4 text-indigo-500 fill-indigo-500"
-                  />
+                  <Star className="h-4 w-4 text-indigo-500 fill-indigo-500"/>
                   <span className="font-medium">4.8</span>
                   <span className="text-gray-600 text-[12px]">
                     (156 reviews)
                   </span>
                 </div>
                 <div className="flex items-center gap-2 my-1 text-sm">
-                  <i data-lucide="map-pin" className="h-4 w-4 text-gray-600" />
+                  <MapPin className="h-4 w-4 text-gray-600" />
                   <span>Ahmedabad, Gujarat</span>
                 </div>
               </div>
@@ -92,7 +90,7 @@ export default function Services() {
                 className="w-full h-48 object-cover"
               />
               <div className="flex absolute top-2 right-2 bg-indigo-500/70 text-white text-xs font-bold px-2 py-1 rounded">
-                <i data-lucide="badge-check" className="h-4 w-4 mr-1" />
+                <UserCheck className="h-4 w-4 mr-1" />
                 Verfied
               </div>
             </div>
@@ -103,7 +101,7 @@ export default function Services() {
                     Quick Fix Plumbing
                   </h3>
                   <p className="text-sm text-gray-500 flex items-center">
-                    <i data-lucide="tag" className="h-3 w-3 mr-1" />
+                    <Tag className="h-3 w-3 mr-1" />
                     Plumbing
                   </p>
                 </div>
@@ -118,19 +116,13 @@ export default function Services() {
                   </span>
                 </div>
                 <div className="flex items-center text-sm">
-                  <i
-                    data-lucide="map-pin"
-                    className="h-4 w-4 text-indigo-500 mr-2"
-                  />
+                  <MapPin className="h-4 w-4 text-indigo-500 mr-2"/>
                   <span className="text-gray-700">
                     Downtown, Westside, North Hills
                   </span>
                 </div>
                 <div className="flex items-center text-sm">
-                  <i
-                    data-lucide="briefcase-business"
-                    className="h-4 w-4 text-indigo-500 mr-2"
-                  />
+                  <BriefcaseBusiness className="h-4 w-4 text-indigo-500 mr-2"/>
                   <span className="text-gray-700">5+ Years Experiance</span>
                 </div>
               </div>
