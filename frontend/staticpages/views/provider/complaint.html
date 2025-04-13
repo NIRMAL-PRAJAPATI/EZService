@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>complaint box</title>
+    <link rel="icon" type="image/png" href="/frontend/public/img/ezservice logo.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Custom Tailwind Configuration -->
+    <script src="/frontend/public/js/color_config.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+
+<body>
+    <main class="p-5">
+        <div class="bg-gray-50 shadow overflow-hidden sm:rounded-md max-w-6xl mx-auto">
+            <ul role="list" class="divide-y divide-gray-200">
+                <li>
+                    <div class="px-4 py-4 sm:px-6">
+                        <div class="flex items-start">
+                            <div class="flex-1">
+                                <div class="flex items-center justify-between">
+                                    <p class="text-sm font-medium text-gray-900">
+                                        Sarah Williams
+                                    </p>
+                                    <p class="text-sm text-gray-500">2 Days ago</p>
+                                </div>
+                                <p class="mt-2 text-gray-600 font-semibold">Regarding to service problem</p>
+                                <p class="mt-1 text-[12px] sm:text-sm text-gray-500">
+                                    Excellent service! Very professional and thorough with the cleaning. Will definitely
+                                    book again.
+                                </p>
+                                <div class="mt-2 text-sm text-gray-500 flex gap-2">
+                                    <button class="px-4 py-2 rounded-sm bg-primary text-white">Reply</button>
+                                    <button class="px-4 py-2 rounded-sm text-primary">Ignore</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </main>
+
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+
+</html>

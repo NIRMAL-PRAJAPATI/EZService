@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ranking</title>
+    <link rel="icon" type="image/png" href="/frontend/public/img/ezservice logo.png">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Custom Tailwind Configuration -->
+    <script src="/frontend/public/js/color_config.js"></script>
+    <!-- Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+
+<body class="bg-gray-50">
+    <section id="serviceList" class="absolute bg-black/30 z-10 w-full h-full hidden">
+        <div class="bg-primary text-white h-full w-3/4 md:w-1/4 ml-auto p-2 border overflow-y-scroll">
+            <i data-lucide="x" id="closeServiceList" class="ml-auto text-white"></i>
+        <ul class="space-y-1 tracking-wider pl-2">
+            <li class="border-b border-primary hover:border-gray-300 p-1">Home Cleaning</li>
+            <li class="border-b border-primary hover:border-gray-300 p-1">Trainer</li>
+            <li class="border-b border-primary hover:border-gray-300 p-1">Plumbing</li>
+            <li class="border-b border-primary hover:border-gray-300 p-1">Mechanic</li>
+            <li class="border-b border-primary hover:border-gray-300 p-1">Education</li>
+            <li class="border-b border-primary hover:border-gray-300 p-1">Laboure</li>
+            <li class="border-b border-primary hover:border-gray-300 p-1">Beauty & Wellness</li>
+        </ul>
+        </div>
+    </section>
+
+
+    <div class="max-w-7xl mx-auto p-2 z-0">
+        <!-- Header Section -->
+            <div class="flex justify-between items-start sm:items-center mb-6">
+                <h1 class="text-xl sm:text-2xl font-bold text-gray-800">Service Rankings</h1>
+                <button id="openServiceList" class="flex border py-2 px-3 rounded tracking-wide bg-primary text-white"><i data-lucide="list-minus"></i>&nbsp;List</button>
+            </div>
+
+        <!-- Rankings List -->
+        <div class="space-y-4">
+            <!-- Rank 1 -->
+            <div class="bg-white rounded-md shadow-sm p-5">
+                <div class="md:flex flex-col md:flex-row items-start md:items-center gap-4">
+                    <p class="absolute px-3 py-1 text-white font-bold bg-primary text-[12px] tracking-wide transform rotate-[-20deg] -mt-5 md:mt-0 md:mb-24 -ml-8 border-2 border-dashed border-white">1st Position</p>
+                    <div class="flex h-20 w-20 bg-gray-100 rounded-md overflow-hidden">
+                        <img src="https://c8.alamy.com/comp/DERFBR/colourful-indian-shop-in-puttaparthi-andhra-pradesh-india-DERFBR.jpg"
+                            alt="Provider" class="w-full h-full object-cover">
+                    </div>
+                    <!-- Service Info -->
+                    <div class="flex-1">
+                        <h3 class="text-xl font-bold">Premium Cleaning Services</h3>
+                        <p class="text-gray-600 text-sm">Ahmedabad, Gujarat, India</p>
+
+                        <!-- Metrics -->
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 md:gap-5 mt-4">
+                            <!-- Customer Satisfaction -->
+                            <div class="flex justify-between text-sm border-b border-primary">
+                                <span class="">Customer Satisfaction</span>
+                                <span class="font-semibold">98%</span>
+                            </div>
+
+                            <!-- Service Reliability -->
+                            <div class="flex justify-between text-sm border-b border-primary">
+                                <span>Service Reliability</span>
+                                <span class="font-semibold">95%</span>
+                            </div>
+
+                            <!-- Response Time -->
+                            <div class="flex justify-between text-sm border-b border-primary">
+                                <span>Response Time</span>
+                                <span class="font-semibold">92%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Rank 2 -->
+            <div class="bg-white rounded-md shadow-sm p-5">
+                <div class="md:flex flex-col md:flex-row items-start md:items-center gap-4">
+                    <p class="absolute px-3 py-1 text-white font-bold bg-primary text-[12px] tracking-wide transform rotate-[-20deg] -mt-5 md:mt-0 md:mb-24 -ml-8 border-2 border-dashed border-white">2nd Position</p>
+                    <div class="flex h-20 w-20 bg-gray-100 rounded-md overflow-hidden">
+                        <img src="https://c8.alamy.com/comp/DERFBR/colourful-indian-shop-in-puttaparthi-andhra-pradesh-india-DERFBR.jpg"
+                            alt="Provider" class="w-full h-full object-cover">
+                    </div>
+                    <!-- Service Info -->
+                    <div class="flex-1">
+                        <h3 class="text-xl font-bold">Ananta Plumbing Service</h3>
+                        <p class="text-gray-600 text-sm">Ahmedabad, Gujarat, India</p>
+
+                        <!-- Metrics -->
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-4">
+                            <!-- Customer Satisfaction -->
+                            <div class="flex justify-between text-sm border-b border-primary">
+                                <span class="">Customer Satisfaction</span>
+                                <span class="font-semibold">98%</span>
+                            </div>
+
+                            <!-- Service Reliability -->
+                            <div class="flex justify-between text-sm border-b border-primary">
+                                <span>Service Reliability</span>
+                                <span class="font-semibold">95%</span>
+                            </div>
+
+                            <!-- Response Time -->
+                            <div class="flex justify-between text-sm border-b border-primary">
+                                <span>Response Time</span>
+                                <span class="font-semibold">92%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Additional ranks would be added here -->
+    </div>
+
+    <!-- Load More Button -->
+        <button class="flex mx-auto text-center mt-4 text-primary font-semibold">Load More <i data-lucide="chevron-down" class="mt-0.5"></i></button>
+    </div>
+</body>
+
+<script>
+    lucide.createIcons();
+</script>
+<script>
+    let serviceList = document.querySelector('#serviceList');
+    document.querySelector('#openServiceList').addEventListener("click", () => {
+        serviceList.classList.toggle('hidden');
+    })
+    document.querySelector('#closeServiceList').addEventListener("click", () => {
+        serviceList.classList.add('hidden');
+    })
+</script>
+</html>
