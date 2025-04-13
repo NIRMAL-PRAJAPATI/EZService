@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Plug,
   LibraryBig,
@@ -12,8 +12,51 @@ import {
 } from 'lucide-react';
 
 const Hero = () => {
+  const messages = [
+    'Mechenic',
+    'Technician',
+    'Laboure',
+    'Electrician',
+    'Trainer',
+    'Servant',
+  ];
+
+  const [displayText, setDisplayText] = useState('');
+  const [messageIndex, setMessageIndex] = useState(0);
+  const [charIndex, setCharIndex] = useState(0);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  // Typing effect loop
+  React.useLayoutEffect(() => {
+    const currentMessage = messages[messageIndex];
+    let timeout;
+
+    if (!isDeleting && charIndex < currentMessage.length) {
+      timeout = setTimeout(() => {
+        setDisplayText(currentMessage.substring(0, charIndex + 1));
+        setCharIndex((prev) => prev + 1);
+      }, 120);
+    } else if (isDeleting && charIndex > 0) {
+      timeout = setTimeout(() => {
+        setDisplayText(currentMessage.substring(0, charIndex - 1));
+        setCharIndex((prev) => prev - 1);
+      }, 90);
+    } else {
+      timeout = setTimeout(() => {
+        if (!isDeleting) {
+          setIsDeleting(true);
+        } else {
+          setIsDeleting(false);
+          setMessageIndex((prev) => (prev + 1) % messages.length);
+        }
+      }, 1000);
+    }
+
+    return () => clearTimeout(timeout);
+  }, [charIndex, isDeleting, messageIndex]);
+
   return (
-    <section className="bg-gradient-to-r from-gray-900 to-gray-700 py-20 text-white py-20">
+    <section className="!w-screen bg-gradient-to-r from-gray-900 to-gray-700 text-white py-20 overflow-hidden m-0 p-0 relative">
       {/* Floating icons */}
       <div className="text-gray-600">
         <Plug className="absolute top-24 left-60 rotate-[330deg] z-0" />
@@ -26,7 +69,7 @@ const Hero = () => {
         <PartyPopper className="absolute top-[350px] right-[35%] rotate-[330deg] z-0" />
       </div>
 
-      {/* Full-width content */}
+      {/* Main Content */}
       <div className="container mx-auto px-4 z-10 relative z-0">
         <div className="max-w-6xl mx-auto text-center">
           <div className="text-[12px]">
@@ -40,8 +83,8 @@ const Hero = () => {
             <p className="flex lg:block flex-col">
               Find Services Like{' '}
               <span>
-                <span id="text" className="text-indigo-500"></span>
-                <span>&nbsp;</span>
+                <span className="text-indigo-500">{displayText}</span>
+                <span className="animate-pulse">|</span>
               </span>
             </p>
             <p>at Your Fingertips</p>
@@ -66,8 +109,8 @@ const Hero = () => {
             </a>
           </div>
 
-          <div className="flex justify-center">
-            <div className="w-full max-w-2xl flex gap-2">
+          <div className="max-w-2xl mx-auto">
+            <div className="flex gap-2">
               <input
                 type="text"
                 placeholder="Search for services..."
