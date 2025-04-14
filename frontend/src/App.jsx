@@ -1,12 +1,9 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
-import { useState } from 'react'
 import './App.css'
 import Navbar from './components/Navbar'
-import HeroSection from './components/Home/HeroSection'
+import UserHome from './pages/UserHome'
 import Footer from './components/Footer'
-import UserReview from './components/Home/UserReview'
-import Services from './components/Home/Services'
-import About from './components/About/About'
+import About from './pages/About'
 
 function App() {
   return (
@@ -14,13 +11,7 @@ function App() {
       <div className="w-full min-h-screen bg-gray-50">
         <Navbar />
         <Routes>
-          <Route path="/" element={
-            <>
-              <HeroSection />
-              <Services/>
-              <UserReview />
-            </>
-          } />
+          <Route path="/" element={<UserHome />} />
           <Route path="/about" element={<About />} />
         </Routes>
         <Footer/>
