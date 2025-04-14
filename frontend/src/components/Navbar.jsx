@@ -46,13 +46,13 @@ const Navbar = () => {
                 Home
               </a>
               <a
-                href="explore.html"
+                href="/explore"
                 className="text-gray-600 hover:text-indigo-400"
               >
                 Explore
               </a>
               <a
-                href="services.html"
+                href="/services"
                 className="text-gray-600 hover:text-indigo-400"
               >
                 Services

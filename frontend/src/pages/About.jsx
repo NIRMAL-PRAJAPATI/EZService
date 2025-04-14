@@ -1,4 +1,5 @@
-import React from 'react'
+import React from 'react';
+import { Boxes, BriefcaseBusiness, Github, Instagram, Linkedin, PencilRuler, Send, ShieldCheck, User , Map} from 'lucide-react';
 
 function About() {
     return (
@@ -19,14 +20,14 @@ function About() {
                                 <div className="px-4 sm:px-6 lg:px-8">
                                     <h1 className="text-4xl tracking-tight font-extrabold text-gray-900 sm:text-5xl md:text-6xl">
                                         <span className="block">About</span>
-                                        <span className="block text-primary-600">Our <span className="text-primary tracking-wide">EZService</span></span>
+                                        <span className="block text-indigo-500-600">Our <span className="text-indigo-500 tracking-wide">EZService</span></span>
                                     </h1>
                                     <p className="mt-3 text-md text-gray-500 sm:mt-5 sm:max-w-xl sm:mx-auto md:mt-5 md:text-md lg:mx-0">
                                         Founded in 2010, our company has been at the forefront of innovation, delivering
                                         exceptional products and services to our clients worldwide. We're committed to
                                         excellence, integrity, and customer satisfaction.
                                     </p>
-                                    <button className="px-4 py-2 bg-primary border-none text-white ml-2 mt-3 rounded">Go to Home</button>
+                                    <button className="px-4 py-2 bg-indigo-500 border-none text-white ml-2 mt-3 rounded">Go to Home</button>
                                 </div>
                             </div>
                         </div>
@@ -41,7 +42,7 @@ function About() {
                 <div className="bg-white py-16">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="lg:text-center">
-                            <h2 className="text-base text-primary font-semibold tracking-wide uppercase">Our Values</h2>
+                            <h2 className="text-base text-indigo-500 font-semibold tracking-wide uppercase">Our Values</h2>
                             <p className="mt-1 text-3xl leading-8 font-extrabold tracking-tight text-gray-800 sm:text-4xl">
                                 Principles That Guide Us
                             </p>
@@ -53,7 +54,7 @@ function About() {
                             <div className="space-y-10 md:space-y-0 md:grid md:grid-cols-2 md:gap-x-8 md:gap-y-10">
                                 <div className="relative">
                                     <div className="absolute flex items-center justify-center h-12 w-12 rounded-md bg-gray-100 text-white">
-                                        <i data-lucide="shield-check" className="h-6 w-6 text-primary" />
+                                        <ShieldCheck className="h-6 w-6 text-indigo-500" />
                                     </div>
                                     <div className="ml-16">
                                         <h3 className="text-lg leading-6 font-medium text-gray-900">Integrity</h3>
@@ -66,7 +67,7 @@ function About() {
                                 </div>
                                 <div className="relative">
                                     <div className="absolute flex items-center justify-center h-12 w-12 rounded-md bg-gray-100 text-white">
-                                        <i data-lucide="pencil-ruler" className="h-6 w-6 text-primary" />
+                                        <PencilRuler className="h-6 w-6 text-indigo-500" />
                                     </div>
                                     <div className="ml-16">
                                         <h3 className="text-lg leading-6 font-medium text-gray-900">Innovation</h3>
@@ -78,7 +79,7 @@ function About() {
                                 </div>
                                 <div className="relative">
                                     <div className="absolute flex items-center justify-center h-12 w-12 rounded-md bg-gray-100 text-white">
-                                        <i data-lucide="users" className="h-6 w-6 text-primary" />
+                                        <User className="h-6 w-6 text-indigo-500" />
                                     </div>
                                     <div className="ml-16">
                                         <h3 className="text-lg leading-6 font-medium text-gray-900">Collaboration</h3>
@@ -90,7 +91,7 @@ function About() {
                                 </div>
                                 <div className="relative">
                                     <div className="absolute flex items-center justify-center h-12 w-12 rounded-md bg-gray-100 text-white">
-                                        <i data-lucide="boxes" className="h-6 w-6 text-primary" />
+                                        <Boxes className="h-6 w-6 text-indigo-500" />
                                     </div>
                                     <div className="ml-16">
                                         <h3 className="text-lg leading-6 font-medium text-gray-900">Excellence</h3>
@@ -109,7 +110,7 @@ function About() {
             <section className="container mx-auto px-4 md:pb-5 relative" id="main_id">
                 <h2 className="text-3xl font-bold text-center">How Process go through</h2>
                 {/* card 1 */}
-                <div className="flex flex-col md:flex-row items-center gap-8 mx-auto bg-white p-7 md:p-10 shadow-lg h-full rounded my-5 border-b hover:border-primary">
+                <div className="flex flex-col md:flex-row items-center gap-8 mx-auto bg-white p-7 md:p-10 shadow-lg h-full rounded my-5 border-b hover:border-indigo-500">
                     <div className="w-full md:w-2/3 space-y-6">
                         <h1 className="text-2xl md:text-4xl font-bold text-gray-800 mb-2">
                             Choose Service
@@ -123,7 +124,7 @@ function About() {
                     </div>
                 </div>
                 {/* card 2 */}
-                <div className="flex flex-col md:flex-row items-center gap-8 mx-auto bg-white p-7 md:p-10 shadow-lg h-full rounded my-5 border-b hover:border-primary">
+                <div className="flex flex-col md:flex-row items-center gap-8 mx-auto bg-white p-7 md:p-10 shadow-lg h-full rounded my-5 border-b hover:border-indigo-500">
                     <div className="w-full md:w-2/3 space-y-6">
                         <h1 className="text-2xl md:text-4xl font-bold text-gray-800 mb-2">
                             Send Service Request
@@ -137,7 +138,7 @@ function About() {
                     </div>
                 </div>
                 {/* card 3 */}
-                <div className="flex flex-col md:flex-row items-center gap-8 mx-auto bg-white p-7 md:p-10 shadow-lg h-full rounded my-5 border-b hover:border-primary">
+                <div className="flex flex-col md:flex-row items-center gap-8 mx-auto bg-white p-7 md:p-10 shadow-lg h-full rounded my-5 border-b hover:border-indigo-500">
                     <div className="w-full md:w-2/3 space-y-6">
                         <h1 className="text-2xl md:text-4xl font-bold text-gray-800 mb-2">
                             Get Service
@@ -154,74 +155,32 @@ function About() {
             <section className="bg-gray-50 pt-10 pb-1">
                 <h1 className="text-2xl md:text-4xl lg:text-4xl font-bold text-center mb-16">
                     Change Lifestyle
-                    <span className="block text-primary text-3xl md:text-6xl">Those Who've Made Life Easy</span>
+                    <span className="block text-indigo-500 text-3xl md:text-6xl">Those Who've Made Life Easy</span>
                 </h1>
                 {/* Stats Grid */}
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 mb-16 star_grid">
                     {/* Companies */}
                     <div className="text-center">
-                        <p className="text-primary text-md">Users</p>
+                        <p className="text-indigo-500 text-md">Users</p>
                         <h2 className="text-3xl md:text-5xl font-extrabold mb-1 " data-val={600}>455</h2>
                         <p className="text-gray-500 text-sm">Growing Users</p>
                     </div>
                     <div className="text-center">
-                        <p className="text-primary text-md">Services Available</p>
+                        <p className="text-indigo-500 text-md">Services Available</p>
                         <h2 className="text-3xl md:text-5xl font-extrabold mb-1" data-val={25}>47</h2>
                         <p className="text-gray-500 text-sm">Available now</p>
                     </div>
                     {/* Templates */}
                     <div className="text-center">
-                        <p className="text-primary text-md">Fullfilled Services</p>
+                        <p className="text-indigo-500 text-md">Fullfilled Services</p>
                         <h2 className="text-3xl md:text-5xl font-extrabold mb-1" data-val={500}>64</h2>
                         <p className="text-gray-500 text-sm">From DreamIT Solutions</p>
                     </div>
                     {/* Ratings */}
                     <div className="text-center">
-                        <p className="text-primary text-md">Ratings</p>
+                        <p className="text-indigo-500 text-md">Ratings</p>
                         <h2 className="text-3xl md:text-5xl font-extrabold mb-1">4.5/5</h2>
                         <p className="text-gray-500 text-sm">In Industry</p>
-                    </div>
-                </div>
-            </section>
-            <section>
-                <div className="mx-auto bg-gray-50 p-10 mt-5">
-                    {/* Director Message Section */}
-                    <div className="relative grid md:grid-cols-2 gap-8 items-center">
-                        {/* Left Column with Image */}
-                        <div className="relative w-60 h-60 lg:h-80 lg:w-80 mx-auto">
-                            {/* Circular Border */}
-                            <div className="absolute inset-0 rounded-full border-8 border-dashed border-primary transform rotate-45" />
-                            {/* Image Container */}
-                            <div className="absolute inset-2 rounded-full overflow-hidden bg-white">
-                                <img src="/frontend/public/img/nirmal.jpeg" alt="Nirmal prajapati" className="w-full h-full object-cover" />
-                            </div>
-                            <i data-lucide="send" className="z-0 text-primary h-10 w-10 absolute top-56 left-52 lg:left-80" />
-                        </div>
-                        {/* Right Column with Content */}
-                        <div className="text-center md:text-left">
-                            {/* Director's Message Header */}
-                            <h3 className="text-primary text-md font-semibold tracking-wide uppercase">
-                                DIRECTOR
-                            </h3>
-                            {/* Name */}
-                            <h2 className="text-4xl md:text-5xl font-bold text-gray-800 font-extrabold">Nirmal Prajapati</h2>
-                            {/* Subtitle */}
-                            <p className="text-gray-700 my-3">
-                                Passionate, Visionary, Creative &amp; Dedicated
-                            </p>
-                            {/* Message */}
-                            <p className="relative z-10 text-gray-500 leading-relaxed">
-                                At EZService, our mission is to transform industries through modern-day technology solutions.
-                                With our extensive experience, we are committed to driving innovation and maximizing
-                                productivity for clients around the world.
-                            </p>
-                            <div className="flex gap-5 mt-3 ml-3 text-primary">
-                                <i data-lucide="github" />
-                                <i data-lucide="instagram" />
-                                <i data-lucide="linkedin" />
-                                <i data-lucide="briefcase-business" />
-                            </div>
-                        </div>
                     </div>
                 </div>
             </section>
@@ -233,7 +192,7 @@ function About() {
                         <div className="h-80 bg-gray-200 rounded-lg flex items-center justify-center">
                             {/* Replace with actual map embed code */}
                             <div className="text-center">
-                                <i data-lucide="map" className="w-12 h-12 text-primary mx-auto mb-2" />
+                                <Map className="w-12 h-12 text-indigo-500 mx-auto mb-2" />
                                 <p className="text-gray-600">Interactive map would be embedded here</p>
                             </div>
                         </div>
