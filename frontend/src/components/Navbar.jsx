@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import { ChevronDown, ChevronUp , UserRound , AlignRight} from "lucide-react";
 import resources from "../resource";
 
@@ -109,12 +110,12 @@ const Navbar = () => {
               >
                 Complaint
               </a>
-              <a
-                href="about.html"
+              <Link
+                to="/about"
                 className="text-gray-600 hover:text-indigo-400"
               >
                 About
-              </a>
+              </Link>
             </div>
 
             {/* Account Button */}
