@@ -42,7 +42,7 @@ const Navbar = () => {
             <div></div>
             {/* Links */}
             <div className="flex flex-col md:flex-row md:space-x-6 space-y-4 tracking-wide md:space-y-0">
-              <a href="#" className="text-primary">
+              <a href="/" className="text-primary">
                 Home
               </a>
               <a
