@@ -2,11 +2,8 @@ import React from 'react'
 
 function About() {
     return (
-        <div>
-            <meta charSet="UTF-8" />
-            <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-            <title>about</title>
-            <link rel="icon" type="image/png" href="/frontend/public/img/ezservice logo.png" />
+        
+          <>  
             {/* Tailwind CSS CDN */}
             {/* Custom Tailwind Configuration */}
             {/* Icons */}
@@ -114,7 +111,7 @@ function About() {
                 {/* card 1 */}
                 <div className="flex flex-col md:flex-row items-center gap-8 mx-auto bg-white p-7 md:p-10 shadow-lg h-full rounded my-5 border-b hover:border-primary">
                     <div className="w-full md:w-2/3 space-y-6">
-                        <h1 className="text-2xl md:text-4xl font-bold text-gray-800 -mb-4">
+                        <h1 className="text-2xl md:text-4xl font-bold text-gray-800 mb-2">
                             Choose Service
                         </h1>
                         <p className="text-gray-600">
@@ -128,7 +125,7 @@ function About() {
                 {/* card 2 */}
                 <div className="flex flex-col md:flex-row items-center gap-8 mx-auto bg-white p-7 md:p-10 shadow-lg h-full rounded my-5 border-b hover:border-primary">
                     <div className="w-full md:w-2/3 space-y-6">
-                        <h1 className="text-2xl md:text-4xl font-bold text-gray-800 -mb-4">
+                        <h1 className="text-2xl md:text-4xl font-bold text-gray-800 mb-2">
                             Send Service Request
                         </h1>
                         <p className="text-gray-600">
@@ -142,7 +139,7 @@ function About() {
                 {/* card 3 */}
                 <div className="flex flex-col md:flex-row items-center gap-8 mx-auto bg-white p-7 md:p-10 shadow-lg h-full rounded my-5 border-b hover:border-primary">
                     <div className="w-full md:w-2/3 space-y-6">
-                        <h1 className="text-2xl md:text-4xl font-bold text-gray-800 -mb-4">
+                        <h1 className="text-2xl md:text-4xl font-bold text-gray-800 mb-2">
                             Get Service
                         </h1>
                         <p className="text-gray-600">
@@ -243,7 +240,7 @@ function About() {
                     </div>
                 </section>
             </section>
-        </div>
+        </>
 
     )
 }
