@@ -121,7 +121,7 @@ const Navbar = () => {
             {/* Account Button */}
             <div className="flex md:space-x-1 mt-4 md:mt-0">
               <a
-                href="user_profile.html"
+                href="/profile"
                 className="px-4 py-2 bg-indigo-500 text-white  hover:bg-indigo-500/90 rounded flex"
               >
                 <UserRound className="h-5 w-5 mt-[2px] transition duration-150" />

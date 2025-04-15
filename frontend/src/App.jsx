@@ -3,7 +3,7 @@ import './App.css'
 import Navbar from './components/Navbar'
 import UserHome from './pages/UserHome'
 import Footer from './components/Footer'
-// import UserExplore from './pages/UserExplore'
+import ProfilePage from './pages/Pofile'
 import ServicePage from './pages/ServicesPage'
 import About from './pages/About'
 
@@ -17,6 +17,7 @@ function App() {
           <Route path="/about" element={<About />} />
           {/* <Route path="/explore" element={<UserExplore />} /> */}
           <Route path="/services" element={<ServicePage />} />
+          <Route path="/profile" element={<ProfilePage />} />
         </Routes>
         <Footer/>
       </div>
