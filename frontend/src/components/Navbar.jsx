@@ -16,7 +16,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="bg-white shadow-sm top-0 left-0 w-full z-50">
+    <nav className="bg-white shadow-sm top-0 left-0 w-full z-50 text-black border-none">
       <div className="mx-auto py-3 px-4">
         <div className="flex items-center justify-between">
           {/* Logo and Brand */}
@@ -35,9 +35,9 @@ const Navbar = () => {
           {/* Navigation Menu */}
           <div
             id="navMenuDiv"
-            className={`md:flex items-center justify-between absolute md:w-full md:relative z-10 top-14 md:top-0 w-[70vw] sm:w-[50vw] ${
+            className={`md:flex items-center justify-between absolute md:w-full md:relative z-10 top-14.5 md:top-0 w-[70vw] sm:w-[50vw] ${
               menuOpen ? "right-0" : "right-[100vw]"
-            } md:right-0 bg-white text-left md:bg-transparent p-6 md:p-0 z-20 border md:border-none transition-all duration-300`}
+            } md:right-0 bg-white text-left md:bg-transparent p-6 md:p-0 z-20 border-none transition-all duration-300`}
           >
             <div></div>
             {/* Links */}
@@ -68,9 +68,9 @@ const Navbar = () => {
                 <a className="text-gray-600 hover:text-indigo-400 flex items-center cursor-pointer">
                   Templates
                   {dropdownOpen ? (
-                    <ChevronUp className="h-5 w-5 ml-2 mt-[2px] transition duration-150" />
+                    <ChevronUp className="h-5 w-5 mt-[2px] transition duration-150" />
                   ) : (
-                    <ChevronDown className="h-5 w-5 ml-2 mt-[2px] transition duration-150" />
+                    <ChevronDown className="h-5 w-5 mt-[2px] transition duration-150" />
                   )}
                 </a>
 

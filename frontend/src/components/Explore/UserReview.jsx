@@ -8,7 +8,7 @@ function UserReview() {
             <div className="flex items-center justify-between">
               <div className="flex items-center">
                 <img
-                  className="h-10 w-10 rounded-lg"
+                  className="h-10 w-10 rounded-lg object-cover"
                   src="https://images.unsplash.com/photo-1520813792240-56fc4a3765a7"
                   alt=""
                 />

@@ -6,7 +6,7 @@ function ProviderAnno() {
           <div className="p-3">
             <div className="flex items-center">
               <img
-                className="h-12 w-12 rounded-xl"
+                className="h-12 w-12 rounded-xl object-cover"
                 src="https://images.unsplash.com/photo-1494790108377-be9c29b29330"
                 alt=""
               />

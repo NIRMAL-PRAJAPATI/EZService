@@ -6,6 +6,7 @@ import Footer from './components/Footer'
 import ProfilePage from './pages/Pofile'
 import ServicePage from './pages/ServicesPage'
 import About from './pages/About'
+import Explore from './pages/Explore'
 
 function App() {
   return (
@@ -13,9 +14,9 @@ function App() {
       <div className="w-full min-h-screen bg-gray-50">
         <Navbar />
         <Routes>
-          <Route path="/" element={<UserHome />} />
+          <Route index element={<UserHome />} />
           <Route path="/about" element={<About />} />
-          {/* <Route path="/explore" element={<UserExplore />} /> */}
+          <Route path="/explore" element={<Explore />} />
           <Route path="/services" element={<ServicePage />} />
           <Route path="/profile" element={<ProfilePage />} />
         </Routes>

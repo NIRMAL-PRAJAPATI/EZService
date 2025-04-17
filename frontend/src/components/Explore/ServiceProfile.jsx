@@ -47,7 +47,7 @@ function ServiceProfile() {
             </div>
             <div className="mt-3 flex items-center">
               <img
-                className="h-8 w-8 rounded-full"
+                className="h-8 w-8 rounded-full object-cover"
                 src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e"
                 alt=""
               />

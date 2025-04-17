@@ -42,7 +42,7 @@ function UserComp() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center">
                   <img
-                    className="h-8 w-8 rounded-full"
+                    className="h-8 w-8 rounded-full object-cover"
                     src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d"
                     alt=""
                   />

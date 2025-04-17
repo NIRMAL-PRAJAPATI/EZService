@@ -87,7 +87,7 @@ const Hero = () => {
                 Find Services Like{" "}
                 <span>
                   <span className="text-indigo-500">{displayText}</span>
-                  <span className="animate-pulse">|</span>
+                  <span className="text-gray-300 -ml-2">|</span>
                 </span>
               </p>
               <p>at Your Fingertips</p>
@@ -124,23 +124,6 @@ const Hero = () => {
                   <Search className="text-xl mt-2" />
                 </button>
               </div>
-            </div>
-          </div>
-        </div>
-      </section>
-      <section className="py-12 bg-gray-100">
-        <div className="px-4">
-          <h2 className="text-3xl font-bold text-center mb-8">
-            Popular Categories
-          </h2>
-          <div className="overflow-x-auto">
-            <div className="flex space-x-2 w-max">
-              <button
-                type="submit"
-                className="w-[200px] p-5 bg-white rounded-md shadow-sm hover:shadow-md transition-shadow hover:border-indigo-500 border"
-              >
-                Plumbing
-              </button>
             </div>
           </div>
         </div>

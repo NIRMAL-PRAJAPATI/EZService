@@ -17,9 +17,9 @@ import Announs from "../components/Explore/Announs";
 import Header from "../components/Explore/Header";
 import ProviderAnno from "../components/Explore/ProviderAnno";
 
-export const UserExplore = () => (
+const Explore = () => (
   <>
-    <main className=" mx-auto px-4 sm:px-6 lg:px-8">
+    <main className=" mx-auto px-4 sm:px-6 lg:px-8 text-black">
       {/* Filters */}
       <Header />
 
@@ -57,3 +57,5 @@ export const UserExplore = () => (
     </main>
   </>
 );
+
+export default Explore
