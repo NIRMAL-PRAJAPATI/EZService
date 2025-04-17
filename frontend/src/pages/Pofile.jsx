@@ -2,7 +2,7 @@ import { LogOut, Trash2 } from "lucide-react";
 
 export default function ProfilePage() {
   return (
-    <main className="mx-auto py-4 sm:px-6 lg:px-8 font-sans bg-gray-100">
+    <main className="max-w-7xl mx-auto py-4 sm:px-6 lg:px-8 font-sans">
     <div>
       <div className="md:grid md:grid-cols-3 md:gap-6">
         <div className="md:col-span-1 flex justify-between">

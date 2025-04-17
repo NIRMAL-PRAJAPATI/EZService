@@ -3,10 +3,10 @@ import resources from '../../resource';
 
 function Process() {
   return (
-    <section className="container mx-auto px-4 md:pb-5 relative" id="main_id">
+    <section className="container mx-auto px-4 md:pb-5 relative text-black" id="main_id">
                 <h2 className="text-3xl font-bold text-center">How Process go through</h2>
                 {/* card 1 */}
-                <div className="flex flex-col md:flex-row items-center gap-8 mx-auto bg-white p-7 md:p-10 shadow-lg h-full rounded my-5 border-b hover:border-indigo-500">
+                <div className="flex flex-col md:flex-row items-center gap-8 mx-auto bg-white p-7 md:p-10 shadow-lg h-full rounded my-5 border-gray-300 border-b hover:border-indigo-500">
                     <div className="w-full md:w-2/3 space-y-6">
                         <h1 className="text-2xl md:text-4xl font-bold text-gray-800 mb-2">
                             Choose Service
@@ -20,7 +20,7 @@ function Process() {
                     </div>
                 </div>
                 {/* card 2 */}
-                <div className="flex flex-col md:flex-row items-center gap-8 mx-auto bg-white p-7 md:p-10 shadow-lg h-full rounded my-5 border-b hover:border-indigo-500">
+                <div className="flex flex-col md:flex-row items-center gap-8 mx-auto bg-white p-7 md:p-10 shadow-lg h-full rounded my-5 border-gray-300 border-b hover:border-indigo-500">
                     <div className="w-full md:w-2/3 space-y-6">
                         <h1 className="text-2xl md:text-4xl font-bold text-gray-800 mb-2">
                             Send Service Request
@@ -34,7 +34,7 @@ function Process() {
                     </div>
                 </div>
                 {/* card 3 */}
-                <div className="flex flex-col md:flex-row items-center gap-8 mx-auto bg-white p-7 md:p-10 shadow-lg h-full rounded my-5 border-b hover:border-indigo-500">
+                <div className="flex flex-col md:flex-row items-center gap-8 mx-auto bg-white p-7 md:p-10 shadow-lg h-full rounded my-5 border-gray-300 border-b hover:border-indigo-500">
                     <div className="w-full md:w-2/3 space-y-6">
                         <h1 className="text-2xl md:text-4xl font-bold text-gray-800 mb-2">
                             Get Service

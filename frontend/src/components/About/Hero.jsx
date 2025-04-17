@@ -42,7 +42,7 @@ function Hero() {
         <div className="lg:absolute lg:inset-y-0 lg:right-0 lg:w-1/2">
           <img
             className="h-56 w-full object-cover sm:h-72 md:h-96 lg:w-full lg:h-full"
-            src="https://miro.medium.com/v2/resize:fit:1400/1*G788U7EQNm70xhiW_hbwew.jpeg"
+            src="https://images.ctfassets.net/pdf29us7flmy/2TkW6GD0U1ozZZZT3F7c5u/244501c7e6695a63d2f1656aa92067aa/building-sales-team_shutterstock_381098812_optimized_.jpg"
             alt="Team working together"
           />
         </div>

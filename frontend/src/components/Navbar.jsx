@@ -37,23 +37,23 @@ const Navbar = () => {
             id="navMenuDiv"
             className={`md:flex items-center justify-between absolute md:w-full md:relative z-10 top-14.5 md:top-0 w-[70vw] sm:w-[50vw] ${
               menuOpen ? "right-0" : "right-[100vw]"
-            } md:right-0 bg-white text-left md:bg-transparent p-6 md:p-0 z-20 border-none transition-all duration-300`}
+            } md:right-0 bg-white text-left md:bg-transparent p-6 md:p-0 z-20 border-none transition-all duration-100`}
           >
             <div></div>
             {/* Links */}
             <div className="flex flex-col md:flex-row md:space-x-6 space-y-4 tracking-wide md:space-y-0">
-              <a href="/" className="text-primary">
+              <a href="/" className="text-indigo-600 font-semibold">
                 Home
               </a>
               <a
                 href="/explore"
-                className="text-gray-600 hover:text-indigo-400"
+                className="text-gray-600 hover:text-black"
               >
                 Explore
               </a>
               <a
                 href="/services"
-                className="text-gray-600 hover:text-indigo-400"
+                className="text-gray-600 hover:text-black"
               >
                 Services
               </a>
@@ -65,7 +65,7 @@ const Navbar = () => {
                 onMouseEnter={() => setDropdownOpen(true)}
                 onMouseLeave={() => setDropdownOpen(false)}
               >
-                <a className="text-gray-600 hover:text-indigo-400 flex items-center cursor-pointer">
+                <a className="text-gray-600 hover:text-black flex items-center cursor-pointer">
                   Templates
                   {dropdownOpen ? (
                     <ChevronUp className="h-5 w-5 mt-[2px] transition duration-150" />
@@ -80,19 +80,19 @@ const Navbar = () => {
                     dropdownOpen ? "block" : "hidden"
                   }`}
                 >
-                  <li className="hover:text-indigo-400 cursor-pointer">
+                  <li className="hover:text-black cursor-pointer">
                     Home Renovation
                   </li>
-                  <li className="hover:text-indigo-400 cursor-pointer">
+                  <li className="hover:text-black cursor-pointer">
                     Wedding Requisites
                   </li>
-                  <li className="hover:text-indigo-400 cursor-pointer">
+                  <li className="hover:text-black cursor-pointer">
                     Home Appliances
                   </li>
-                  <li className="hover:text-indigo-400 cursor-pointer">
+                  <li className="hover:text-black cursor-pointer">
                     Beauty & Spa
                   </li>
-                  <li className="hover:text-indigo-400 cursor-pointer">
+                  <li className="hover:text-black cursor-pointer">
                     Party Things
                   </li>
                 </ul>
@@ -100,19 +100,19 @@ const Navbar = () => {
 
               <a
                 href="service_ranking.html"
-                className="text-gray-600 hover:text-indigo-400"
+                className="text-gray-600 hover:text-black"
               >
                 Ranking
               </a>
               <a
                 href="complaint.html"
-                className="text-gray-600 hover:text-indigo-400"
+                className="text-gray-600 hover:text-black"
               >
                 Complaint
               </a>
               <Link
                 to="/about"
-                className="text-gray-600 hover:text-indigo-400"
+                className="text-gray-600 hover:text-black"
               >
                 About
               </Link>
@@ -122,10 +122,9 @@ const Navbar = () => {
             <div className="flex md:space-x-1 mt-4 md:mt-0">
               <a
                 href="/profile"
-                className="px-4 py-2 bg-indigo-500 text-white  hover:bg-indigo-500/90 rounded flex"
+                className="p-2 bg-gray-100 text-gray-700 rounded-full flex"
               >
-                <UserRound className="h-5 w-5 mt-[2px] transition duration-150" />
-                Account
+                <UserRound className="h-5 w-5 transition duration-150" />
               </a>
             </div>
           </div>
