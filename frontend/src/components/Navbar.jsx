@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { ChevronDown, ChevronUp , UserRound , AlignRight} from "lucide-react";
+import { ChevronDown, ChevronUp , UserRound , AlignRight, LucideShoppingCart, LucideShoppingBag} from "lucide-react";
 import resources from "../resource";
 
 const Navbar = () => {
@@ -35,28 +35,28 @@ const Navbar = () => {
           {/* Navigation Menu */}
           <div
             id="navMenuDiv"
-            className={`md:flex items-center justify-between absolute md:w-full md:relative z-10 top-14.5 md:top-0 w-[70vw] sm:w-[50vw] ${
+            className={`md:flex items-center justify-between absolute md:w-full md:relative z-10 top-14 md:top-0 w-[70vw] sm:w-[50vw] ${
               menuOpen ? "right-0" : "right-[100vw]"
             } md:right-0 bg-white text-left md:bg-transparent p-6 md:p-0 z-20 border-none transition-all duration-100`}
           >
             <div></div>
             {/* Links */}
             <div className="flex flex-col md:flex-row md:space-x-6 space-y-4 tracking-wide md:space-y-0">
-              <a href="/" className="text-indigo-600 font-semibold">
+              <Link to="/" className="text-indigo-600 font-semibold">
                 Home
-              </a>
-              <a
-                href="/explore"
+              </Link>
+              <Link
+                to="/explore"
                 className="text-gray-600 hover:text-black"
               >
                 Explore
-              </a>
-              <a
-                href="/services"
+              </Link>
+              <Link
+                to="/services"
                 className="text-gray-600 hover:text-black"
               >
                 Services
-              </a>
+              </Link>
 
               {/* Templates Dropdown */}
               <div
@@ -65,14 +65,14 @@ const Navbar = () => {
                 onMouseEnter={() => setDropdownOpen(true)}
                 onMouseLeave={() => setDropdownOpen(false)}
               >
-                <a className="text-gray-600 hover:text-black flex items-center cursor-pointer">
+                <Link className="text-gray-600 hover:text-black flex items-center cursor-pointer">
                   Templates
                   {dropdownOpen ? (
                     <ChevronUp className="h-5 w-5 mt-[2px] transition duration-150" />
                   ) : (
                     <ChevronDown className="h-5 w-5 mt-[2px] transition duration-150" />
                   )}
-                </a>
+                </Link>
 
                 <ul
                   id="templateContainer"
@@ -98,18 +98,18 @@ const Navbar = () => {
                 </ul>
               </div>
 
-              <a
-                href="service_ranking.html"
+              <Link
+                to="service_ranking.html"
                 className="text-gray-600 hover:text-black"
               >
                 Ranking
-              </a>
-              <a
-                href="/complaint"
+              </Link>
+              <Link
+                to="/complaint"
                 className="text-gray-600 hover:text-black"
               >
                 Complaint
-              </a>
+              </Link>
               <Link
                 to="/about"
                 className="text-gray-600 hover:text-black"
@@ -120,12 +120,18 @@ const Navbar = () => {
 
             {/* Account Button */}
             <div className="flex md:space-x-1 mt-4 md:mt-0">
-              <a
-                href="/profile"
-                className="p-2 bg-gray-100 text-gray-700 rounded-full flex"
+            <Link
+                to="/profile"
+                className="p-2 text-gray-700"
+              >
+                <LucideShoppingBag className="h-5 w-5 transition duration-150" />
+              </Link>
+              <Link
+                to="/profile"
+                className="p-2 text-gray-700"
               >
                 <UserRound className="h-5 w-5 transition duration-150" />
-              </a>
+              </Link>
             </div>
           </div>
         </div>
