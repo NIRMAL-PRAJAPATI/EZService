@@ -105,7 +105,7 @@ const Navbar = () => {
                 Ranking
               </a>
               <a
-                href="complaint.html"
+                href="/complaint"
                 className="text-gray-600 hover:text-black"
               >
                 Complaint

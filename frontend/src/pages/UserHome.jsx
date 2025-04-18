@@ -12,8 +12,8 @@ import LRAlert from "../components/Home/LRAlert";
 function UserHome() {
   return (
     <div>
-      <HeroSection />
-      {/* <Search /> */}
+      {/* <HeroSection /> */}
+      <Search />
       <Category />
       <Services />
       <TopCity />

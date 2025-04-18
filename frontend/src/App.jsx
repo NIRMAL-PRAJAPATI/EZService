@@ -7,6 +7,7 @@ import ProfilePage from './pages/Pofile'
 import ServicePage from './pages/ServicesPage'
 import About from './pages/About'
 import Explore from './pages/Explore'
+import Complaint from './pages/Complaint'
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
           <Route path="/explore" element={<Explore />} />
           <Route path="/services" element={<ServicePage />} />
           <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/complaint" element={<Complaint />} />
         </Routes>
         <Footer/>
       </div>
