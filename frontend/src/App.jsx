@@ -11,6 +11,7 @@ const Explore = lazy(() => import('./pages/Explore'));
 const Complaint = lazy(() => import('./pages/Complaint'));
 const Order = lazy(() => import('./pages/Order'));
 import Loading from './components/Loading'
+import OrderDetails from './pages/OrderDetails';
 const ErrorPage = lazy(() => import('./pages/ErrorPage'));
 
 function App() {
@@ -28,6 +29,7 @@ function App() {
           <Route path="/complaint" element={<Complaint />} />
           <Route path="/order" element={<Order />} />
           <Route path="/errorpage" element={<ErrorPage />} />
+          <Route path="/orders/orderdetails" element={<OrderDetails />} />
         </Routes>
         </Suspense>
         <Footer/>

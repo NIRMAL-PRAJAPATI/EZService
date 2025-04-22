@@ -1,7 +1,8 @@
 "use client"
 
 import { useState } from "react"
-import { ChevronDown, ChevronUp, Clock, ClockArrowDown, MapPin, Package } from "lucide-react"
+import { ChevronRight, ClockArrowDown, MapPin, Package } from "lucide-react"
+import { Link } from "react-router-dom"
 
 // Mock data for demonstration
 const mockCurrentOrders = [
@@ -35,17 +36,17 @@ const mockPastOrders = [
 ]
 
 const OrderItem = ({ order }) => {
-  const [showDetails, setShowDetails] = useState(false)
 
   return (
     <div className="border rounded-sm p-4 mb-4 bg-white border-gray-300 text-gray-800 hover:border-indigo-500">
       <div className="sm:flex items-center justify-between">
         <div className="flex items-center space-x-4">
-          <img src={order.image || "/placeholder.svg"} alt={order.name} className="w-30 h-30 object-cover rounded-sm" />
+          <img src={order.image || "/placeholder.svg"} alt={order.name} className="sm:w-25 w-22 sm:h-25 h-22 object-cover rounded-sm" />
           <div>
-            <h3 className="font-medium text-lg">{order.name}</h3>
+            <h3 className="font-medium text-lg md:text-xl">{order.name}</h3>
             <p className="text-xs text-gray-600 -mt-1.5">Plumbing</p>
             <p className="text-indigo-500 font-bold mt-1">₹{order.price.toFixed(2)}</p>
+            <div className="lg:flex lg:gap-4">
             <div className="flex items-center text-sm text-gray-500 mt-1 text-xs sm:text-sm">
               <ClockArrowDown className="w-4 h-4 mr-1 text-indigo-500" />
               <span>{order.arrivalTime}</span>
@@ -54,49 +55,16 @@ const OrderItem = ({ order }) => {
               <MapPin className="w-4 h-4 mr-1 text-indigo-500" />
               <span className="max-w-xs">{order.address}</span>
             </div>
+            </div>
           </div>
         </div>
         <button
-          onClick={() => setShowDetails(!showDetails)}
           className="flex items-center text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors mx-auto sm:mx-0 mt-3"
         >
-          {showDetails ? (
-            <>
-              Hide Details
-              <ChevronUp className="ml-1 w-4 h-4" />
-            </>
-          ) : (
-            <>
-              Show Details
-              <ChevronDown className="ml-1 w-4 h-4" />
-            </>
-          )}
+              More Details
+              <ChevronRight className="ml-1 w-4 h-4" />
         </button>
       </div>
-
-      {showDetails && (
-        <div className="mt-4 pt-4 border-t border-gray-300 text-sm">
-          <p className="text-gray-900 font-semibold mb-2">Issue: <span className="text-gray-500 font-normal">Lorem ipsum dolor sit amet consectetur adipisicing elit. Sapiente sit aperiam esse, velit reiciendis doloremque quae? Libero, officia quisquam, dolor autem quidem aperiam impedit veritatis nemo eveniet tempore soluta molestiae.</span></p>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <p className="text-gray-500">Order Date:</p>
-              <p className="font-medium">{order.orderDate}</p>
-            </div>
-            <div>
-              <p className="text-gray-500">Status:</p>
-              <p className="font-medium">{order.status}</p>
-            </div>
-            <div>
-              <p className="text-gray-500">Tracking Number:</p>
-              <p className="font-medium">{order.trackingNumber}</p>
-            </div>
-            <div>
-              <p className="text-gray-500">Payment Method:</p>
-              <p className="font-medium">{order.paymentMethod}</p>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   )
 }
@@ -120,6 +88,7 @@ const OrderPage = () => {
   const currentOrders = hasCurrentOrders ? mockCurrentOrders : []
 
   return (
+    <Link to={'/orders/orderdetails'}>
     <div className="max-w-5xl mx-auto px-4 py-4">
       <section>
         <h2 className="text-xl font-semibold mb-4">Current Orders</h2>
@@ -137,6 +106,7 @@ const OrderPage = () => {
         ))}
       </section>
     </div>
+    </Link>
   )
 }
 

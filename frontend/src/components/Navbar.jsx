@@ -97,7 +97,6 @@ const Navbar = () => {
                   </Link></li>
                 </ul>
               </div>
-
               <Link onClick={toggleMenu}
                 to="/rankings"
                 className="text-gray-600 hover:text-black"
