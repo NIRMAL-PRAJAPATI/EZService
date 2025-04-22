@@ -13,8 +13,8 @@ import Card from "../components/Home/Cards";
 function UserHome() {
   return (
     <div>
-      <HeroSection />
-      {/* <Search /> */}
+      {/* <HeroSection /> */}
+      <Search />
       <Category />
       <Services />
       <div className="p-5 container mx-auto">

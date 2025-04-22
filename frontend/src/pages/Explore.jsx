@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   User,
   Image,
@@ -16,9 +16,19 @@ import UserComp from "../components/Explore/UserComp";
 import Announs from "../components/Explore/Announs";
 import Header from "../components/Explore/Header";
 import ProviderAnno from "../components/Explore/ProviderAnno";
+import Loading from '../components/Loading';
 
-const Explore = () => (
-  <>
+const Explore = () => { 
+
+  const [isLoading, setIsLoading] = useState(true);
+  useEffect (() => {
+    setTimeout(() => {
+      setIsLoading(false)
+    }, 2000)
+  }, [])
+
+  return ( <>{
+    isLoading ? <Loading /> : 
     <main className=" mx-auto px-4 sm:px-6 lg:px-8 text-black bg-gray-50">
       {/* Filters */}
       <Header />
@@ -54,8 +64,8 @@ const Explore = () => (
           Load More <ChevronDown />
         </button>
       </div>
-    </main>
-  </>
-);
+    </main>}
+    </>
+)};
 
 export default Explore
