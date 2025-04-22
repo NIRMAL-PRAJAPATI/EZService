@@ -98,23 +98,13 @@ const Navbar = () => {
                 </ul>
               </div>
 
-<<<<<<< HEAD
               <Link onClick={toggleMenu}
-                to="service_ranking.html"
-=======
-              <Link
                 to="/rankings"
->>>>>>> 66a2de20475a5fc8bb9851f4e17e304a15660928
                 className="text-gray-600 hover:text-black"
               >
                 Ranking
               </Link>
-<<<<<<< HEAD
               {/* <Link onClick={toggleMenu}
-=======
-              <Link
-              
->>>>>>> 66a2de20475a5fc8bb9851f4e17e304a15660928
                 to="/complaint"
                 className="text-gray-600 hover:text-black"
               >
