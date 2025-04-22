@@ -3,52 +3,10 @@
 import { Box, Contact, CreditCardIcon, Home, LucideTimerReset, Timer, TimerResetIcon, Truck } from "lucide-react"
 import { useState } from "react"
 
-// Custom date formatting function to replace date-fns
-const formatDate = (date, formatString) => {
-  const dt = new Date(date)
-  const options = {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-    hour: 'numeric',
-    minute: '2-digit',
-    hour12: true,
-  }
-  
-  if (formatString === "MMMM d, yyyy") {
-    return new Intl.DateTimeFormat('en-US', {
-      month: 'long',
-      day: 'numeric',
-      year: 'numeric',
-    }).format(dt)
-  }
-  
-  if (formatString === "MMMM d, yyyy 'at' h:mm a") {
-    return new Intl.DateTimeFormat('en-US', {
-      month: 'long',
-      day: 'numeric',
-      year: 'numeric',
-      hour: 'numeric',
-      minute: '2-digit',
-      hour12: true,
-    }).format(dt).replace(',', ' at')
-  }
-  
-  if (formatString === "PPP") {
-    return new Intl.DateTimeFormat('en-US', {
-      month: 'long',
-      day: 'numeric',
-      year: 'numeric',
-    }).format(dt)
-  }
-  
-  return dt.toLocaleString()
-}
-
 // Sample order data
 const orderData = {
   id: "ORD-7829-4321",
-  date: new Date("2023-11-15T14:30:00"),
+  date: "2023-11-15",
   status: "Fullfilled", // processing, shipped, delivered, cancelled
   customer: {
     name: "Alex Johnson",
@@ -107,7 +65,7 @@ const orderData = {
   tax: 27.2,
   shipping: 15.0,
   total: 382.16,
-  estimatedDelivery: new Date("2023-11-17T18:00:00"),
+  estimatedDelivery: "2023-11-17",
 }
 
 export default function OrderDetails() {
@@ -128,21 +86,6 @@ export default function OrderDetails() {
     })
     setShowCancelDialog(false)
     setAlertMessage("Order has been successfully cancelled")
-    setShowSuccessAlert(true)
-    setTimeout(() => setShowSuccessAlert(false), 5000)
-  }
-
-  const handleUpdateDeliveryTime = () => {
-    const [hours, minutes] = selectedTime.split(":").map(Number)
-    const newDate = new Date(selectedDate)
-    newDate.setHours(hours, minutes)
-
-    setOrder({
-      ...order,
-      estimatedDelivery: newDate,
-    })
-    setShowDateDialog(false)
-    setAlertMessage("Delivery time has been successfully updated")
     setShowSuccessAlert(true)
     setTimeout(() => setShowSuccessAlert(false), 5000)
   }
@@ -217,7 +160,7 @@ export default function OrderDetails() {
                     onClick={() => setShowDatePicker(!showDatePicker)}
                   >
                     <span className="mr-2">📅</span>
-                    {selectedDate ? formatDate(selectedDate, "PPP") : "Select date"}
+                    {selectedDate ? selectedDate : "Select date"}
                   </button>
                   {showDatePicker && (
                     <div className="absolute mt-2 bg-white border border-gray-200 rounded-md shadow-lg p-4 z-10">
@@ -255,7 +198,6 @@ export default function OrderDetails() {
               </button>
               <button
                 className="px-4 py-2 border border-transparent rounded-md text-sm font-medium text-white bg-blue-600 hover:bg-blue-700"
-                onClick={handleUpdateDeliveryTime}
               >
                 Update Delivery
               </button>
@@ -322,7 +264,7 @@ export default function OrderDetails() {
                 <Timer className="h-6 w-6 text-indigo-500 mt-3" />
                 <div>
                   <p className="font-medium">Service Booked on</p>
-                  <p className="text-sm text-gray-500">{formatDate(order.date, "MMMM d, yyyy")}</p>
+                  <p className="text-sm text-gray-500">{order.date}</p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
@@ -330,7 +272,7 @@ export default function OrderDetails() {
                 <div>
                   <p className="font-medium">Service Delivery time</p>
                   <p className="text-sm text-gray-500">
-                    {formatDate(order.estimatedDelivery, "MMMM d, yyyy 'at' h:mm a")}
+                    {order.estimatedDelivery}
                   </p>
                 </div>
               </div>
