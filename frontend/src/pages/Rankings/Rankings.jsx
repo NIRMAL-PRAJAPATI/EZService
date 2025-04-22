@@ -1,8 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { BsList } from "react-icons/bs"
-import { IoIosArrowDown } from "react-icons/io"
+import { List, ChevronDown } from "lucide-react"
 // Fix the import paths to match your project structure
 import ServiceList from "./ServiceList"
 import RankingCard from "./Ranking-cards"
@@ -49,7 +48,7 @@ const Rankings = () => {
             onClick={() => setIsServiceListOpen(true)}
             className="flex items-center border py-2 px-3 rounded tracking-wide bg-primary text-white"
           >
-            <BsList className="mr-1" />
+            <List className="mr-1 w-5 h-5" />
             List
           </button>
         </div>
@@ -65,7 +64,7 @@ const Rankings = () => {
         <div className="flex justify-center mt-6">
           <button className="flex items-center text-center text-primary font-semibold">
             Load More
-            <IoIosArrowDown className="ml-1 mt-0.5" />
+            <ChevronDown className="ml-1 mt-0.5 w-4 h-4" />
           </button>
         </div>
       </div>
