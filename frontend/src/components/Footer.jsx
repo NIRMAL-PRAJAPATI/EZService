@@ -1,6 +1,11 @@
 import { Mail, Phone } from "lucide-react";
 import React from "react";
 import resources from "../resource";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { motion } from "framer-motion";
+
 const Footer = () => {
     return (
         <footer className="bg-gray-900 text-white pt-12 pb-5">
