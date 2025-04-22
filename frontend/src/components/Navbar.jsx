@@ -99,12 +99,13 @@ const Navbar = () => {
               </div>
 
               <Link
-                to="service_ranking.html"
+                to="/rankings"
                 className="text-gray-600 hover:text-black"
               >
                 Ranking
               </Link>
               <Link
+              
                 to="/complaint"
                 className="text-gray-600 hover:text-black"
               >
