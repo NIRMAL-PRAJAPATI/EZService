@@ -10,9 +10,10 @@ const About = lazy(() => import('./pages/About'));
 const Explore = lazy(() => import('./pages/Explore'));
 const Complaint = lazy(() => import('./pages/Complaint'));
 const Order = lazy(() => import('./pages/Order'));
+const Rankings = lazy(()=> import('./pages/Rankings/Rankings'))
 import Loading from './components/Loading'
 import OrderDetails from './pages/OrderDetails';
-import Rankings from './pages/Rankings/Rankings'
+// import Rankings from './pages/Rankings/Rankings'
 const ErrorPage = lazy(() => import('./pages/ErrorPage'));
 
 function App() {
