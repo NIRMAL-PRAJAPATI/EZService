@@ -42,16 +42,16 @@ const Navbar = () => {
             <div></div>
             {/* Links */}
             <div className="flex flex-col md:flex-row md:space-x-6 space-y-4 tracking-wide md:space-y-0">
-              <Link to="/" className="text-indigo-600 font-semibold">
+              <Link onClick={toggleMenu} to="/" className="text-indigo-600 font-semibold">
                 Home
               </Link>
-              <Link
+              <Link onClick={toggleMenu}
                 to="/explore"
                 className="text-gray-600 hover:text-black"
               >
                 Explore
               </Link>
-              <Link
+              <Link onClick={toggleMenu}
                 to="/services"
                 className="text-gray-600 hover:text-black"
               >
@@ -80,37 +80,37 @@ const Navbar = () => {
                     dropdownOpen ? "block" : "hidden"
                   }`}
                 >
-                  <li className="hover:text-black cursor-pointer">
+                  <li><Link className="hover:text-black cursor-pointer" to="/errorpage" onClick={toggleMenu}>
                     Home Renovation
-                  </li>
-                  <li className="hover:text-black cursor-pointer">
+                  </Link></li>
+                  <li><Link className="hover:text-black cursor-pointer" to="/errorpage" onClick={toggleMenu}>
                     Wedding Requisites
-                  </li>
-                  <li className="hover:text-black cursor-pointer">
+                  </Link></li>
+                  <li><Link className="hover:text-black cursor-pointer" to="/errorpage" onClick={toggleMenu}>
                     Home Appliances
-                  </li>
-                  <li className="hover:text-black cursor-pointer">
+                  </Link></li>
+                  <li><Link className="hover:text-black cursor-pointer" to="/errorpage" onClick={toggleMenu}>
                     Beauty & Spa
-                  </li>
-                  <li className="hover:text-black cursor-pointer">
+                  </Link></li>
+                  <li><Link className="hover:text-black cursor-pointer" to="/errorpage" onClick={toggleMenu}>
                     Party Things
-                  </li>
+                  </Link></li>
                 </ul>
               </div>
 
-              <Link
+              <Link onClick={toggleMenu}
                 to="service_ranking.html"
                 className="text-gray-600 hover:text-black"
               >
                 Ranking
               </Link>
-              <Link
+              {/* <Link onClick={toggleMenu}
                 to="/complaint"
                 className="text-gray-600 hover:text-black"
               >
                 Complaint
-              </Link>
-              <Link
+              </Link> */}
+              <Link onClick={toggleMenu}
                 to="/about"
                 className="text-gray-600 hover:text-black"
               >
@@ -120,13 +120,13 @@ const Navbar = () => {
 
             {/* Account Button */}
             <div className="flex md:space-x-1 mt-4 md:mt-0">
-            <Link
-                to="/profile"
+            <Link onClick={toggleMenu}
+                to="/order"
                 className="p-2 text-gray-700"
               >
                 <LucideShoppingBag className="h-5 w-5 transition duration-150" />
               </Link>
-              <Link
+              <Link onClick={toggleMenu}
                 to="/profile"
                 className="p-2 text-gray-700"
               >

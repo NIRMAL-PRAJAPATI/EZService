@@ -1,23 +1,17 @@
-import React from 'react'
+import { AlignLeft, Search, SlidersHorizontal, Star, XIcon } from 'lucide-react'
+import React, { useState } from 'react'
 
 function ServicesPage() {
+  const [menuOpen, setMenuOpen] = useState(true);
+
   return (
-      <div className="text-black mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-5 gap-1">
+      <div className="text-black mx-auto bg-gray-100">
+        <div className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-5">
           {/* Left Sidebar - Services List */}
-          <div
-            id="serviceDiv"
-            className="lg:col-span-1 bg-white p-1 shadow-md h-fit absolute md:relative z-10 hidden md:block"
-          >
-            <div className="flex justify-between">
-              <i
-                data-lucide="x"
-                id="closeServiceDivBtn"
-                className="md:hidden text-gray-500 hover:text-indigo-500 cursor-pointer"
-              />
-            </div>
-            <ul className="space-y-1 overflow-y-scroll h-[90vh]">
-              <li className="p-2 border-b border-indigo-500 bg-indigo-500/10 rounded-t cursor-pointer hover:bg-gray-50 transition-colors">
+          <div className={`lg:col-span-1 bg-white px-1 pt-2 h-fit absolute md:relative z-10 ${menuOpen ? 'block' : 'hidden'}`}>
+              <XIcon onClick={() => setMenuOpen(false)} className="md:hidden text-gray-500 hover:text-indigo-500 cursor-pointer ml-1" />
+            <ul className="overflow-y-scroll h-[85vh] sm:h-[90vh]">
+              <li className="p-2 bg-indigo-500/8 rounded-t cursor-pointer hover:bg-gray-50 transition-colors">
                 <h3 className="font-semibold text-indigo-500">Home Cleaning</h3>
                 <p className="text-xs text-gray-600">
                   Professional cleaning services for your home needs
@@ -76,13 +70,9 @@ function ServicesPage() {
           {/* Right Content Area */}
           <div className="sm:col-span-3 md:col-span-3 lg:col-span-4 space-y-4 overflow-y-scroll h-[90vh] z-0">
             {/* Search and Filter Section */}
-            <div className="bg-white py-2 px-4 rounded-lg w-100 m-2">
-              <div className="flex gap-4">
-                <i
-                  data-lucide="align-left"
-                  id="openServiceDivBtn"
-                  className="md:hidden mt-2 text-gray-500 hover:text-indigo-500 cursor-pointer"
-                />
+            <div className="bg-white pb-2 px-2 sm:px-3 w-full mb-2">
+              <div className="flex">
+                <AlignLeft onClick={() => setMenuOpen(true)} id="openServiceDivBtn" className="md:hidden mt-2 mr-2 text-gray-500 hover:text-indigo-500 cursor-pointer" />
             {/* Search Box */}
                 <div className="flex-1">
                   <div className="relative">
@@ -91,67 +81,46 @@ function ServicesPage() {
                       placeholder="Search service providers..."
                       className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:border-indigo-500"
                     />
-                    <i
-                      data-lucide="search"
-                      className="absolute left-2 top-2 text-indigo-500"
-                    />
+                    <Search className="absolute left-2 top-2 text-indigo-500" />
                   </div>
                 </div>
                 {/* Filter Dropdown */}
-                <i
-                  data-lucide="sliders-horizontal"
-                  className="mt-2 text-gray-500 hover:text-indigo-500 cursor-pointer"
-                />
+                <SlidersHorizontal className="mt-2 ml-2 text-gray-500 hover:text-indigo-500 cursor-pointer" />
               </div>
             </div>
             {/* Service Providers Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 px-2 md:px-0 sm:m-2">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 lg:gap-3 px-2 md:px-0 sm:m-2">
              {/* Service Provider Card 1 */}
-              <a
-                href="/frontend/views/user/service_profile.html"
-                className="bg-white overflow-hidden rounded-lg shadow-sm"
-              >
+              <a href="/frontend/views/user/service_profile.html" className="bg-white overflow-hidden rounded-md border border-gray-200 hover:border-indigo-500">
                 <div className="items-start">
-                  <div className="w-full bg-gray-100 h-30">
+                  <div className="w-full bg-gray-100 h-26">
                     <img
                       src="https://c8.alamy.com/comp/DERFBR/colourful-indian-shop-in-puttaparthi-andhra-pradesh-india-DERFBR.jpg"
                       alt="Provider"
                       className="w-full h-full object-cover"
                     />
                   </div>
-                  <div className="flex-1 pb-3 pr-1 sm:px-3">
-                    <span className="text-green-500 bg-gray-100 font-semibold rounded-full px-2 text-[10px] ml-1">
+                  <div className="flex-1 pb-3 px-1 sm:px-2">
+                    {/* <span className="text-green-500 bg-gray-100 font-semibold rounded-full px-2 text-[10px] ml-1">
                       Available
-                    </span>
-                    <h3 className="font-semibold text-md leading-none sm:text-lg sm:leading-none">
+                    </span> */}
+                    <h3 className="font-semibold text-md leading-none py-1" title='Ananta Plumbing Service'>
                       Ananta Plumbing Service
                     </h3>
                     <p className="text-sm text-gray-600 mb-1 font-semibold">
                       ₹4100
                     </p>
-                    <div className="flex items-center space-x-1 text-[12px]">
+                    <div className="flex items-center text-[12px]">
                       <span className="text-gray-500">
                         Ahmedabad, Gujarat, India
                       </span>
                     </div>
-                    <div className="flex items-center text-indigo-500 gap-1 mt-1">
-                      <i
-                        data-lucide="star"
-                        className="h-4 w-4 fill-indigo-500 inline-block"
-                      />
-                      <i
-                        data-lucide="star"
-                        className="h-4 w-4 fill-indigo-500 inline-block"
-                      />
-                      <i
-                        data-lucide="star"
-                        className="h-4 w-4 fill-indigo-500 inline-block"
-                      />
-                      <i
-                        data-lucide="star"
-                        className="h-4 w-4 fill-indigo-500 inline-block"
-                      />
-                      <i data-lucide="star" className="h-4 w-4 inline-block" />
+                    <div className="flex items-center text-indigo-500 gap-0.5 mt-1">
+                      <Star className="h-3 w-3 fill-indigo-500 inline-block" />
+                      <Star className="h-3 w-3 fill-indigo-500 inline-block" />
+                      <Star className="h-3 w-3 fill-indigo-500 inline-block" />
+                      <Star className="h-3 w-3 fill-indigo-500 inline-block" />
+                      <Star className="h-3 w-3 inline-block" />
                     </div>
                   </div>
                 </div>

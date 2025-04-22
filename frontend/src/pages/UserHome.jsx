@@ -8,6 +8,7 @@ import TopCity from "../components/Home/TopCity";
 import Sponser from "../components/Home/Sponser";
 import Template from "../components/Home/Template";
 import LRAlert from "../components/Home/LRAlert";
+import Card from "../components/Home/Cards";
 
 function UserHome() {
   return (
@@ -16,7 +17,7 @@ function UserHome() {
       {/* <Search /> */}
       <Category />
       <Services />
-      <div className="p-5">
+      <div className="p-5 container mx-auto">
       <div className="bg-indigo-500/80 rounded-xl shadow-lg overflow-hidden flex w-full sm:h-100">
       {/* Left Content */}
       <div className="p-8 flex flex-col justify-center sm:w-1/2">
@@ -38,8 +39,8 @@ function UserHome() {
       </div>
     </div>
     </div>
-
-    <div className="p-5">
+<Card />
+    <div className="p-5 container mx-auto">
       <div className="bg-indigo-500/80 rounded-xl shadow-lg overflow-hidden flex w-full sm:h-100">
       {/* Right Image */}
       <div className="w-1/2 hidden sm:block">

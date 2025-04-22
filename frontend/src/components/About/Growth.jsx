@@ -2,7 +2,7 @@ import React from 'react'
 
 function Growth() {
   return (
-    <section className="bg-gray-50 pt-10 pb-1 text-black">
+    <section className="bg-gray-100 pt-10 pb-1 text-black">
                 <h1 className="text-2xl md:text-4xl lg:text-4xl font-bold text-center mb-16">
                     Change Lifestyle
                     <span className="block text-indigo-500 text-3xl md:text-6xl">Those Who've Made Life Easy</span>

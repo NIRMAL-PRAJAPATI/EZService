@@ -19,7 +19,7 @@ import ProviderAnno from "../components/Explore/ProviderAnno";
 
 const Explore = () => (
   <>
-    <main className=" mx-auto px-4 sm:px-6 lg:px-8 text-black">
+    <main className=" mx-auto px-4 sm:px-6 lg:px-8 text-black bg-gray-50">
       {/* Filters */}
       <Header />
 

@@ -1,19 +1,24 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import './App.css'
 import Navbar from './components/Navbar'
-import UserHome from './pages/UserHome'
-import Footer from './components/Footer'
-import ProfilePage from './pages/Pofile'
-import ServicePage from './pages/ServicesPage'
-import About from './pages/About'
-import Explore from './pages/Explore'
-import Complaint from './pages/Complaint'
+import { lazy, Suspense } from 'react'
+const UserHome = lazy(() => import('./pages/UserHome'));
+const Footer = lazy(() => import('./components/Footer'));
+const ProfilePage = lazy(() => import('./pages/Pofile'));
+const ServicePage = lazy(() => import('./pages/ServicesPage'));
+const About = lazy(() => import('./pages/About'));
+const Explore = lazy(() => import('./pages/Explore'));
+const Complaint = lazy(() => import('./pages/Complaint'));
+const Order = lazy(() => import('./pages/Order'));
+import Loading from './components/Loading'
+const ErrorPage = lazy(() => import('./pages/ErrorPage'));
 
 function App() {
   return (
     <Router>
-      <div className="w-full min-h-screen bg-gray-50">
+      <div className="w-full min-h-screen">
         <Navbar />
+        <Suspense fallback={<Loading />}>
         <Routes>
           <Route index element={<UserHome />} />
           <Route path="/about" element={<About />} />
@@ -21,7 +26,10 @@ function App() {
           <Route path="/services" element={<ServicePage />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/complaint" element={<Complaint />} />
+          <Route path="/order" element={<Order />} />
+          <Route path="/errorpage" element={<ErrorPage />} />
         </Routes>
+        </Suspense>
         <Footer/>
       </div>
     </Router>
