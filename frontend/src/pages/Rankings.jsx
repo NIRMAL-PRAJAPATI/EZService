@@ -1,11 +1,8 @@
-"use client"
-
 import { useState } from "react"
 import { List, ChevronDown } from "lucide-react"
 // Fix the import paths to match your project structure
-import ServiceList from "./ServiceList"
-import RankingCard from "./Ranking-cards"
-import "./Rankings.css"
+import ServiceList from "../components/Rankings/ServiceList"
+import RankingCard from "../components/Rankings/Ranking-cards"
 
 const Rankings = () => {
   const [isServiceListOpen, setIsServiceListOpen] = useState(false)
@@ -46,7 +43,7 @@ const Rankings = () => {
           <button
             id="openServiceList"
             onClick={() => setIsServiceListOpen(true)}
-            className="flex items-center border py-2 px-3 rounded tracking-wide bg-primary text-white"
+            className="flex items-center border py-2 px-3 rounded tracking-wide bg-indigo-500 text-white"
           >
             <List className="mr-1 w-5 h-5" />
             List
@@ -62,7 +59,7 @@ const Rankings = () => {
 
         {/* Load More Button */}
         <div className="flex justify-center mt-6">
-          <button className="flex items-center text-center text-primary font-semibold">
+          <button className="flex items-center text-center text-indigo-500 font-semibold">
             Load More
             <ChevronDown className="ml-1 mt-0.5 w-4 h-4" />
           </button>
