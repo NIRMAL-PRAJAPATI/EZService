@@ -88,12 +88,12 @@ const OrderPage = () => {
   const currentOrders = hasCurrentOrders ? mockCurrentOrders : []
 
   return (
-    <Link to={'/orders/orderdetails'}>
+   
     <div className="max-w-5xl mx-auto px-4 py-4">
       <section>
         <h2 className="text-xl font-semibold mb-4">Current Orders</h2>
         {currentOrders.length > 0 ? (
-          currentOrders.map((order) => <OrderItem key={order.id} order={order} />)
+          currentOrders.map((order) =>  <Link to={'/orders/orderdetails'}> <OrderItem key={order.id} order={order} /> </Link>)
         ) : (
           <NoOrders />
         )}
@@ -106,7 +106,6 @@ const OrderPage = () => {
         ))}
       </section>
     </div>
-    </Link>
   )
 }
 

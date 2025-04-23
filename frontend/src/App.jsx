@@ -13,6 +13,7 @@ const Order = lazy(() => import('./pages/Order'));
 const Rankings = lazy(()=> import('./pages/Rankings/Rankings'))
 import Loading from './components/Loading'
 import OrderDetails from './pages/OrderDetails';
+import BookOrderPage from './pages/BookOrder';
 // import Rankings from './pages/Rankings/Rankings'
 const ErrorPage = lazy(() => import('./pages/ErrorPage'));
 
@@ -33,6 +34,7 @@ function App() {
           <Route path="/order" element={<Order />} />
           <Route path="/errorpage" element={<ErrorPage />} />
           <Route path="/orders/orderdetails" element={<OrderDetails />} />
+          <Route path='/book' element={<BookOrderPage />} />
         </Routes>
         </Suspense>
         <Footer/>

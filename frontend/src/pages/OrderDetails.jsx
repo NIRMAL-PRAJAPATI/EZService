@@ -1,7 +1,8 @@
 "use client"
 
-import { Box, Contact, CreditCardIcon, Home, LucideTimerReset, Timer, TimerResetIcon, Truck } from "lucide-react"
+import { Box, Contact, CreditCardIcon, Home, LucideTimerReset, Store, Timer } from "lucide-react"
 import { useState } from "react"
+import { Link } from "react-router-dom"
 
 // Sample order data
 const orderData = {
@@ -133,7 +134,7 @@ export default function OrderDetails() {
                 Edit Delivery Time
               </button>
               <button
-                className="inline-flex items-center px-4 py-2 border border-transparent rounded-md text-sm font-medium text-white bg-red-600 hover:bg-red-700"
+                className="inline-flex items-center px-4 py-2 border border-transparent rounded-md text-sm font-medium text-white bg-red-500 hover:bg-red-700"
                 onClick={() => setShowCancelDialog(true)}
               >
                 Cancel Order
@@ -145,7 +146,7 @@ export default function OrderDetails() {
 
       {/* Date Dialog */}
       {showDateDialog && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black/50 bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
             <h2 className="text-lg font-semibold">Update Delivery Time</h2>
             <p className="text-sm text-gray-500 mt-1">
@@ -197,7 +198,7 @@ export default function OrderDetails() {
                 Cancel
               </button>
               <button
-                className="px-4 py-2 border border-transparent rounded-md text-sm font-medium text-white bg-blue-600 hover:bg-blue-700"
+                className="px-4 py-2 border border-transparent rounded-md text-sm font-medium text-white bg-indigo-500 hover:bg-indigo-400"
               >
                 Update Delivery
               </button>
@@ -208,7 +209,7 @@ export default function OrderDetails() {
 
       {/* Cancel Dialog */}
       {showCancelDialog && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black/50 bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
             <h2 className="text-lg font-semibold">Cancel Order</h2>
             <p className="text-sm text-gray-500 mt-1">
@@ -239,7 +240,7 @@ export default function OrderDetails() {
                 Go Back
               </button>
               <button
-                className="px-4 py-2 border border-transparent rounded-md text-sm font-medium text-white bg-red-600 hover:bg-red-700"
+                className="px-4 py-2 border border-transparent rounded-md text-sm font-medium text-white bg-red-500 hover:bg-red-400"
                 onClick={handleCancelOrder}
               >
                 Confirm Cancellation
@@ -249,7 +250,7 @@ export default function OrderDetails() {
         </div>
       )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 pt-1">
         {/* Order Summary and Status */}
         <div className="bg-white border border-gray-200 rounded-lg lg:col-span-3 col-span-3">
           <div className="px-6 pt-4">
@@ -339,13 +340,14 @@ export default function OrderDetails() {
                 <p className="text-sm text-gray-700">{order.customer.phone}</p>
               </div>
               <div>
-                <h3 className="font-medium flex"><Home className="text-indigo-500 h-4 w-4 mr-1 mt-1" /> Shop Address</h3>
+                <h3 className="font-medium flex"><Store className="text-indigo-500 h-4 w-4 mr-1 mt-1" /> Shop Address</h3>
                 <div className="items-start gap-2 text-gray-700">
                     <p>{order.shippingAddress.street} {order.shippingAddress.city}, {order.shippingAddress.state} {order.shippingAddress.zipCode}</p>
                     <p>{order.shippingAddress.country}</p>
                 </div>
               </div>
             </div>
+            <Link to={'/book'} className="hover:text-gray-500 cursor-pointer mt-3 text-indigo-500 text-xs">Open Profile</Link>
           </div>
         </div>
 
@@ -367,6 +369,7 @@ export default function OrderDetails() {
                 <div className="items-start gap-2 text-gray-700">
                     <p>{order.shippingAddress.street} {order.shippingAddress.city}, {order.shippingAddress.state} {order.shippingAddress.zipCode}</p>
                     <p>{order.shippingAddress.country}</p>
+                    <button className="hover:text-gray-500 cursor-pointer mt-3 text-indigo-500 text-xs">Change Address</button>
                 </div>
               </div>
             </div>
