@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useRef, useEffect } from "react"
-import { ChevronLeft, ChevronRight, Plus, Check, CalendarIcon, ChevronDown, Info } from "lucide-react"
+import { ChevronLeft, ChevronRight, Plus, Check, CalendarIcon, ChevronDown, Info, Plug, PartyPopper, Wrench, Cake, Dumbbell, ScanFaceIcon, CircleCheckBigIcon } from "lucide-react"
 import { format } from "date-fns"
 
 const BookOrderPage = () => {
@@ -16,6 +16,7 @@ const BookOrderPage = () => {
   const [showTimeDropdown, setShowTimeDropdown] = useState(false)
   const calendarRef = useRef(null)
   const timeDropdownRef = useRef(null)
+  const [paymentOnCash, setPaymentOnCash] = useState(true);
 
   // Close dropdowns when clicking outside
   useEffect(() => {
@@ -130,6 +131,7 @@ const BookOrderPage = () => {
   }
 
   return (
+    <div className="bg-gray-50">
     <div className="max-w-4xl px-2 py-5 md:mx-auto">
 
       {!isOrderConfirmed ? (
@@ -223,7 +225,7 @@ const BookOrderPage = () => {
                             <li key={slot}>
                               <button
                                 type="button"
-                                className={`w-full text-left px-3 py-2 hover:bg-blue-50 ${time === slot ? "bg-blue-50 text-blue-600" : ""}`}
+                                className={`w-full text-left px-3 py-2 hover:bg-indigo-50 ${time === slot ? "bg-indigo-50 text-indigo-500" : ""}`}
                                 onClick={() => {
                                   setTime(slot)
                                   setShowTimeDropdown(false)
@@ -239,7 +241,7 @@ const BookOrderPage = () => {
                   </div>
                 </div>
               </div>
-              <div className="px-4 pb-4 flex justify-end">
+              <div className="p-4 border-t border-gray-300 flex justify-end">
                 <button
                   onClick={handleNext}
                   disabled={!time}
@@ -419,7 +421,7 @@ const BookOrderPage = () => {
                   </div>
                 )}
               </div>
-              <div className="p-4 border-t flex justify-between">
+              <div className="p-4 border-t border-gray-300 flex justify-between">
                 <button
                   type="button"
                   onClick={handleBack}
@@ -449,14 +451,15 @@ const BookOrderPage = () => {
                 <h2 className="text-xl font-semibold">Payment Method</h2>
                 <p className="text-gray-600 text-sm">Choose how you'd like to pay</p>
               </div>
-              <div className="flex gap-2 px-5 py-3 rounded-sm bg-indigo-500 text-white m-2">
-                <input type="radio" name="cashonservicetime" />
-                <p>Cash on Service Time</p>
-              </div>
-              <div className="flex gap-2 px-5 py-3 rounded-sm bg-indigo-500 text-white m-2">
-                <input type="radio" name="cashonservicetime" />
-                <p>Others</p>
-              </div>
+              <label className={`flex gap-2 px-5 py-3 rounded-sm border border-gray-300 hover:border-gray-500 m-2 ${paymentOnCash ? 'bg-indigo-500 text-white border border-indigo-500' : 'bg-transperent'}`} onClick={() => setPaymentOnCash(true)}>
+                <input type="radio" name="cashonservicetime" defaultChecked className="h-4 w-4 mt-1" />
+                Cash on Service Time
+              </label> 
+              <label className={`flex gap-2 px-5 py-3 rounded-sm border border-gray-300 hover:border-gray-500 m-2 ${!paymentOnCash ? 'bg-indigo-500 text-white  border border-indigo-500' : 'bg-transperent'}`} onClick={() => setPaymentOnCash(false)}>
+                <input type="radio" name="cashonservicetime" className="h-4 w-4 mt-1" />
+                Others
+              </label> 
+              {!paymentOnCash && ( 
               <div className="p-4 space-y-4">
                 <div className="">
                   <div className="flex">
@@ -464,7 +467,7 @@ const BookOrderPage = () => {
                       type="button"
                       onClick={() => setPaymentMethod("credit-card")}
                       className={`px-4 py-2 text-center flex-1 ${
-                        paymentMethod === "credit-card" ? "border-b-2 border-blue-600 text-blue-600" : "text-gray-500"
+                        paymentMethod === "credit-card" ? "border-b-2 border-indigo-500 text-indigo-500" : "text-gray-500"
                       }`}
                     >
                       Credit Card
@@ -473,7 +476,7 @@ const BookOrderPage = () => {
                       type="button"
                       onClick={() => setPaymentMethod("paypal")}
                       className={`px-4 py-2 text-center flex-1 ${
-                        paymentMethod === "paypal" ? "border-b-2 border-blue-600 text-blue-600" : "text-gray-500"
+                        paymentMethod === "paypal" ? "border-b-2 border-indigo-500 text-indigo-500" : "text-gray-500"
                       }`}
                     >
                       UPI
@@ -482,7 +485,7 @@ const BookOrderPage = () => {
                       type="button"
                       onClick={() => setPaymentMethod("bank-transfer")}
                       className={`px-4 py-2 text-center flex-1 ${
-                        paymentMethod === "bank-transfer" ? "border-b-2 border-blue-600 text-blue-600" : "text-gray-500"
+                        paymentMethod === "bank-transfer" ? "border-b-2 border-indigo-500 text-indigo-500" : "text-gray-500"
                       }`}
                     >
                       Bank Transfer
@@ -552,7 +555,7 @@ const BookOrderPage = () => {
                     <p className="mb-4">You'll be redirected to PayPal to complete your payment.</p>
                     <button
                       type="button"
-                      className="w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                      className="w-full px-4 py-2 bg-indigo-500 text-white rounded-md hover:bg-indigo-400"
                     >
                       Continue to PayPal
                     </button>
@@ -588,7 +591,8 @@ const BookOrderPage = () => {
                   </div>
                 )}
               </div>
-              <div className="p-4 border-t flex justify-between">
+              )}
+              <div className="p-4 border-t border-gray-300 flex justify-between">
                 <button
                   type="button"
                   onClick={handleBack}
@@ -599,7 +603,7 @@ const BookOrderPage = () => {
                 <button
                   type="button"
                   onClick={handleNext}
-                  className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                  className="flex items-center px-4 py-2 bg-indigo-500 text-white rounded-md hover:bg-indigo-400"
                 >
                   Next <ChevronRight className="ml-2 h-4 w-4" />
                 </button>
@@ -608,15 +612,15 @@ const BookOrderPage = () => {
           )}
 
           {step === 4 && (
-            <div className="bg-white rounded-lg shadow-md overflow-hidden">
-              <div className="p-4 border-b">
+            <div className="bg-white rounded-lg border border-gray-300 overflow-hidden">
+              <div className="p-4 border-b border-gray-300">
                 <h2 className="text-xl font-semibold">Order Confirmation</h2>
                 <p className="text-gray-600 text-sm">Review your order details before confirming</p>
               </div>
-              <div className="p-4 space-y-6">
+              <div className="p-4 space-y-4">
                 <div className="space-y-2">
                   <h3 className="font-medium">Delivery Information</h3>
-                  <div className="bg-gray-100 p-3 rounded-md">
+                  <div className="bg-gray-100 p-3 md:p-5 rounded-sm">
                     <p>Date: {date ? format(date, "PPP") : "Not selected"}</p>
                     <p>Time: {time || "Not selected"}</p>
                   </div>
@@ -624,19 +628,14 @@ const BookOrderPage = () => {
 
                 <div className="space-y-2">
                   <h3 className="font-medium">Shipping Address</h3>
-                  <div className="bg-gray-100 p-3 rounded-md">
+                  <div className="bg-gray-100 p-3 md:p-5 rounded-sm">
                     {addressOption.startsWith("existing") ? (
                       (() => {
                         const addressId = Number.parseInt(addressOption.split("-")[1])
                         const address = existingAddresses.find((a) => a.id === addressId)
                         return address ? (
                           <>
-                            <p>{address.name}</p>
-                            <p>{address.street}</p>
-                            <p>
-                              {address.city}, {address.state} {address.zip}
-                            </p>
-                            <p>{address.country}</p>
+                            <p>{address.name} {address.street} {address.city}, {address.state} {address.zip} {address.country}</p>
                           </>
                         ) : (
                           <p>No address selected</p>
@@ -650,7 +649,7 @@ const BookOrderPage = () => {
 
                 <div className="space-y-2">
                   <h3 className="font-medium">Payment Method</h3>
-                  <div className="bg-gray-100 p-3 rounded-md">
+                  <div className="bg-gray-100 p-3 md:p-5 rounded-sm">
                     <p>
                       {paymentMethod === "credit-card" && "Credit Card"}
                       {paymentMethod === "paypal" && "PayPal"}
@@ -661,20 +660,22 @@ const BookOrderPage = () => {
 
                 <div className="space-y-2">
                   <h3 className="font-medium">Order Summary</h3>
-                  <div className="bg-gray-100 p-3 rounded-md">
+                  <div className="bg-gray-100 p-3 md:p-5 rounded-sm">
                     <div className="flex justify-between">
-                      <span>
-                        {bookDetails.title} × {bookDetails.quantity}
-                      </span>
-                      <span>${(bookDetails.price * bookDetails.quantity).toFixed(2)}</span>
+                      <span>Provider Service Charge</span>
+                      <span>₹{(bookDetails.price).toFixed(2)}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span>Shipping</span>
-                      <span>$4.99</span>
+                      <span>Platform Charge</span>
+                      <span>₹4.99</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Tex</span>
+                      <span>₹8.64</span>
                     </div>
                     <div className="flex justify-between font-bold mt-2 pt-2 border-t">
                       <span>Total</span>
-                      <span>${(bookDetails.price * bookDetails.quantity + 4.99).toFixed(2)}</span>
+                      <span>₹{(bookDetails.price + 4.99 + 8.64).toFixed(2)}</span>
                     </div>
                   </div>
                 </div>
@@ -686,11 +687,11 @@ const BookOrderPage = () => {
                   <textarea
                     id="order-notes"
                     placeholder="Any special instructions for delivery?"
-                    className="w-full px-3 py-2 border border-gray-300 focus:border-indigo-500 outline-none rounded-md min-h-[100px]"
+                    className="w-full px-3 py-2 border border-gray-300 focus:border-indigo-500 outline-none rounded-sm min-h-[100px]"
                   ></textarea>
                 </div>
               </div>
-              <div className="p-4 border-t flex justify-between">
+              <div className="p-4 border-t border-gray-300 flex justify-between">
                 <button
                   type="button"
                   onClick={handleBack}
@@ -701,7 +702,7 @@ const BookOrderPage = () => {
                 <button
                   type="button"
                   onClick={handleNext}
-                  className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                  className="flex items-center px-4 py-2 bg-indigo-500 text-white rounded-md hover:bg-indigo-400"
                 >
                   Confirm Order
                 </button>
@@ -710,40 +711,49 @@ const BookOrderPage = () => {
           )}
         </>
       ) : (
-        <div className="bg-white rounded-lg shadow-md overflow-hidden">
-          <div className="p-4 border-b text-center">
-            <div className="mx-auto bg-green-100 rounded-full p-3 w-16 h-16 flex items-center justify-center mb-4">
-              <Check className="h-8 w-8 text-green-600" />
+          <main className="text-center flex justify-center items-center w-full h-[85vh] p-3">
+            {/* icons */}
+            <div className="text-gray-400 overflow-hidden">
+              <Plug className="absolute top-[5%] left-60 rotate-[330deg] z-0" />
+              <PartyPopper className="absolute top-[40%] right-20 z-0" />
+              <Wrench className="absolute top-[90%] right-60 rotate-[10deg] z-0" />
+              <Cake className="absolute top-[15%] right-[25vw] rotate-[330deg] z-0" />
+              <Dumbbell className="absolute top-[77%] left-20 rotate-[330deg] z-0" />
+              <ScanFaceIcon className="absolute top-[30%] left-10 rotate-[330deg] z-0" />
             </div>
-            <h2 className="text-2xl font-semibold">Order Confirmed!</h2>
-            <p className="text-gray-600 text-sm">Thank you for your order. Your order number is #12345.</p>
-          </div>
-          <div className="p-4 space-y-4">
-            <div className="border rounded-md p-4">
-              <h3 className="font-medium mb-2">Order Details</h3>
-              <p>
-                Your book will be delivered on {date ? format(date, "PPP") : "the selected date"} between{" "}
-                {time || "the selected time"}.
+            <div className="p-4 sm:p-10 z-10">
+              <CircleCheckBigIcon className="mx-auto mb-2 h-16 w-16 text-indigo-500" />
+              <h1 className="text-3xl font-extrabold text-indigo-500 tracking-wide">
+                Service Request Sent
+              </h1>
+              <p className="text-gray-600 mt-1">
+                Your service request has been sent successfully. Service provider will
+                give there answer soon. you'le be ready to take your service
               </p>
-              <p className="mt-2">We've sent a confirmation email with all the details to your email address.</p>
+              <div className="gap-2 sm:space-x-2 mt-10 flex flex-col sm:block">
+                <a
+                  href="index.html"
+                  className="text-white bg-indigo-500 px-5 py-3 font-semibold rounded border border-indigo-500"
+                >Go Back to Home</a>
+                <a
+                  href="user_servicelist.html"
+                  className="border border-indigo-500 text-indigo-500 px-5 py-3 font-semibold rounded"
+                > Orders</a>
+              </div>
+              <p className="mt-5 text-gray-500">
+                You will be redirected to main page in{" "}
+                <span
+                  id="secondCounter"
+                  className="border border-red-500 text-red-500 tracking-tight font-bold"
+                >
+                  15
+                </span>{" "}
+                seconds
+              </p>
             </div>
-            <div className="text-center space-y-2">
-              <p>Have questions about your order?</p>
-              <button type="button" className="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50">
-                Contact Support
-              </button>
-            </div>
-          </div>
-          <div className="p-4 border-t flex justify-center">
-            <button type="button" className="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50 mr-2">
-              View Order Status
-            </button>
-            <button type="button" className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
-              Continue Shopping
-            </button>
-          </div>
-        </div>
+          </main>
       )}
+    </div>
     </div>
   )
 }
