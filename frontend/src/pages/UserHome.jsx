@@ -13,7 +13,7 @@ import Card from "../components/Home/Cards";
 function UserHome() {
   return (
     <div>
-      {/* <HeroSection /> */}
+      <HeroSection />
       <Search />
       <Category />
       <Services />
