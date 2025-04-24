@@ -17,6 +17,9 @@ const BookOrderPage = () => {
   const calendarRef = useRef(null)
   const timeDropdownRef = useRef(null)
   const [paymentOnCash, setPaymentOnCash] = useState(true);
+  const [orderSuccessCount, setOrderSucccessCount] = useState(true);
+  useEffect(() => {
+  })
 
   // Close dropdowns when clicking outside
   useEffect(() => {
