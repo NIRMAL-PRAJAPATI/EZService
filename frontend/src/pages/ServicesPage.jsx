@@ -79,7 +79,7 @@ function ServicesPage() {
                     <input
                       type="text"
                       placeholder="Search service providers..."
-                      className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:border-indigo-500"
+                      className="w-full pl-10 pr-4 py-2 border-b border-gray-300 focus:outline-none focus:border-indigo-500"
                     />
                     <Search className="absolute left-2 top-2 text-indigo-500" />
                   </div>

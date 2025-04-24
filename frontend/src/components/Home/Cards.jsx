@@ -16,57 +16,6 @@ const ProductCategoryCards = () => {
     }
   ]
 
-  const lifestyleCategories = [
-    {
-      id: 1,
-      title: "Top Selling Stationery",
-      image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRXdRRvjXFfDjFcoYG2OyF8kSSNbBiHhL_UQQ&s",
-      price: "From ₹49",
-    },
-    {
-      id: 2,
-      title: "Coffee Powder",
-      image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRXdRRvjXFfDjFcoYG2OyF8kSSNbBiHhL_UQQ&s",
-      price: "Upto 80% Off",
-      isDiscount: true,
-    },
-    {
-      id: 3,
-      title: "Remote Control Toys",
-      image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRXdRRvjXFfDjFcoYG2OyF8kSSNbBiHhL_UQQ&s",
-      price: "Up to 80% Off",
-      isDiscount: true,
-    },
-    {
-      id: 4,
-      title: "Geared Cycles",
-      image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRXdRRvjXFfDjFcoYG2OyF8kSSNbBiHhL_UQQ&s",
-      price: "Up to 70% Off",
-      isDiscount: true,
-    },
-    {
-      id: 5,
-      title: "Dry Fruits",
-      image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRXdRRvjXFfDjFcoYG2OyF8kSSNbBiHhL_UQQ&s",
-      price: "Upto 75% Off",
-      isDiscount: true,
-    },
-    {
-      id: 6,
-      title: "Electric Cycle",
-      image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRXdRRvjXFfDjFcoYG2OyF8kSSNbBiHhL_UQQ&s",
-      price: "Up to 40% Off",
-      isDiscount: true,
-    },
-    {
-      id: 7,
-      title: "Best of Action Toys",
-      image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRXdRRvjXFfDjFcoYG2OyF8kSSNbBiHhL_UQQ&s",
-      price: "Up to 70% Off",
-      isDiscount: true,
-    },
-  ]
-
   return (
     <div className="container mx-auto p-4 bg-gray-50">
       {/* Electronics Section */}
