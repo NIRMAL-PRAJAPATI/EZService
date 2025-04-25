@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { ChevronDown, ChevronUp , UserRound , AlignRight, LucideShoppingCart, LucideShoppingBag} from "lucide-react";
+import { ChevronDown, ChevronUp , UserRound , AlignRight, LucideShoppingCart, LucideShoppingBag, Heart} from "lucide-react";
 import resources from "../resource";
 
 const Navbar = () => {
@@ -117,6 +117,12 @@ const Navbar = () => {
 
             {/* Account Button */}
             <div className="flex md:space-x-1 mt-4 md:mt-0">
+            <Link onClick={toggleMenu}
+                to="/order"
+                className="p-2 text-gray-700"
+              >
+                <Heart className="h-5 w-5 transition duration-150" />
+              </Link>
             <Link onClick={toggleMenu}
                 to="/order"
                 className="p-2 text-gray-700"
