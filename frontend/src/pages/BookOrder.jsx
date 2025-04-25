@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react"
 import { ChevronLeft, ChevronRight, Plus, Check, CalendarIcon, ChevronDown, Info, Plug, PartyPopper, Wrench, Cake, Dumbbell, ScanFaceIcon, CircleCheckBigIcon } from "lucide-react"
-import { format } from "date-fns"
+
 
 const BookOrderPage = () => {
   const [step, setStep] = useState(1)
@@ -624,7 +624,7 @@ const BookOrderPage = () => {
                 <div className="space-y-2">
                   <h3 className="font-medium">Delivery Information</h3>
                   <div className="bg-gray-100 p-3 md:p-5 rounded-sm">
-                    <p>Date: {date ? format(date, "PPP") : "Not selected"}</p>
+                    <p>Date: {date ? date : "Not selected"}</p>
                     <p>Time: {time || "Not selected"}</p>
                   </div>
                 </div>
