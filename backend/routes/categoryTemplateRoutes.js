@@ -3,6 +3,6 @@ const express = require("express")
 const router = express.Router()
 const pagination = require("../middlewares/pagination")
 
-router.get("/", pagination, Controller.getAllTemplates)
+router.get("/", Controller.getAllTemplates)
 
 module.exports = router;
