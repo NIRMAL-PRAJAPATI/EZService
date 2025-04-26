@@ -1,5 +1,6 @@
 const { Sequelize, DataTypes } = require('sequelize');
 const sequelize6 = require('../db');
+const ProviderInfo = require("./providerInfo")
 
 const ProviderBank = sequelize6.define('ProviderBank', {
   provider_id: {
@@ -17,5 +18,16 @@ const ProviderBank = sequelize6.define('ProviderBank', {
   tableName: 'provider_bank',
   timestamps: false
 });
+
+ProviderInfo.hasOne(ProviderBank, {
+  foreignKey: 'provider_id',
+  sourceKey: 'id'
+});
+
+ProviderBank.belongsTo(ProviderInfo, {
+  foreignKey: 'provider_id',
+  targetKey: 'id'
+});
+
 
 module.exports = ProviderBank;

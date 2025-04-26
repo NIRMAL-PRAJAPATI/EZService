@@ -1,7 +1,7 @@
 const bcrypt = require('bcrypt');
 const sequelize2 = require('../db');
 const { Sequelize, DataTypes } = require('sequelize');
-
+const CustomerComplaint = require("../models/customerComplaint")
 const CustomerInfo = sequelize2.define('CustomerInfo', {
   id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
   name: DataTypes.STRING,
@@ -34,5 +34,15 @@ const CustomerInfo = sequelize2.define('CustomerInfo', {
 CustomerInfo.prototype.validPassword = async function (password) {
   return await bcrypt.compare(password, this.password);
 };
+
+CustomerInfo.hasMany(CustomerComplaint, {
+  foreignKey: 'customer_id',
+  sourceKey: 'id'
+});
+
+CustomerComplaint.belongsTo(CustomerInfo, {
+  foreignKey: 'customer_id',
+  targetKey: 'id'
+});
 
 module.exports = CustomerInfo;
