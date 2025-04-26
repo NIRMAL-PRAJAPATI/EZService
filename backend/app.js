@@ -9,6 +9,7 @@ app.use(cors({
 // Routes
 app.use("/customer",require("./routes/customerInfoRoutes"));
 app.use("/category",require("./routes/serviceCategoryRoutes"));
+app.use("/services", require("./routes/serviceRoutes"));
 
 app.listen(3000, () => {
     console.log("Server is running on port http://localhost:3000/");
