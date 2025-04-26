@@ -12,9 +12,7 @@ function Login() {
                 <i data-lucide="wrench" className="absolute top-[500px] left-40 rotate-[10deg] z-0" />
                 <i data-lucide="party-popper" className="absolute top-[250px] left-[50%] z-0" />
             </div>
-            <h2 style={{ fontSize: 17 }} className="absolute text-primary top-0">&nbsp;EZService</h2>
-            {/* main page code */}
-            <main className="flex items-center justify-center border-dashed border-primary m-5 mt-20 p-2 border-2 md:m-10 md:p-5 lg:m-14 lg:p-20 rounded-lg bg-white">
+            <main className="flex items-center justify-center border-dashed border-primary m-5 mt-20 p-2 border-2 md:m-10 md:p-5 w-screen lg:m-14 lg:p-20 rounded-lg bg-white">
                 <div className="mx-2 mt-10 w-[550px] hidden md:block">
                     <h1 className="text-5xl font-bold tracking-wide">Get Any Service at Your<span className="bg-primary text-gray-100"> Doorsteps</span></h1>
                     <p className="text-gray-500 mt-4">Welcome to EZService, your trusted doorstep service provider. We bring convenience to your home with fast, reliable, and professional solutions. Book now and enjoy hassle-free services at your doorstep!</p>

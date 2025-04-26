@@ -1,26 +1,25 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
+import axios from "axios"
 
 function Template() {
-  let services = [
-    {
-      name: "Banquet Halls",
-      image: "https://image.wedmegood.com/resized/720X/uploads/member/25616/1727946389_234217240.jpg?crop=6,84,1010,568"
-    },
-    {
-      name: "Bridal Requisite",
-      image: "https://img.weddingbazaar.com/shaadisaga_production/photos/pictures/001/887/534/new_medium/pinterest.jpg?1598019283"
-    },
-    {
-      name: "Caterers",
-      image: "https://www.shaadibaraati.com/vendors-profile/f79f778a75e54a9cfedc3400d4e3752e.jpg"
-    }
-  ]
+  const [templates, setTemplates] = useState([])
+  const [categories, setCategories] = useState([])
 
+  useEffect(()=>{
+    axios.get("http://localhost:3000/template/").then(response=>{
+      setTemplates(response.data)
+    }).catch((err)=>{
+      console.log(err)
+    })
+  }, [])
   return (
+    <>
+    {templates.map((template)=>
+    
     <section className="bg-white py-12">
         <div className="mx-4 md:mx-8">
           {/* <h2 className="text-2xl font-bold text-gray-900 mb-3">
-            Explore Template Services
+            Explore Template categories
           </h2> */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
             {/* Wedding Requisites Section */}
@@ -34,7 +33,7 @@ function Template() {
               </p>
               <div className="grid grid-cols-3 gap-4">
                 {/* Banquet Halls */}
-                {services.map((service) => 
+                {template.categories.map((service) => 
                 <div className="flex flex-col items-center">
                   <div className="rounded-lg overflow-hidden mb-2 w-full">
                     <img
@@ -53,6 +52,8 @@ function Template() {
           </div>
         </div>
       </section>
+    )}
+    </>
   )
 }
 

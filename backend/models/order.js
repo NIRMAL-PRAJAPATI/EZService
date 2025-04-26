@@ -1,5 +1,8 @@
 const sequelize4 = require('../db');
 const { Sequelize, DataTypes } = require('sequelize');
+const CustomerInfo = require("./providerInfo")
+const ProviderInfo = require("./providerInfo")
+const Service = require("./service")
 
 const Order = sequelize4.define('Order', {
   order_id: { type: DataTypes.STRING, primaryKey: true },
@@ -28,6 +31,36 @@ const Order = sequelize4.define('Order', {
 }, {
   tableName: 'order',
   timestamps: false
+});
+
+// One-to-Many: Customer -> Orders
+CustomerInfo.hasMany(Order, {
+  foreignKey: 'customer_id',
+  sourceKey: 'id'
+});
+Order.belongsTo(CustomerInfo, {
+  foreignKey: 'customer_id',
+  targetKey: 'id'
+});
+
+// One-to-Many: Service -> Orders
+Service.hasMany(Order, {
+  foreignKey: 'service_id',
+  sourceKey: 'id'
+});
+Order.belongsTo(Service, {
+  foreignKey: 'service_id',
+  targetKey: 'id'
+});
+
+// One-to-Many: Provider -> Orders
+ProviderInfo.hasMany(Order, {
+  foreignKey: 'provider_id',
+  sourceKey: 'id'
+});
+Order.belongsTo(ProviderInfo, {
+  foreignKey: 'provider_id',
+  targetKey: 'id'
 });
 
 module.exports = Order;
