@@ -21,6 +21,23 @@ const getServiceCategoryNames = async (req,res)=>{
     }
 }
 
+const getCategoriesByIds = async (ids)=>{
+    try{
+        const categories = await ServiceCategory.findAll(
+            {
+                where: {
+                    id: ids
+                }
+            }
+        )
+        return categories;
+    }catch(err){
+        console.log("Error in fetching the categories")
+        return [];
+    }
+}
+
 module.exports = {
-    getServiceCategoryNames
+    getServiceCategoryNames,
+    getCategoriesByIds
 }

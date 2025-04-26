@@ -1,10 +1,13 @@
 express = require('express');
 app = express();
 cors = require("cors")
+
+// middlewares
 app.use(express.json());
 app.use(cors({
     origin: "*"
 }))
+app.use(require("./middlewares/pagination"))
 
 // Routes
 app.use("/customer",require("./routes/customerInfoRoutes"));
