@@ -37,7 +37,7 @@ export default function Services() {
               <img src={service.cover_image ? service.cover_image : `https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQeJQeJyzgAzTEVqXiGe90RGBFhfp_4RcJJMQ&s`}
                 className="w-full h-40 object-cover p-4"
               />
-              <p className="line-clamp-2 text-sm text-gray-600">{service.description}</p>
+              <p className="line-clamp-2 text-sm text-gray-600">{service.description ? service.description : `lorem this is my service description for basic knowledge of service provided by the provider`}</p>
               <div className="mt-2">
                 <div className="flex justify-between items-start">
                   <span className="bg-indigo-500/10 text-indigo-500 px-2 py-1 rounded-md text-sm">₹{service.visiting_charge}</span>
