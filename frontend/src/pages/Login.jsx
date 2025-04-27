@@ -3,7 +3,7 @@ import { Plug, LibraryBig, Car, Wrench, PartyPopper } from 'lucide-react'
 
 function Login() {
     return (
-        <div className="md:bg-gray-100">
+        <div className="md:bg-gray-50">
             <div className="text-gray-500 overflow-hidden z-0  hidden md:block">
                 <Plug className="absolute top-24 left-60 rotate-[330deg] z-0" />
                 <Car className="absolute top-[400px] left-[30vw] rotate-[330deg] z-0" />
@@ -16,7 +16,7 @@ function Login() {
                     <h1 className="text-5xl font-bold tracking-wide">Get Any Service at Your<span className="bg-indigo-500 text-white"> Doorsteps</span></h1>
                     <p className="text-gray-500 mt-4 mr-10">Welcome to EZService, your trusted doorstep service provider. We bring convenience to your home with fast, reliable, and professional solutions. Book now and enjoy hassle-free services at your doorstep!</p>
                 </div>
-                <div className="max-w-md w-full space-y-8 p-8 sm:p-10 bg-gray-100 rounded-xl shadow border border-gray-300">
+                <div className="max-w-md w-full space-y-8 p-8 sm:p-10 bg-gray-50 rounded-xl shadow border border-gray-200">
                     <div className="text-center">
                         <h2 className="mt-2 text-3xl font-extrabold">
                             Login your account
@@ -26,7 +26,7 @@ function Login() {
                         <div className="rounded-md">
                             <p id="errormsg" className="text-red-600 -mt-3">Error message print here</p>
                             <div className="mt-4 relative">
-                                <label className="absolute left-3 -top-3 bg-gray-100 px-1 text-sm font-medium text-indigo-500">Email/Mobile No.</label>
+                                <label className="absolute left-3 -top-3 bg-gray-50 px-1 text-sm font-medium text-indigo-500">Email/Mobile No.</label>
                                 <input
                                     type="email"
                                     name="email"
@@ -34,7 +34,7 @@ function Login() {
                                     required />
                             </div><br />
                             <div className="relative">
-                                <label className="absolute left-3 -top-3 bg-gray-100 px-1 text-sm font-medium text-indigo-500">Password</label>
+                                <label className="absolute left-3 -top-3 bg-gray-50 px-1 text-sm font-medium text-indigo-500">Password</label>
                                 <input
                                     type="password"
                                     name="password"
@@ -44,7 +44,7 @@ function Login() {
                         </div>
                         <a className="text-sm text-red-500">Forgot Password?</a>
                         <div>
-                            <button id="formbtn" type="submit" className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-sm text-white bg-indigo-500 focus:outline-none mt-3">LogIn Now</button>
+                            <button id="formbtn" type="submit" className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-sm text-white bg-indigo-500 hover:bg-indigo-600 cursor-pointer focus:outline-none mt-3">LogIn Now</button>
                         </div>
                     </form>
                 </div>

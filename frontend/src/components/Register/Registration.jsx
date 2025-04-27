@@ -4,8 +4,8 @@ const Registration = () => {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
+    mobile: "",
     password: "",
-    confirmPassword: "",
   })
 
   const handleChange = (e) => {
@@ -44,7 +44,7 @@ const Registration = () => {
             <input
               type="mobile"
               name="mobile"
-              value={formData.name}
+              value={formData.mobile}
               onChange={handleChange}
               className="block w-full pl-4 pr-3 py-3 text-gray-800 border border-gray-300 rounded-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
               required
@@ -79,14 +79,14 @@ const Registration = () => {
             <label className="absolute left-3 -top-3 bg-white px-1 text-sm font-medium text-indigo-500">Confirm Password</label>
             <input
               type="password"
-              name="password"
-              value={formData.confirmPassword}
+              name="confirmpassword"
+              // value={formData.confirmPassword}
               onChange={handleChange}
               className="block w-full pl-4 pr-3 py-3 text-gray-800 border border-gray-300 rounded-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
               required
             />
           </div>
-
+          <p id="errormsg" className="text-red-600 -mt-2 mb-1 text-sm">Error message print here</p>
           <button
             type="submit"
             className="w-full bg-indigo-500 text-white py-3 px-4 rounded-sm hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">Register</button>
