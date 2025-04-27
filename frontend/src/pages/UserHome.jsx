@@ -12,9 +12,9 @@ import Card from "../components/Home/Cards";
 
 function UserHome() {
   return (
-    <div>
-      {/* <HeroSection /> */}
-      <Search />
+    <div className="bg-gray-50">
+      <HeroSection />
+      {/* <Search /> */}
       <Category />
       <Services />
       <div className="p-5 container mx-auto">

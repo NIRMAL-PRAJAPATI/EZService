@@ -17,18 +17,18 @@ const ProductCategoryCards = () => {
   ]
 
   return (
-    <div className="container mx-auto p-4 bg-gray-50">
+    <div className="mx-auto p-4 bg-gray-50">
       {/* Electronics Section */}
       <div className="mb-8">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-bold">Services in Ahmedabad</h2>
         </div>
         <div className="relative">
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2 bg-white p-4 rounded shadow-sm">
+          <div className="flex gap-2 bg-white p-4 rounded shadow-sm overflow-x-auto">
             {electronicsCategories.map((category) => (
               <div
                 key={category.id}
-                className="flex flex-col items-center justify-center p-2 hover:shadow-md transition-shadow cursor-pointer"
+                className="flex flex-col items-center justify-center p-2 hover:shadow-md transition-shadow cursor-pointer border-b border-white hover:border-indigo-500"
               >
                 <div className="w-40 h-40 mb-1">
                   <img

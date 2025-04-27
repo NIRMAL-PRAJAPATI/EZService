@@ -12,9 +12,10 @@ function TopCity() {
               NEW
             </span>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 px-4 md:px-0">
+          <div className='w-full overflow-x-auto'>
+          <div className="flex gap-4 px-4 md:px-0 w-max">
             {/* Mumbai Card */}
-            <div className="bg-white border border-gray-200 hover:border-indigo-500 rounded-lg overflow-hidden">
+            <div className="bg-white border border-gray-200 hover:border-indigo-500 rounded-lg overflow-hidden w-[250px]">
               <div className="flex">
                 <img
                   src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Mumbai_03-2016_31_Gateway_of_India.jpg/1200px-Mumbai_03-2016_31_Gateway_of_India.jpg"
@@ -29,6 +30,7 @@ function TopCity() {
                 </div>
               </div>
             </div>
+          </div>
           </div>
         </div>
       </section>
