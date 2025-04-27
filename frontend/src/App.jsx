@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom'
 import './App.css'
 import Navbar from './components/Navbar'
 import { lazy, Suspense } from 'react'
@@ -15,14 +15,15 @@ import Loading from './components/Loading'
 import OrderDetails from './pages/OrderDetails';
 import BookOrderPage from './pages/BookOrder';
 import Login from './pages/Login';
-// import Rankings from './pages/Rankings/Rankings'
 const ErrorPage = lazy(() => import('./pages/ErrorPage'));
 
 function App() {
+  const location = useLocation();
+  const hideHeaderFooter = (location.pathname === '/login') || (location.pathname === '/errorpage');
+
   return (
-    <Router>
-      <div className="w-full min-h-screen">
-        <Navbar />
+      <div className="">
+        {!hideHeaderFooter && <Navbar />}
         <Suspense fallback={<Loading />}>
         <Routes>
           <Route index element={<UserHome />} />
@@ -39,9 +40,8 @@ function App() {
           <Route path='/login' element={<Login />}/>
         </Routes>
         </Suspense>
-        <Footer/>
+        {!hideHeaderFooter && <Footer/>}
       </div>
-    </Router>
   )
 }
 

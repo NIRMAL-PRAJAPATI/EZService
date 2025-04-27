@@ -14,9 +14,7 @@ function LRAlert() {
         </p>
         <div className="flex  gap-1 justify-center">
           <Link to="/login" className='px-5 py-2 sm:px-8 sm:py-3 bg-indigo-500 text-white border font-medium rounded-md hover:bg-indigo-500/90'>
-
             LogIn
-
           </Link>
           <a
             href="registration.html"
