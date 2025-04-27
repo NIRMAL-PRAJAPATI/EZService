@@ -17,9 +17,8 @@ function UserHome() {
       {/* <Search /> */}
       <Category />
       <Services />
-      <div className="p-5 container mx-auto">
+      {/* <div className="p-5 container mx-auto">
       <div className="bg-indigo-500/80 rounded-xl shadow-lg overflow-hidden flex w-full sm:h-100">
-      {/* Left Content */}
       <div className="p-8 flex flex-col justify-center sm:w-1/2">
         <h2 className="text-3xl sm:text-5xl font-bold text-white mb-2">
           Air Conditioner Service / Repair
@@ -29,7 +28,6 @@ function UserHome() {
           Explore
         </button>
       </div>
-      {/* Right Image */}
       <div className="w-1/2 hidden sm:block">
         <img
           src="https://static.wixstatic.com/media/ade29c_24e1ba8f67a241b5a6a44f04a96fdbd0~mv2.png/v1/fill/w_556,h_366,fp_0.50_0.50,q_85,usm_0.66_1.00_0.01,enc_auto/ade29c_24e1ba8f67a241b5a6a44f04a96fdbd0~mv2.png"
@@ -38,13 +36,12 @@ function UserHome() {
         />
       </div>
     </div>
-    </div>
+    </div> */}
 
 <Card />
 
-    <div className="p-5 container mx-auto">
+    {/* <div className="p-5 container mx-auto">
       <div className="bg-indigo-500/80 rounded-xl shadow-lg overflow-hidden flex w-full sm:h-100">
-      {/* Right Image */}
       <div className="w-1/2 hidden sm:block">
         <img
           src="https://www.shutterstock.com/image-photo/authentic-indian-food-snacks-close-260nw-1960332085.jpg"
@@ -52,7 +49,6 @@ function UserHome() {
           className="h-full w-full object-cover"
         />
       </div>
-      {/* Left Content */}
       <div className="p-8 flex flex-col justify-center sm:w-1/2">
         <h2 className="text-3xl sm:text-5xl font-bold text-white mb-2">
           Just need to Find Best Cataring Services
@@ -63,7 +59,7 @@ function UserHome() {
         </button>
       </div>
     </div>
-    </div>
+    </div> */}
       <TopCity />
       <Card />
       <Sponser />

@@ -16,12 +16,9 @@ function LRAlert() {
           <Link to="/login" className='px-5 py-2 sm:px-8 sm:py-3 bg-indigo-500 text-white border font-medium rounded-md hover:bg-indigo-500/90'>
             LogIn
           </Link>
-          <a
-            href="registration.html"
-            className="px-5 py-2 sm:px-8 sm:py-3 bg-transparent border-2 border-indigo-500 font-medium rounded-md hover:bg-white/10"
-          >
+          <Link to="/register" className="px-5 py-2 sm:px-8 sm:py-3 bg-transparent border-2 border-indigo-500 font-medium rounded-md hover:bg-white/10">
             Sign Up
-          </a>
+          </Link>
         </div>
       </div>
     </section>

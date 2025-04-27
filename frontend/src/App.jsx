@@ -16,10 +16,11 @@ import OrderDetails from './pages/OrderDetails';
 import BookOrderPage from './pages/BookOrder';
 import Login from './pages/Login';
 const ErrorPage = lazy(() => import('./pages/ErrorPage'));
+const Register = lazy(() => import('./pages/register'));
 
 function App() {
   const location = useLocation();
-  const hideHeaderFooter = (location.pathname === '/login') || (location.pathname === '/errorpage');
+  const hideHeaderFooter = (location.pathname === '/login') || (location.pathname === '/errorpage') || (location.pathname === '/register');
 
   return (
       <div className="">
@@ -38,6 +39,7 @@ function App() {
           <Route path="/orders/orderdetails" element={<OrderDetails />} />
           <Route path='/book' element={<BookOrderPage />} />
           <Route path='/login' element={<Login />}/>
+          <Route path='/register' element={<Register />} />
         </Routes>
         </Suspense>
         {!hideHeaderFooter && <Footer/>}

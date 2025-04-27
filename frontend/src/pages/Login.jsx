@@ -14,29 +14,37 @@ function Login() {
             <main className="flex items-center justify-center border-dashed border-indigo-500 my-20 md:border-2 md:m-10 md:p-5 lg:m-14 lg:p-20 rounded-lg bg-white">
                 <div className="mx-2 mt-10 w-[550px] hidden md:block">
                     <h1 className="text-5xl font-bold tracking-wide">Get Any Service at Your<span className="bg-indigo-500 text-white"> Doorsteps</span></h1>
-                    <p className="text-gray-500 mt-4">Welcome to EZService, your trusted doorstep service provider. We bring convenience to your home with fast, reliable, and professional solutions. Book now and enjoy hassle-free services at your doorstep!</p>
+                    <p className="text-gray-500 mt-4 mr-10">Welcome to EZService, your trusted doorstep service provider. We bring convenience to your home with fast, reliable, and professional solutions. Book now and enjoy hassle-free services at your doorstep!</p>
                 </div>
-                <div className="max-w-md w-full space-y-8 p-8 sm:p-10 bg-gray-200 rounded-xl shadow border border-gray-300">
+                <div className="max-w-md w-full space-y-8 p-8 sm:p-10 bg-gray-100 rounded-xl shadow border border-gray-300">
                     <div className="text-center">
                         <h2 className="mt-2 text-3xl font-extrabold">
                             Login your account
                         </h2>
                     </div>
-                    <form id="formsubmit" className="mt-8 space-y-6 text-sm" action="submit" method="POST">
+                    <form id="formsubmit" className="mt-8 space-y-2 text-sm" action="submit" method="POST">
                         <div className="rounded-md">
                             <p id="errormsg" className="text-red-600 -mt-3">Error message print here</p>
-                            <div className="pt-2">
-                                <label htmlFor="user_id" className="sr-only">Email Address</label>
-                                <input id="email" name="email" type="text" required className="appearance-none relative block w-full p-3 border border-gray-400 bg-gray-50 tracking-wide placeholder-gray-700 rounded focus:outline-none focus:border-indigo-500 focus:z-10 lowercase" placeholder="email" defaultValue />
+                            <div className="mt-4 relative">
+                                <label className="absolute left-3 -top-3 bg-gray-100 px-1 text-sm font-medium text-indigo-500">Email/Mobile No.</label>
+                                <input
+                                    type="email"
+                                    name="email"
+                                    className="block w-full pl-4 pr-3 py-3 border border-gray-300 bg-white rounded-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                                    required />
                             </div><br />
-                            <div>
-                                <label htmlFor="password" className="sr-only">Password</label>
-                                <input id="password" name="password" type="password" required className="appearance-none relative block w-full p-3 border border-gray-400 bg-gray-50 placeholder-gray-700 tracking-wide rounded focus:outline-none focus:border-indigo-500 focus:z-10" placeholder="Password" defaultValue />
+                            <div className="relative">
+                                <label className="absolute left-3 -top-3 bg-gray-100 px-1 text-sm font-medium text-indigo-500">Password</label>
+                                <input
+                                    type="password"
+                                    name="password"
+                                    className="block w-full pl-4 pr-3 py-3 border border-gray-300 bg-white rounded-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                                    required />
                             </div>
                         </div>
                         <a className="text-sm text-red-500">Forgot Password?</a>
                         <div>
-                            <button id="formbtn" type="submit" className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-500 focus:outline-none mt-3">LogIn Now</button>
+                            <button id="formbtn" type="submit" className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-sm text-white bg-indigo-500 focus:outline-none mt-3">LogIn Now</button>
                         </div>
                     </form>
                 </div>
