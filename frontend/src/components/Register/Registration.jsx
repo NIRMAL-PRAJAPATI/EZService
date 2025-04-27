@@ -24,7 +24,7 @@ const Registration = () => {
 
   return (
     <>
-        <h1 className="text-3xl font-semibold text-center mb-8">Create an account</h1>
+        <h1 className="text-3xl font-extrabold text-center mb-8">Create an account</h1>
 
         <form onSubmit={handleSubmit}>
           <div className="mb-4 relative">
