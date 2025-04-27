@@ -14,6 +14,11 @@ const getCustomerInfo = async (req, res) => {
     }
 }
 
+const registerCustomer = async (req, res) => {
+    let { name, email, mobile, password } = req.body;
+
+}
+
 module.exports = {
     getCustomerInfo,
 };
