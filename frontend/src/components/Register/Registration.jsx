@@ -1,42 +1,45 @@
-import { useState } from "react"
+import { useForm } from 'react-hook-form';
+import axios from 'axios';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
-const Registration = () => {
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    mobile: "",
-    password: "",
-  })
+function Registration () {
+  const { register, handleSubmit, reset, watch, setError, formState: {errors} } = useForm();
+  const navigate = useNavigate();
+  const [errorMessage, setErrorMessage] = useState("");
+  const api = 'http://localhost:3000';
 
-  const handleChange = (e) => {
-    const { name, value } = e.target
-    setFormData((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }))
-  }
+  const onRegister = async (formData) => {
 
-  const handleSubmit = (e) => {
-    e.preventDefault()
-    // Handle form submission logic here
-    console.log(formData)
+      await axios.post(`${api}/customer/register`, formData).then(response => {
+        navigate('/register/mobilevarification?mobile=' + formData.mobile);
+      }).catch((error) => {
+      if(error.response) {
+        reset(error.response.data.data);
+        setErrorMessage(error.response.data.errorMessage);
+      } else {
+        setErrorMessage("");
+        console.log("successful");
+      }
+    })
   }
 
   return (
     <>
         <h1 className="text-3xl font-extrabold text-center mb-8">Create an account</h1>
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit(onRegister)}>
           <div className="mb-4 relative">
-            <label className="absolute left-3 -top-3 bg-white px-1 text-sm font-medium text-indigo-500">Full name</label>
+            <label className="absolute left-3 -top-3 bg-white px-1 text-sm font-medium text-indigo-500">Your Name</label>
             <input
               type="text"
               name="name"
-              value={formData.name}
-              onChange={handleChange}
               className="block w-full pl-4 pr-3 py-3 text-gray-800 border border-gray-300 rounded-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-              required
+              {...register("name", {required: "name is required",
+                minLength: {value: 3, message: "name must be at least 3 characters"}
+              })}
             />
+               {errors.name && <p className="text-red-600 text-xs">{errors.name.message}</p>}
           </div>
 
           <div className="mb-4 relative">
@@ -44,11 +47,12 @@ const Registration = () => {
             <input
               type="mobile"
               name="mobile"
-              value={formData.mobile}
-              onChange={handleChange}
               className="block w-full pl-4 pr-3 py-3 text-gray-800 border border-gray-300 rounded-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-              required
+              {...register("mobile", {required: "mobile is required",
+                pattern: {value: /^[0-9]{10}$/, message: "Mobile number must be 10 digits"}
+              })}
             />
+            {errors.mobile && <p className="text-red-600 text-sm">{errors.mobile.message}</p>}
           </div>
 
           <div className="mb-4 relative">
@@ -56,11 +60,12 @@ const Registration = () => {
             <input
               type="email"
               name="email"
-              value={formData.email}
-              onChange={handleChange}
               className="block w-full pl-4 pr-3 py-3 text-gray-800 border border-gray-300 rounded-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-              required
+              {...register("email", {required: "email is required",
+                pattern: {value: /^\S+@\S+\.\S+$/, message: "Invalid email format"}
+              })}
             />
+            {errors.email && <p className="text-red-600 text-sm">{errors.email.message}</p>}
           </div>
 
           <div className="mb-4 relative">
@@ -68,11 +73,13 @@ const Registration = () => {
             <input
               type="password"
               name="password"
-              value={formData.password}
-              onChange={handleChange}
               className="block w-full pl-4 pr-3 py-3 text-gray-800 border border-gray-300 rounded-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-              required
+              {...register("password", {required: "password is required",
+                pattern: {value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/,
+                  message: "Password must be strong (8+ characters, one special char, uppercase, number)"}
+              })}
             />
+            {errors.password && <p className="text-red-600 text-sm">{errors.password.message}</p>}
           </div>
 
           <div className="mb-4 relative">
@@ -80,13 +87,13 @@ const Registration = () => {
             <input
               type="password"
               name="confirmpassword"
-              // value={formData.confirmPassword}
-              onChange={handleChange}
               className="block w-full pl-4 pr-3 py-3 text-gray-800 border border-gray-300 rounded-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-              required
+              {...register("confirmpassword", {required: "Confirm Password is required",
+                validate: (value) => value === watch('password') || "Passwords do not match"})}
             />
+            {errors.confirmpassword && <p className="text-red-600 text-sm">{errors.confirmpassword.message}</p>}
           </div>
-          <p id="errormsg" className="text-red-600 -mt-2 mb-1 text-sm">Error message print here</p>
+          <p className="text-red-600 -mt-2 mb-1 text-sm">{errorMessage}</p>
           <button
             type="submit"
             className="w-full bg-indigo-500 text-white py-3 px-4 rounded-sm hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">Register</button>

@@ -14,7 +14,7 @@ const getServiceCategoryNames = async (req,res)=>{
 
         res.status(200).json(categories)
     }catch(err){
-        console.log("serviceCategory : ", err)
+        // console.log("serviceCategory : ", err)
         res.status(500).json({
             message: "Internal server error"
         })
@@ -32,7 +32,7 @@ const getCategoriesByIds = async (ids)=>{
         )
         return categories;
     }catch(err){
-        console.log("Error in fetching the categories")
+        // console.log("Error in fetching the categories")
         return [];
     }
 }
