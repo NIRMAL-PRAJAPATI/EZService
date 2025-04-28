@@ -9,7 +9,7 @@ const ProductCategoryCards = () => {
   
   useEffect(()=>{
     setCity(localStorage.getItem('city')? localStorage.getItem('city'): 'ahmedabad')
-    api.get('/services/?limit=6').then((response)=>{
+    api.get('/services/?limit=10').then((response)=>{
       setServices(response.data)
     }).catch((err)=>{
       console.log(`Error in fetching services in ${city}`)
@@ -25,11 +25,11 @@ const ProductCategoryCards = () => {
       {/* Electronics Section */}
       <div className="mb-8">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-bold">Services in {city}</h2>
+          <h2 className="text-xl font-bold capitalize">Services in {city}</h2>
         </div>
         <div className="relative">
           <div className="flex gap-2 bg-white p-4 rounded shadow-sm overflow-x-auto">
-            {electronicsCategories.map((category) => (
+            {services.map((category) => (
               <div
                 key={category.id}
                 className="flex flex-col items-center justify-center p-2 hover:shadow-md transition-shadow cursor-pointer border-b border-white hover:border-indigo-500"
