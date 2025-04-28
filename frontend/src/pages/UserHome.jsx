@@ -21,19 +21,19 @@ function UserHome() {
   const [isLoading, setIsLoading] = useState(true)
   const [cityServices, setCityServices] = useState([])
   const [city, setCity] = useState('ahmedabad')
-  
+  const [activeCategory, setActiveCategory] = useState('')
   
   
   useEffect(()=>{
     
     // condition to be added if logged in then not to show this
     if(!localStorage.getItem('city'))
-      api.get("/user/city/get").then((response)=>{
-    localStorage.setItem('city',response.data)
-  }).catch((err)=>{
-      const city = prompt("Please enter your city:")
-      localStorage.setItem('city',city)
-    })
+          api.get("/user/city/get").then((response)=>{
+        localStorage.setItem('city',response.data)
+      }).catch((err)=>{
+          const city = prompt("Please enter your city:")
+          localStorage.setItem('city',city)
+      })
     setCity(localStorage.getItem('city')? localStorage.getItem('city'): 'ahmedabad')
 
     // loading setup
@@ -63,7 +63,7 @@ function UserHome() {
     <div className="bg-gray-50">
       <HeroSection />
       {/* <Search /> */}
-      <Category categories={categories}/>
+      <Category categories={categories} setActiveCategory={setActiveCategory}/>
       <Services services={services}/>
       {/* <div className="p-5 container mx-auto">
       <div className="bg-indigo-500/80 rounded-xl shadow-lg overflow-hidden flex w-full sm:h-100">
