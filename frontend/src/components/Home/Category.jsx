@@ -9,7 +9,7 @@ function Category() {
   useEffect(()=>{
     axios.get(`${api}/category/names`).then(response=>{
       setCategories(response.data)
-      console.log(response.data)
+      // console.log(response.data)
     }).catch((err)=>{
       console.log(err)
     })

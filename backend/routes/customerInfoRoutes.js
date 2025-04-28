@@ -4,5 +4,6 @@ const router = express.Router();
 
 // Route to get customer information
 router.get('/:id', Controller.getCustomerInfo);
+router.post('/register', Controller.registerCustomer);
 
 module.exports = router;

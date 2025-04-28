@@ -1,4 +1,6 @@
+const { Op, or } = require('sequelize');
 const User = require('../models/customerInfo'); 
+const bcrypt = require('bcrypt');
 
 const getCustomerInfo = async (req, res) => {
     try {
@@ -16,9 +18,30 @@ const getCustomerInfo = async (req, res) => {
 
 const registerCustomer = async (req, res) => {
     let { name, email, mobile, password } = req.body;
+    
+    try {
+        const existanceCheck = await User.findOne({
+            where: {[Op.or]: [{email}, {mobile}]}
+        });
 
+        if(existanceCheck) {
+            return res.status(409).json({
+                errorMessage: "email or mobile is already registered",
+                data: { name, email, mobile, password }
+            });
+        }
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        await User.create({name, email, mobile, password: hashedPassword});
+
+        res.status(201).json({message: "Registration successfull"});
+    } catch(error) {
+        console.log(error);
+        res.status(500).json({errorMessage: "Internal Server Error"});
+    }
 }
 
 module.exports = {
-    getCustomerInfo,
+    getCustomerInfo, registerCustomer
 };

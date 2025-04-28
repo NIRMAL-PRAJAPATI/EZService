@@ -15,12 +15,13 @@ import Loading from './components/Loading'
 import OrderDetails from './pages/OrderDetails';
 import BookOrderPage from './pages/BookOrder';
 import Login from './pages/Login';
+import MobileVarification from './pages/MobileVarification';
 const ErrorPage = lazy(() => import('./pages/ErrorPage'));
 const Register = lazy(() => import('./pages/register'));
 
 function App() {
   const location = useLocation();
-  const hideHeaderFooter = (location.pathname === '/login') || (location.pathname === '/errorpage') || (location.pathname === '/register');
+  const hideHeaderFooter = (location.pathname === '/login') || (location.pathname === '/errorpage') || (location.pathname === '/register') || (location.pathname === '/register/mobilevarification');
 
   return (
       <div className="">
@@ -40,6 +41,7 @@ function App() {
           <Route path='/book' element={<BookOrderPage />} />
           <Route path='/login' element={<Login />}/>
           <Route path='/register' element={<Register />} />
+          <Route path='/register/mobilevarification' element={<MobileVarification />} />
         </Routes>
         </Suspense>
         {!hideHeaderFooter && <Footer/>}
