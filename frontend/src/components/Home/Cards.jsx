@@ -1,25 +1,7 @@
 import { ChevronRight } from "lucide-react"
-import { useEffect, useState } from "react"
-import api from "../../config/axios-config"
 
-const ProductCategoryCards = () => {
+const ProductCategoryCards = ({services, city}) => {
 
-  const [services, setServices] = useState([])
-  const [city, setCity] = useState('ahmedabad')
-  
-  useEffect(()=>{
-    setCity(localStorage.getItem('city')? localStorage.getItem('city'): 'ahmedabad')
-    api.get('/services/?limit=10').then((response)=>{
-      setServices(response.data)
-    }).catch((err)=>{
-      console.log(`Error in fetching services in ${city}`)
-      console.log(err)
-    })
-    
-  },[])
-
-  if(!(services && services.length > 0))
-    return <></>
   return (
     <div className="mx-auto p-4 bg-gray-50">
       {/* Electronics Section */}

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import HeroSection from "../components/Home/HeroSection";
 import Services from "../components/Home/Services";
 import UserReview from "../components/Home/UserReview";
@@ -10,27 +10,61 @@ import Template from "../components/Home/Template";
 import LRAlert from "../components/Home/LRAlert";
 import Card from "../components/Home/Cards";
 import api from "../config/axios-config";
+import Loading from "../components/Loading";
 
 function UserHome() {
 
+  const [categories, setCategories] = useState([])
+  const [services, setServices] = useState([])
+  const [verifiedServices, setVerifiedServices] = useState([])
+  const [templates, setTemplates] = useState([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [cityServices, setCityServices] = useState([])
+  const [city, setCity] = useState('ahmedabad')
+  
+  
+  
   useEffect(()=>{
-
+    
     // condition to be added if logged in then not to show this
     if(!localStorage.getItem('city'))
       api.get("/user/city/get").then((response)=>{
-        localStorage.setItem('city',response.data)
-      }).catch((err)=>{
-        const city = prompt("Please enter your city:")
-        localStorage.setItem('city',city)
+    localStorage.setItem('city',response.data)
+  }).catch((err)=>{
+      const city = prompt("Please enter your city:")
+      localStorage.setItem('city',city)
+    })
+    setCity(localStorage.getItem('city')? localStorage.getItem('city'): 'ahmedabad')
+
+    // loading setup
+    Promise.all([
+      api.get(`/category/names`),
+      api.get(`/services/?limit=5`),
+      api.get("/services/verified"),
+      api.get("/template/?limit=2"),
+      api.get('/services/?limit=10')
+    ]).then(([categoryNames, servicesData, vServiceData, templateData, cityServiceData])=>{
+      setCategories(categoryNames.data)
+      setServices(servicesData.data);
+      setVerifiedServices(vServiceData.data)
+      setTemplates(templateData.data)
+      setCityServices(cityServiceData.data)
+      }).catch((err) => {
+        console.log(err);
+      }).finally(()=>{
+        setIsLoading(false)
       })
   },[])
+  
+  if(isLoading)
+    return <Loading />
 
   return (
     <div className="bg-gray-50">
       <HeroSection />
       {/* <Search /> */}
-      <Category />
-      <Services />
+      <Category categories={categories}/>
+      <Services services={services}/>
       {/* <div className="p-5 container mx-auto">
       <div className="bg-indigo-500/80 rounded-xl shadow-lg overflow-hidden flex w-full sm:h-100">
       <div className="p-8 flex flex-col justify-center sm:w-1/2">
@@ -52,7 +86,7 @@ function UserHome() {
     </div>
     </div> */}
 
-<Card />
+<Card services={cityServices} city={city}/>
 
     {/* <div className="p-5 container mx-auto">
       <div className="bg-indigo-500/80 rounded-xl shadow-lg overflow-hidden flex w-full sm:h-100">
@@ -76,8 +110,8 @@ function UserHome() {
     </div> */}
       <TopCity />
       {/* <Card /> */}
-      <Sponser />
-      <Template />
+      <Sponser services={verifiedServices}/>
+      <Template templates={templates}/>
       <UserReview />
       <LRAlert />
     </div>

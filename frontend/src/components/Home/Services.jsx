@@ -2,17 +2,8 @@ import React, { useEffect, useState } from "react";
 import { UserCheck, MapPin, Star, BriefcaseBusiness ,Tag} from "lucide-react";
 import api from "../../config/axios-config";
 
-export default function Services() {
+export default function Services({services}) {
 
-  const [services, setServices] = useState([]);
-
-  useEffect(() => {
-    api.get(`/services/?limit=5`).then(response => {
-      setServices(response.data);
-    }).catch((err) => {
-      console.log(err);
-    })
-  }, [])
 
   return (
     <div>

@@ -1,21 +1,4 @@
-"use client"
-
-import { useEffect, useState } from "react"
-import axios from "axios"
-
-function Template() {
-  const [templates, setTemplates] = useState([])
-
-  useEffect(() => {
-    axios
-      .get("http://localhost:3000/template/?limit=2")
-      .then((response) => {
-        setTemplates(response.data)
-      })
-      .catch((err) => {
-        console.log(err)
-      })
-  }, [])
+function Template({templates}) {
 
   return (
     <>

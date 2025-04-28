@@ -1,72 +1,39 @@
 import { AlignLeft, Search, SlidersHorizontal, Star, XIcon } from 'lucide-react'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
+import Sidebar from '../components/Service/Sidebar';
+import api from '../config/axios-config';
+import ServiceCard from '../components/Service/ServiceCard';
+import Loading from "../components/Loading"
 
 function ServicesPage() {
   const [menuOpen, setMenuOpen] = useState(true);
+  const [categories, setCategories] = useState([])
+  const [services, setServices] = useState([])
+  const [isLoading, setIsLoading] = useState(true)
 
+  useEffect(() => {
+    Promise.all([
+      api.get("/category/"),
+      api.get("/services/?limit=20")
+    ])
+      .then(([categoriesResponse, servicesResponse]) => {
+        setCategories(categoriesResponse.data);
+        setServices(servicesResponse.data);
+      })
+      .catch((err) => {
+        console.error(err);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  }, []);
+
+  if(isLoading)
+    return <Loading />
   return (
       <div className="text-black mx-auto bg-gray-100">
         <div className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-5">
-          {/* Left Sidebar - Services List */}
-          <div className={`lg:col-span-1 bg-white px-1 pt-2 h-fit absolute md:relative z-10 ${menuOpen ? 'block' : 'hidden'}`}>
-              <XIcon onClick={() => setMenuOpen(false)} className="md:hidden text-gray-500 hover:text-indigo-500 cursor-pointer ml-1" />
-            <ul className="overflow-y-scroll h-[85vh] sm:h-[90vh]">
-              <li className="p-2 bg-indigo-500/8 rounded-t cursor-pointer hover:bg-gray-50 transition-colors">
-                <h3 className="font-semibold text-indigo-500">Home Cleaning</h3>
-                <p className="text-xs text-gray-600">
-                  Professional cleaning services for your home needs
-                </p>
-              </li>
-              <li className="p-2 hover:bg-gray-50 rounded-t cursor-pointer transition-colors">
-                <h3 className="font-semibold text-gray-800">Plumbing Services</h3>
-                <p className="text-xs text-gray-600">
-                  Expert plumbing solutions for all requirements
-                </p>
-              </li>
-              <li className="p-2 hover:bg-gray-50 rounded-t cursor-pointer transition-colors">
-                <h3 className="font-semibold text-gray-800">Electrical Work</h3>
-                <p className="text-xs text-gray-600">
-                  Certified electricians for your electrical needs
-                </p>
-              </li>
-              <li className="p-2 hover:bg-gray-50 rounded-t cursor-pointer transition-colors">
-                <h3 className="font-semibold text-gray-800">Carpentry</h3>
-                <p className="text-xs text-gray-600">
-                  Custom woodwork and furniture repair services
-                </p>
-              </li>
-              <li className="p-2 hover:bg-gray-50 rounded-t cursor-pointer transition-colors">
-                <h3 className="font-semibold text-gray-800">Painting</h3>
-                <p className="text-xs text-gray-600">
-                  Professional painting services for your space
-                </p>
-              </li>
-              <li className="p-2 hover:bg-gray-50 rounded-t cursor-pointer transition-colors">
-                <h3 className="font-semibold text-gray-800">Plumbing Services</h3>
-                <p className="text-xs text-gray-600">
-                  Expert plumbing solutions for all requirements
-                </p>
-              </li>
-              <li className="p-2 hover:bg-gray-50 rounded-t cursor-pointer transition-colors">
-                <h3 className="font-semibold text-gray-800">Electrical Work</h3>
-                <p className="text-xs text-gray-600">
-                  Certified electricians for your electrical needs
-                </p>
-              </li>
-              <li className="p-2 hover:bg-gray-50 rounded-t cursor-pointer transition-colors">
-                <h3 className="font-semibold text-gray-800">Carpentry</h3>
-                <p className="text-xs text-gray-600">
-                  Custom woodwork and furniture repair services
-                </p>
-              </li>
-              <li className="p-2 hover:bg-gray-50 rounded-t cursor-pointer transition-colors">
-                <h3 className="font-semibold text-gray-800">Painting</h3>
-                <p className="text-xs text-gray-600">
-                  Professional painting services for your space
-                </p>
-              </li>
-            </ul>
-          </div>
+          <Sidebar menuOpen={menuOpen} categories={categories} />
           {/* Right Content Area */}
           <div className="sm:col-span-3 md:col-span-3 lg:col-span-4 space-y-4 overflow-y-scroll h-[90vh] z-0">
             {/* Search and Filter Section */}
@@ -91,40 +58,7 @@ function ServicesPage() {
             {/* Service Providers Grid */}
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 lg:gap-3 px-2 md:px-0 sm:m-2">
              {/* Service Provider Card 1 */}
-              <a href="/frontend/views/user/service_profile.html" className="bg-white overflow-hidden rounded-md border border-gray-200 hover:border-indigo-500">
-                <div className="items-start">
-                  <div className="w-full bg-gray-100 h-26">
-                    <img
-                      src="https://c8.alamy.com/comp/DERFBR/colourful-indian-shop-in-puttaparthi-andhra-pradesh-india-DERFBR.jpg"
-                      alt="Provider"
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <div className="flex-1 pb-3 px-1 sm:px-2">
-                    {/* <span className="text-green-500 bg-gray-100 font-semibold rounded-full px-2 text-[10px] ml-1">
-                      Available
-                    </span> */}
-                    <h3 className="font-semibold text-md leading-none py-1" title='Ananta Plumbing Service'>
-                      Ananta Plumbing Service
-                    </h3>
-                    <p className="text-sm text-gray-600 mb-1 font-semibold">
-                      ₹4100
-                    </p>
-                    <div className="flex items-center text-[12px]">
-                      <span className="text-gray-500">
-                        Ahmedabad, Gujarat, India
-                      </span>
-                    </div>
-                    <div className="flex items-center text-indigo-500 gap-0.5 mt-1">
-                      <Star className="h-3 w-3 fill-indigo-500 inline-block" />
-                      <Star className="h-3 w-3 fill-indigo-500 inline-block" />
-                      <Star className="h-3 w-3 fill-indigo-500 inline-block" />
-                      <Star className="h-3 w-3 fill-indigo-500 inline-block" />
-                      <Star className="h-3 w-3 inline-block" />
-                    </div>
-                  </div>
-                </div>
-              </a>
+              <ServiceCard services={services} />
             </div>
             {/* Pagination */}
             <div className="flex justify-center space-x-2 mt-6">

@@ -1,17 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import api from "../../config/axios-config"
 
-function Category() {
-  const [categories, setCategories] = useState([]) 
-
-  useEffect(()=>{
-    api.get(`/category/names`).then(response=>{
-      setCategories(response.data)
-      console.log(response.data)
-    }).catch((err)=>{
-      console.log(err)
-    })
-  },[])
+function Category({categories}) {
 
   return (
     
@@ -19,7 +9,7 @@ function Category() {
     <div>
       <div className="overflow-x-auto">
         <div className="flex justify-center align-middle space-x-2 w-max">
-          {categories.map((category) => (
+          {categories?.map((category) => (
           <button
             type="submit"
             key={category.id}
