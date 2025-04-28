@@ -4,8 +4,8 @@ import resources from '../resource'
 
 function ErrorPage() {
   return (
-    <div className='h-[90vh]'>
-        <div className="text-gray-300 overflow-hidden">
+    <div className='h-[100vh]'>
+        <div className="text-gray-400 overflow-hidden">
         <Plug className="absolute top-24 left-60 rotate-[330deg] z-0"
         />
         <LibraryBig className="absolute top-[30vh] right-20 z-0" />
@@ -22,13 +22,13 @@ function ErrorPage() {
         <PartyPopper className="absolute top-[40vh] right-[35%] rotate-[330deg] z-0"
         />
       </div>
-      <div className="text-center mt-30">
+      <div className="text-center mt-50">
         <h1 className="font-extrabold text-8xl text-indigo-500">
           404{" "}
           <img
             src={resources.Error.src}
             alt="Error Image"
-            className="mx-auto mb-4 h-25 w-25 -mt-16 mr-10 sm:mr-40 lg:mr-80"
+            className="mx-auto mb-4 h-22 w-22 -mt-16 mr-10 sm:mr-50 lg:mr-90"
           />
         </h1>
         <h1 className="text-3xl font-bold mb-2 -mt-10">Page not found!</h1>

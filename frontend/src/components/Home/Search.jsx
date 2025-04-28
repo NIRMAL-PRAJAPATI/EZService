@@ -3,7 +3,7 @@ import React from 'react'
 
 function Search() {
   return (
-    <div className="max-w-3xl my-5 px-5 mx-auto text-black">
+    <div className="max-w-3xl mb-5 px-5 mx-auto text-black">
               <div className="flex gap-2">
                 <input
                   type="text"

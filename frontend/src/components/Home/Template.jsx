@@ -20,7 +20,7 @@ function Template() {
   return (
     <>
       <section className="bg-white py-12">
-        <div className="container mx-auto px-4 max-w-8x1">
+        <div className="mx-auto px-4 max-w-8x1">
           <h2 className="text-3xl font-bold text-gray-900 mb-6">Explore Template Categories</h2>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {templates.map((template, index) => (

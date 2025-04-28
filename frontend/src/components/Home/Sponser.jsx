@@ -3,11 +3,11 @@ import React from 'react'
 
 function Sponser() {
   return (
-    <section className="container px-5 sm:mx-auto my-10 text-black">
+    <section className="px-5 sm:mx-auto my-10 text-black w-full overflow-x-auto">
         {/* <h1 className="text-3xl font-bold mb-3">Sponsored</h1> */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="flex gap-4 w-max">
           {/* Service Provider Card 1 */}
-          <div className="service-card bg-white rounded-xl overflow-hidden border border-gray-300">
+          <div className="service-card bg-white rounded-xl overflow-hidden border border-gray-300 w-[270px]">
             <div className="relative">
               <img
                 src="https://images.unsplash.com/photo-1621905251189-08b45d6a269e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=500&q=80"
@@ -36,7 +36,7 @@ function Sponser() {
               <div className=" space-y-1">
                 <div className="flex items-center text-sm mb-3">
                   <span className="text-gray-700">
-                    Pipe repairs, Installations, Drain cleaning
+                    Pipe repairs, Installations, Drain cleaning, efgvefveveve
                   </span>
                 </div>
                 <div className="flex items-center text-sm">
