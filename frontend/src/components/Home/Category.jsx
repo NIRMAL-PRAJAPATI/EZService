@@ -1,13 +1,11 @@
 import React, { useEffect, useState } from 'react'
-import axios from "axios"
-
+import api from "../../config/axios-config"
 
 function Category() {
-  const [categories, setCategories] = useState([]) // {}
-  const api = 'http://localhost:3000'
+  const [categories, setCategories] = useState([]) 
 
   useEffect(()=>{
-    axios.get(`${api}/category/names`).then(response=>{
+    api.get(`/category/names`).then(response=>{
       setCategories(response.data)
       console.log(response.data)
     }).catch((err)=>{
@@ -17,10 +15,10 @@ function Category() {
 
   return (
     
-    <section className="py-5 text-black">
-    <div className="px-4">
+    <section className="p-5 mx-auto container text-black">
+    <div>
       <div className="overflow-x-auto">
-        <div className="flex space-x-2 w-max">
+        <div className="flex justify-center align-middle space-x-2 w-max">
           {categories.map((category) => (
           <button
             type="submit"

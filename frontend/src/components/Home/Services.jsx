@@ -1,16 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { UserCheck, MapPin, Star, BriefcaseBusiness ,Tag} from "lucide-react";
-import axios from "axios";
+import api from "../../config/axios-config";
 
 export default function Services() {
 
   const [services, setServices] = useState([]);
-  const api = 'http://localhost:3000';
 
   useEffect(() => {
-    axios.get(`${api}/services/`).then(response => {
+    api.get(`/services/?limit=5`).then(response => {
       setServices(response.data);
-      console.log(response.data);
     }).catch((err) => {
       console.log(err);
     })
@@ -19,12 +17,12 @@ export default function Services() {
   return (
     <div>
       {/* Featured Services */}
-      <section className="py-5 text-black">
-        <div className="px-4">
+      <section className="p-5 container mx-auto  text-black">
+        <div>
           <h2 className="text-3xl font-bold text-center mb-8">
             Top Performed Service Providers
           </h2>
-          <div className="w-full overflow-x-auto">
+          <div className="w-max overflow-x-auto">
           <div className="gap-2 flex w-max">
             {services.map((service) => (
             <div className="bg-white rounded-lg overflow-hidden border border-gray-300 p-4 w-[300px]">
