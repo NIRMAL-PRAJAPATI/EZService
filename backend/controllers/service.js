@@ -51,4 +51,21 @@ const getVerifiedServices = async (req, res)=>{
     }
 }
 
-module.exports = {getServices, getVerifiedServices};
+const getServicesByCategoryId = async (req,res)=>{
+    try{
+        const {id} = req.params;
+        const services = await service.findAll({
+            where: {category_id:id}
+        })
+
+        if(!services)
+            res.status(404).json({message: "No Services Found"})
+
+        res.status(200).json(services)
+    }catch(err){
+        console.log(err)
+        res.status(500).json({message: "Internal Server Error"})
+    }
+}
+
+module.exports = {getServices, getVerifiedServices, getServicesByCategoryId};

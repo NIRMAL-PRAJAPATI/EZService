@@ -1,13 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react'
 import api from "../../config/axios-config"
 
-function Category({categories, setActiveCategory}) {
+function Category({categories}) {
 
-  const categoryRef = useRef()
-
-  useEffect(()=>{
-    console.log("api")
-  })
   return (
     
     <section className="p-5 mx-auto container text-black">
@@ -18,8 +13,7 @@ function Category({categories, setActiveCategory}) {
           <button
             type="submit"
             key={category.id}
-            className="flex cursor-pointer py-3 px-6 bg-white rounded-md shadow-sm hover:shadow-md transition-shadow hover:border-indigo-500 border border-gray-200 truncate"
-            ref={categoryRef}
+            className="flex cursor-pointer py-3 px-6 bg-white rounded-md shadow-sm hover:shadow-md transition-shadow hover:border-indigo-500 border border-gray-200 truncate"            
             >{category.name}</button>
         ))}
         </div>

@@ -50,6 +50,7 @@ const getCategories = async (req,res)=>{
     }
 }
 
+
 module.exports = {
     getServiceCategoryNames,
     getCategoriesByIds,

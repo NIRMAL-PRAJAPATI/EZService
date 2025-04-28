@@ -1,7 +1,7 @@
 import { XIcon } from 'lucide-react'
 
 
-const Sidebar = ({categories, menuOpen})=>{
+const Sidebar = ({categories, menuOpen, setActiveCategory})=>{
 
     return  (
     
@@ -9,8 +9,8 @@ const Sidebar = ({categories, menuOpen})=>{
         <XIcon onClick={() => setMenuOpen(false)} className="md:hidden text-gray-500 hover:text-indigo-500 cursor-pointer ml-1" />
       <ul className="overflow-y-scroll h-[85vh] sm:h-[90vh]">
         {
-            categories.length > 0 && categories?.map((category)=>{
-         return (<li className="p-2 bg-indigo-500/8 rounded-t cursor-pointer hover:bg-gray-50 transition-colors">
+            categories.length > 0 && categories?.map((category, id)=>{
+         return (<li className="p-2 bg-indigo-500/8 rounded-t cursor-pointer hover:bg-gray-50 transition-colors" key={id} onClick={()=>setActiveCategory(category.id)}>
           <h3 className="font-semibold text-indigo-500">{category.name}</h3>
           <p className="text-xs text-gray-600">
             {category.description}

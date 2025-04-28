@@ -21,7 +21,7 @@ function UserHome() {
   const [isLoading, setIsLoading] = useState(true)
   const [cityServices, setCityServices] = useState([])
   const [city, setCity] = useState('ahmedabad')
-  const [activeCategory, setActiveCategory] = useState('')
+
   
   
   useEffect(()=>{

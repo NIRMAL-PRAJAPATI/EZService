@@ -22,14 +22,14 @@ const ServiceCard = ({services})=>{
                       Available
                     </span> */}
                     <h3 className="font-semibold text-md leading-none py-1" title='Ananta Plumbing Service'>
-                      Ananta Plumbing Service
+                      {service.name}
                     </h3>
                     <p className="text-sm text-gray-600 mb-1 font-semibold">
-                      ₹4100
+                      ₹{service.visiting_charge}
                     </p>
                     <div className="flex items-center text-[12px]">
                       <span className="text-gray-500">
-                        Ahmedabad, Gujarat, India
+                        {service.city}, {service.state}, {service.country}
                       </span>
                     </div>
                     <div className="flex items-center text-indigo-500 gap-0.5 mt-1">
