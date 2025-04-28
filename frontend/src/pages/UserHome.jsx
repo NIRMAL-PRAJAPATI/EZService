@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import HeroSection from "../components/Home/HeroSection";
 import Services from "../components/Home/Services";
 import UserReview from "../components/Home/UserReview";
@@ -9,8 +9,22 @@ import Sponser from "../components/Home/Sponser";
 import Template from "../components/Home/Template";
 import LRAlert from "../components/Home/LRAlert";
 import Card from "../components/Home/Cards";
+import api from "../config/axios-config";
 
 function UserHome() {
+
+  useEffect(()=>{
+
+    // condition to be added if logged in then not to show this
+    if(!localStorage.getItem('city'))
+      api.get("/user/city/get").then((response)=>{
+        localStorage.setItem('city',response.data)
+      }).catch((err)=>{
+        const city = prompt("Please enter your city:")
+        localStorage.setItem('city',city)
+      })
+  },[])
+
   return (
     <div className="bg-gray-50">
       <HeroSection />
@@ -61,7 +75,7 @@ function UserHome() {
     </div>
     </div> */}
       <TopCity />
-      <Card />
+      {/* <Card /> */}
       <Sponser />
       <Template />
       <UserReview />

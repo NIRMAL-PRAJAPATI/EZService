@@ -15,6 +15,10 @@ app.use("/category",require("./routes/serviceCategoryRoutes"));
 app.use("/services", require("./routes/serviceRoutes"));
 app.use("/template",require("./routes/categoryTemplateRoutes"))
 
+
+// Utility
+app.get("/user/city/get", require("./utilities/userLocation"))
+
 app.listen(3000, () => {
     console.log("Server is running on port http://localhost:3000/");
 });

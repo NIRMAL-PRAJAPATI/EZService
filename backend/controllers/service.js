@@ -3,12 +3,14 @@ const service_category = require('../models/serviceCategory');
 
 const getServices = async (req, res) => {
     try {
+        const {page, limit} = req.pagination;
         const services = await service.findAll({
             attributes: ['name', 'cover_image', 'visiting_charge', 'description', 'city', 'state', 'country', 'category_id'],
             include: [{
                 model: service_category,
                 attributes: ['name'],
-            }]
+            }],
+            limit:limit
         })
 
         if(!services) {
