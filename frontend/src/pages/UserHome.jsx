@@ -63,7 +63,7 @@ function UserHome() {
     <div className="bg-gray-50">
       <HeroSection />
       {/* <Search /> */}
-      <Category categories={categories} setActiveCategory={setActiveCategory}/>
+      <Category categories={categories} />
       <Services services={services}/>
       {/* <div className="p-5 container mx-auto">
       <div className="bg-indigo-500/80 rounded-xl shadow-lg overflow-hidden flex w-full sm:h-100">
