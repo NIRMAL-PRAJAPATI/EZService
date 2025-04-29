@@ -35,4 +35,5 @@ const Service = sequelize4.define('Service', {
 Service.belongsTo(ServiceCategory, { foreignKey: 'category_id' });
 ServiceCategory.hasMany(Service, { foreignKey: 'category_id' });
 
+
 module.exports = Service;

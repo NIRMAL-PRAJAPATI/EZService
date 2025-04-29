@@ -9,6 +9,7 @@ const Rankings = () => {
 
   const rankingsData = [
     {
+      id: "premium-cleaning",
       position: "1st",
       name: "Premium Cleaning Services",
       location: "Ahmedabad, Gujarat, India",
@@ -20,6 +21,7 @@ const Rankings = () => {
       },
     },
     {
+      id: "ananta-plumbing",
       position: "2nd",
       name: "Ananta Plumbing Service",
       location: "Ahmedabad, Gujarat, India",

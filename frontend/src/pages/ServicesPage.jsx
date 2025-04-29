@@ -33,19 +33,17 @@ function ServicesPage() {
   useEffect(()=>{
     if(activeCategory=='')
       return
-    setIsLoading(true)
 
     api.get(`/services/${activeCategory}/category`).then((response)=>{
       setServices(response.data)
     }).catch((err)=>{
       console.log(err)
-    }).finally(()=>{
-      setIsLoading(false)
     })
   },[activeCategory])
 
   if(isLoading)
     return <Loading />
+
   return (
       <div className="text-black mx-auto bg-gray-100">
         <div className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-5">
