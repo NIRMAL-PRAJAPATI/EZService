@@ -1,5 +1,6 @@
 const service = require('../models/service');
 const service_category = require('../models/serviceCategory');
+const providerInfo = require("../models/providerInfo")
 
 const getServices = async (req, res) => {
     try {
@@ -68,4 +69,24 @@ const getServicesByCategoryId = async (req,res)=>{
     }
 }
 
-module.exports = {getServices, getVerifiedServices, getServicesByCategoryId};
+const getServiceById = async (req,res)=>{
+    try{
+        const {id} = req.params;
+        const item = await service.findByPk(id, {
+            include:[{
+                model: providerInfo,
+
+            }]
+        })
+
+        if(!item)
+            res.status(404).json({message: "Service not found"})
+
+        res.status(200).json(item)
+    }catch(err){
+        console.log(err)
+        res.status(500).json({message: "Internal Server Error"})
+    }
+}
+
+module.exports = {getServices, getVerifiedServices, getServicesByCategoryId, getServiceById};
