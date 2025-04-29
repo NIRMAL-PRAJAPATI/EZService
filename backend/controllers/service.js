@@ -6,7 +6,7 @@ const getServices = async (req, res) => {
     try {
         const {page, limit} = req.pagination;
         const services = await service.findAll({
-            attributes: ['name', 'cover_image', 'visiting_charge', 'description', 'city', 'state', 'country', 'category_id'],
+            attributes: ['name', 'cover_image', 'visiting_charge', 'description', 'city', 'state', 'country', 'category_id','id'],
             include: [{
                 model: service_category,
                 attributes: ['name'],
@@ -75,8 +75,12 @@ const getServiceById = async (req,res)=>{
         const item = await service.findByPk(id, {
             include:[{
                 model: providerInfo,
-
-            }]
+            },
+            {
+                model: service_category,
+                attributes: ["name","id"]
+            }
+        ]
         })
 
         if(!item)

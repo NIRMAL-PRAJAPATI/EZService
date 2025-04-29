@@ -11,7 +11,7 @@ const ServiceCard = ({services})=>{
             return (
                 <div 
                     key={service.id}
-                    onClick={() => navigate('/service/2')}
+                    onClick={() => navigate(`/service/${service?.id}`)}
                     className="bg-white overflow-hidden rounded-md border border-gray-200 hover:border-indigo-500 cursor-pointer"
                 >
                     <div className="items-start">
