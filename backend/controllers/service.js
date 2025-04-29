@@ -1,12 +1,20 @@
 const service = require('../models/service');
 const service_category = require('../models/serviceCategory');
 const providerInfo = require("../models/providerInfo")
+const {getRatingsFromServiceId} = require("./serviceReview")
+const Sequelize = require("../db")
 
 const getServices = async (req, res) => {
     try {
         const {page, limit} = req.pagination;
         const services = await service.findAll({
-            attributes: ['name', 'cover_image', 'visiting_charge', 'description', 'city', 'state', 'country', 'category_id','id'],
+            attributes: ['name', 'cover_image', 'visiting_charge', 'description', 'city', 'state', 'country', 'category_id','id',
+                    
+                      [
+                        Sequelize.literal(`(SELECT AVG("rating") FROM "service_review" WHERE "service_review"."service_id" = "Service"."id")`),
+                        'average_rating'
+                      ]
+            ],
             include: [{
                 model: service_category,
                 attributes: ['name'],
@@ -31,7 +39,7 @@ const getVerifiedServices = async (req, res)=>{
     try{
         const {limit, page} = req.pagination;
         const services = await service.findAll({
-            attributes: ['name', 'cover_image', 'visiting_charge', 'description', 'city', 'state', 'country', 'category_id','badge_status','created','experience','working_images'],
+            attributes: ['id','name', 'cover_image', 'visiting_charge', 'description', 'city', 'state', 'country', 'category_id','badge_status','created','experience','working_images'],
             include: [{
                 model: service_category,
                 attributes: ['name'],
@@ -56,7 +64,11 @@ const getServicesByCategoryId = async (req,res)=>{
     try{
         const {id} = req.params;
         const services = await service.findAll({
-            where: {category_id:id}
+            where: {category_id:id},
+            attributes: ['id','name', 'cover_image', 'visiting_charge', 'description', 'city', 'state', 'country', 'category_id','badge_status','created','experience','working_images',[
+                Sequelize.literal(`(SELECT AVG("rating") FROM "service_review" WHERE "service_review"."service_id" = "Service"."id")`),
+                'average_rating'
+              ]]
         })
 
         if(!services)
@@ -69,28 +81,44 @@ const getServicesByCategoryId = async (req,res)=>{
     }
 }
 
-const getServiceById = async (req,res)=>{
-    try{
-        const {id} = req.params;
-        const item = await service.findByPk(id, {
-            include:[{
-                model: providerInfo,
-            },
-            {
-                model: service_category,
-                attributes: ["name","id"]
-            }
-        ]
-        })
-
-        if(!item)
-            res.status(404).json({message: "Service not found"})
-
-        res.status(200).json(item)
-    }catch(err){
-        console.log(err)
-        res.status(500).json({message: "Internal Server Error"})
+const getServiceById = async (req, res) => {
+    try {
+      const { id } = req.params;
+  
+      const item = await service.findByPk(id, {
+        include: [
+          {
+            model: providerInfo,
+          },
+          {
+            model: service_category,
+            attributes: ["name", "id"],
+          },
+        ],
+        attributes: {
+          include: [
+            [
+              Sequelize.literal(`(
+                SELECT AVG("rating")
+                FROM "service_review"
+                WHERE "service_review"."service_id" = "Service"."id"
+              )`),
+              "average_rating",
+            ],
+          ],
+        },
+      });
+  
+      if (!item) {
+        return res.status(404).json({ message: "Service not found" });
+      }
+  
+      res.status(200).json(item);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ message: "Internal Server Error" });
     }
-}
+  };
+  
 
 module.exports = {getServices, getVerifiedServices, getServicesByCategoryId, getServiceById};

@@ -17,7 +17,7 @@ const ServiceCard = ({services})=>{
                     <div className="items-start">
                       <div className="w-full bg-gray-100 h-26">
                         <img
-                          src="https://c8.alamy.com/comp/DERFBR/colourful-indian-shop-in-puttaparthi-andhra-pradesh-india-DERFBR.jpg"
+                          src={service.cover_image || "https://c8.alamy.com/comp/DERFBR/colourful-indian-shop-in-puttaparthi-andhra-pradesh-india-DERFBR.jpg"}
                           alt="Provider"
                           className="w-full h-full object-cover"
                         />
@@ -38,11 +38,11 @@ const ServiceCard = ({services})=>{
                           </span>
                         </div>
                         <div className="flex items-center text-indigo-500 gap-0.5 mt-1">
-                          <Star className="h-3 w-3 fill-indigo-500 inline-block" />
-                          <Star className="h-3 w-3 fill-indigo-500 inline-block" />
-                          <Star className="h-3 w-3 fill-indigo-500 inline-block" />
-                          <Star className="h-3 w-3 fill-indigo-500 inline-block" />
+                          {[...Array(Math.floor(service?.average_rating))]?.map((rate)=> <Star className="h-3 w-3 fill-indigo-500 inline-block" />)}
+                          {[...Array(5-Math.floor(service?.average_rating))]?.map((rate)=>
                           <Star className="h-3 w-3 inline-block" />
+                        )}
+                        {/* <Star className="h-3 w-3 fill-indigo-500 inline-block" /> */}
                         </div>
                       </div>
                     </div>

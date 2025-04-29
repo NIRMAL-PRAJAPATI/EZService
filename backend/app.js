@@ -14,6 +14,7 @@ app.use("/customer",require("./routes/customerInfoRoutes"));
 app.use("/category",require("./routes/serviceCategoryRoutes"));
 app.use("/services", require("./routes/serviceRoutes"));
 app.use("/template",require("./routes/categoryTemplateRoutes"))
+app.use("/reviews",require("./routes/serviceReviewRoutes"))
 
 
 // Utility

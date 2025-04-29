@@ -9,6 +9,7 @@ const ServiceProfilePage = () => {
   const [serviceData, setServiceData] = useState({})  
   const [isLoading, setIsLoading] = useState(true)
   const {id} = useParams()
+  const [reviews, setReviews] = useState([])
 
   useEffect(()=>{
     console.log(id)
@@ -18,6 +19,12 @@ const ServiceProfilePage = () => {
       console.log(err)
     }).finally(()=>{
       setIsLoading(false)
+    })
+
+    api.get(`/reviews/service/${id}/`).then((response)=>{
+      setReviews(response.data)    
+    }).catch((err)=>{
+      console.log(err)
     })
   },[])
 
@@ -142,12 +149,8 @@ const ServiceProfilePage = () => {
           <div className="sm:flex">
             <h3 className="text-xl font-bold text-gray-800 flex">Customer Exploration</h3>
             <div className="flex items-center text-primary gap-1 ml-3 mt-1 rounded">
-              {[...Array(5)]?.map((_, i) => (
-                <Star 
-                  key={i}
-                  className={`h-5 w-5 ${i < serviceData?.rating ? "fill-primary" : ""} inline-block`}
-                />
-              ))}
+              {[...Array(Math.floor(serviceData?.average_rating))]?.map((rate)=> <Star className="h-5 w-5 fill-indigo-500 inline-block" />)}
+              {[...Array(5-Math.floor(serviceData?.average_rating))]?.map((rate)=> <Star className="h-5 w-5 inline-block" />)}
             </div>
           </div>
           
@@ -163,10 +166,10 @@ const ServiceProfilePage = () => {
           </table>
           
           <div className="mt-4 space-y-4">
-            {serviceData?.reviews?.map((review, index) => (
+            {reviews?.map((review, index) => (
               <div key={index} className="p-4 border rounded bg-gray-50 shadow-sm">
                 <p className="font-semibold text-gray-800 justify-between flex">
-                  {review.name} <span className="text-gray-500 text-sm">{review.date}</span>
+                  {review.name} <span className="text-gray-500 text-sm">{review.created}</span>
                 </p>
                 <p className="text-gray-600 text-sm">{review.comment}</p>
               </div>
