@@ -4,7 +4,7 @@ const RankingCard = ({ position, name, location, imageUrl, metrics, id }) => {
   const navigate = useNavigate()
   
   const handleClick = () => {
-    navigate(`/service/${id}`)
+    navigate('/service/2')
   }
 
   return (
