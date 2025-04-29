@@ -1,3 +1,4 @@
+require('dotenv').config();
 express = require('express');
 app = express();
 cors = require("cors")
@@ -16,9 +17,9 @@ app.use("/services", require("./routes/serviceRoutes"));
 app.use("/template",require("./routes/categoryTemplateRoutes"))
 app.use("/reviews",require("./routes/serviceReviewRoutes"))
 
-
 // Utility
 app.get("/user/city/get", require("./utilities/userLocation"))
+app.use('/otp', require("./routes/otpRoutes"));
 
 app.listen(3000, () => {
     console.log("Server is running on port http://localhost:3000/");
