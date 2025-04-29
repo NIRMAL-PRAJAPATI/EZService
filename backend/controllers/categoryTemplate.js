@@ -1,5 +1,5 @@
 const CategoryTemplate = require("../models/categoryTemplate")
-const {getCategoriesByIds} = require("../controllers/serviceCategory")
+const {getCategoriesByIds} = require("../controllers/serviceCategory");
 
 const getAllTemplates = async (req,res)=>{
     try{
@@ -28,6 +28,23 @@ const getAllTemplates = async (req,res)=>{
     }
 }
 
+const getMinimalTemplate = async (req,res)=>{
+    try{
+        const templates = await CategoryTemplate.findAll({
+            attributes: ["id","name"]
+        })
+
+        if(!templates)
+            res.status(404).json({message: "Templates not found"})
+
+        res.status(200).json(templates)
+    }catch(err){
+        console.log(err)
+        res.status(500).json({message:"Internal Server Error"})
+    }
+}
+
 module.exports = {
-    getAllTemplates
+    getAllTemplates,
+    getMinimalTemplate
 }
