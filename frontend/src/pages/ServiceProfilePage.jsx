@@ -48,7 +48,7 @@ const ServiceProfilePage = () => {
     return <Loading />
   return (
     <div className="bg-gray-50">
-      <main className="p-2 sm:p-8 bg-white shadow-lg rounded-lg md:my-5 mx-auto border border-dashed border-primary max-w-7xl">
+      <main className="p-2 sm:p-8 bg-white shadow-lg rounded-lg md:my-5 mx-auto border border-dashed border-indigo-500 max-w-7xl">
         <div className="flex flex-col md:flex-row items-center gap-8">
           <img 
             src={serviceData?.cover_image || "/placeholder.svg"} 
@@ -60,7 +60,7 @@ const ServiceProfilePage = () => {
               {serviceData?.name} 
               <p className="mt-3">
                 {serviceData?.badge_status && (
-                  <span className="flex bg-primary/80 text-white ml-2 px-2 py-1 rounded text-xs">
+                  <span className="flex bg-indigo-500/80 text-white ml-2 px-2 py-1 rounded text-xs">
                     <BadgeCheck className="h-4 w-4" />
                     Verifed
                   </span>
@@ -68,7 +68,7 @@ const ServiceProfilePage = () => {
               </p>
             </h2>
             <p className="flex text-gray-500">{serviceData?.ServiceCategory?.name}</p>
-            <div className="mt-4 space-y-1 text-primary">
+            <div className="mt-4 space-y-1 text-indigo-500">
               <div className="flex items-center gap-1">
                 <ShieldUser className="h-4" />
                 <p className="text-gray-800 tracking-wide text-sm">
@@ -101,7 +101,7 @@ const ServiceProfilePage = () => {
         </section>
 
         <section className="mt-3 flex">
-          <p className="text-primary font-bold text-2xl">₹ {serviceData?.visiting_charge}</p>
+          <p className="text-indigo-500 font-bold text-2xl">₹ {serviceData?.visiting_charge}</p>
           <div onClick={handleTermsClick} className="cursor-pointer">
             <CircleAlert className="h-3 w-5 mt-3 text-gray-500" />
           </div>
@@ -110,13 +110,13 @@ const ServiceProfilePage = () => {
         <section className="mt-2 gap-1 space-y-1 sm:space-y-0 sm:flex">
           <button 
             onClick={handleGetService}
-            className="px-3 py-2 border bg-primary text-white tracking-wide font-medium rounded"
+            className="px-3 py-2 border bg-indigo-500 text-white tracking-wide font-medium rounded"
           >
             Get Service
           </button>
           <button 
             onClick={handleChat}
-            className="px-3 py-2 border border-primary text-primary tracking-wide font-medium rounded"
+            className="px-3 py-2 border border-indigo-500 text-indigo-500 tracking-wide font-medium rounded"
           >
             Chat with Service Provider
           </button>
@@ -139,7 +139,7 @@ const ServiceProfilePage = () => {
                 key={index}
                 src={image || "/placeholder.svg"} 
                 alt={`Work sample ${index + 1}`}
-                className="rounded border hover:border-primary h-60 w-60 object-contain bg-gray-50"
+                className="rounded border border-gray-300 hover:border-indigo-500 h-60 w-60 object-contain bg-gray-50"
               />
             ))}
           </div>
@@ -148,7 +148,7 @@ const ServiceProfilePage = () => {
         <section className="mt-8">
           <div className="sm:flex">
             <h3 className="text-xl font-bold text-gray-800 flex">Customer Exploration</h3>
-            <div className="flex items-center text-primary gap-1 ml-3 mt-1 rounded">
+            <div className="flex items-center text-indigo-500 gap-1 ml-3 mt-1 rounded">
               {[...Array(Math.floor(serviceData?.average_rating))]?.map((rate)=> <Star className="h-5 w-5 fill-indigo-500 inline-block" />)}
               {[...Array(5-Math.floor(serviceData?.average_rating))]?.map((rate)=> <Star className="h-5 w-5 inline-block" />)}
             </div>
@@ -167,11 +167,11 @@ const ServiceProfilePage = () => {
           
           <div className="mt-4 space-y-4">
             {reviews?.map((review, index) => (
-              <div key={index} className="p-4 border rounded bg-gray-50 shadow-sm">
-                <p className="font-semibold text-gray-800 justify-between flex">
-                  {review.name} <span className="text-gray-500 text-sm">{review.created}</span>
+              <div key={index} className="p-4 border border-gray-300 rounded">
+                <p className="font-semibold justify-between flex">
+                  {review.name} <span className="text-gray-800 text-sm">{review.created}</span>
                 </p>
-                <p className="text-gray-600 text-sm">{review.comment}</p>
+                <p className="text-gray-900 text-sm">{review.comment}</p>
               </div>
             ))}
           </div>
