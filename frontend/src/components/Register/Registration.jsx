@@ -6,20 +6,20 @@ import { useNavigate } from 'react-router-dom';
 function Registration () {
   const { register, handleSubmit, reset, watch, setError, formState: {errors} } = useForm();
   const navigate = useNavigate();
+    
   const [errorMessage, setErrorMessage] = useState("");
   const api = 'http://localhost:3000';
 
-  const onRegister = async (formData) => {
+  const onVarifyData = async (formData) => {
 
-      await axios.post(`${api}/customer/register`, formData).then(response => {
-        navigate('/register/mobilevarification?mobile=' + formData.mobile);
+      await axios.post(`${api}/customer/varifyemailmobile`, formData).then(response => {
+        navigate('/register/mobilevarification', {state: {'formData': formData}});
       }).catch((error) => {
       if(error.response) {
         reset(error.response.data.data);
         setErrorMessage(error.response.data.errorMessage);
       } else {
         setErrorMessage("");
-        console.log("successful");
       }
     })
   }
@@ -28,7 +28,7 @@ function Registration () {
     <>
         <h1 className="text-3xl font-extrabold text-center mb-8">Create an account</h1>
 
-        <form onSubmit={handleSubmit(onRegister)}>
+        <form onSubmit={handleSubmit(onVarifyData)}>
           <div className="mb-4 relative">
             <label className="absolute left-3 -top-3 bg-white px-1 text-sm font-medium text-indigo-500">Your Name</label>
             <input
