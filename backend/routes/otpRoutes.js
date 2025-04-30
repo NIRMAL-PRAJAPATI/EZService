@@ -7,6 +7,7 @@ router.post('/send-otp', async (req, res) => {
   const { phone } = req.body;
   try {
     const response = await sendOtp(phone);
+    console.log(phone);
     res.send({ status: 'OTP Sent', sid: response.sid });
   } catch (err) {
     res.status(500).send({ errorMessage: err.message });
@@ -18,6 +19,7 @@ router.post('/verify-otp', async (req, res) => {
   const { phone, code } = req.body;
   try {
     const response = await verifyOtp(phone, code);
+    console.log(phone + " and code is " + code)
     if (response.status === 'approved') {
       res.send({ status: 'OTP Verified' });
     } else {

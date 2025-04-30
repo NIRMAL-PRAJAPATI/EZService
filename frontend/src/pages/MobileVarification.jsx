@@ -10,7 +10,6 @@ import { useForm } from 'react-hook-form';
   const [errorMessage, setErrorMessage] = useState("");
 
   const { formData } = location.state || {};
-  console.log(formData);
   const navigate = useNavigate();
 
   const api = "http://localhost:3000";
@@ -39,37 +38,48 @@ import { useForm } from 'react-hook-form';
   }, [isCounting, OTPTimer]);
 
   const sendOTP = async () => {
-    await axios.post(`${api}/otp/send-otp`, {phone: formData.mobile}).then(response => {
+    console.log("i am running" + formData.mobile)
+    await axios.post(`${api}/otp/send-otp`, {phone: `+91${formData.mobile}`}).then(response => {
     setOTPTimer(20)
     setIsCounting(true);
+    console.log("i am running")
     }).catch((error) => {
+    console.log("i am running")
       setErrorMessage(error.response.data.errorMessage)
     })
   }
 
-  const varifyOTP = async (data) => {
-    await axios.post(`${api}/otp/verify-otp`, {phone: formData.mobile, otp: data.otp})
-  }
-
-  const onRegister = async () => {
-    // await axios.post(`${api}.otp/verify-otp`, formData.mobile)
-    await axios.post(`${api}/customer/register`, formData).then(response => {
-      navigate('/');
+  const verifyOTP = async (data) => {
+    console.log(formData.mobile + data.otp)
+    await axios.post(`${api}/otp/verify-otp`, {
+      phone: `+91${formData.mobile}`,
+      code: data.otp
+    }).then(response => {
+      console.log("verified")
+      axios.post(`${api}/customer/register`, formData).then(response => {
+        console.log("registered")
+        navigate('/');
+      }).catch((error) => {
+        if(error.response) {
+          console.log("problem in register");
+          setErrorMessage(error.response.data.errorMessage);
+        } else {
+          setErrorMessage("");
+        }
+      })
     }).catch((error) => {
-      if(error.response) {
-        setErrorMessage(error.response.data.errorMessage);
-      } else {
-        setErrorMessage("");
-      }
+      console.log("problem in verification")
+      setErrorMessage(error.response.data.errorMessage);
     })
   }
+  
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-white">
       <div className="w-full max-w-md p-5">
       <h1 className="text-3xl font-extrabold text-center mb-8">Mobile Varification</h1>
 
-<form onSubmit={handleSubmit(onRegister)}>
+<form onSubmit={handleSubmit(verifyOTP)}>
   <div className="mb-4 relative">
     <label className="absolute left-3 -top-3 bg-white px-1 text-sm font-medium text-indigo-500">Mobile No.</label>
     <input
@@ -89,7 +99,7 @@ import { useForm } from 'react-hook-form';
       className="block w-full pl-4 pr-3 py-3 text-gray-800 border border-gray-300 rounded-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
     />
   </div>
-  <button type="button" className="border-none text-white rounded-sm h-12 bg-indigo-500 hover:bg-indigo-600" onClick={handleSubmit(sendOTP)}>{isCounting ? `0 : `+OTPTimer : buttonText}</button>
+  <button type="button" className="border-none text-white rounded-sm h-12 bg-indigo-500 hover:bg-indigo-600" onClick={sendOTP}>{isCounting ? `0 : `+OTPTimer : buttonText}</button>
   </div>
   <p className="text-red-600 -mt-2 mb-1 text-sm">{errorMessage}</p>
   <button
