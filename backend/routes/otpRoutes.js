@@ -9,7 +9,7 @@ router.post('/send-otp', async (req, res) => {
     const response = await sendOtp(phone);
     res.send({ status: 'OTP Sent', sid: response.sid });
   } catch (err) {
-    res.status(500).send({ error: err.message });
+    res.status(500).send({ errorMessage: err.message });
   }
 });
 
@@ -24,7 +24,7 @@ router.post('/verify-otp', async (req, res) => {
       res.status(400).send({ status: 'Invalid Code' });
     }
   } catch (err) {
-    res.status(500).send({ error: err.message });
+    res.status(500).send({ errorMessage: err.message });
   }
 });
 

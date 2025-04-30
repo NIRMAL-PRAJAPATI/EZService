@@ -11,7 +11,8 @@ const CustomerInfo = sequelize2.define('CustomerInfo', {
   created: DataTypes.DATE,
   city: DataTypes.STRING,
   state: DataTypes.STRING,
-  country: DataTypes.STRING
+  country: DataTypes.STRING,
+  pincode: DataTypes.INTEGER
 }, {
   tableName: 'customer_info',
   timestamps: false,

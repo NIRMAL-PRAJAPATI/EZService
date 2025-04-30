@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
  function MobileVarification() {
-  const { handleSubmit } = useForm();
+  const { handleSubmit, register } = useForm();
 
   const location = useLocation();
   const [errorMessage, setErrorMessage] = useState("");
@@ -15,7 +15,7 @@ import { useForm } from 'react-hook-form';
 
   const api = "http://localhost:3000";
 
-  const [OTPTimer, setOTPTimer] = useState(6);
+  const [OTPTimer, setOTPTimer] = useState(20);
   const [isCounting, setIsCounting] = useState(false);
   const [buttonText, setButtonText] = useState("send OTP");
 
@@ -39,11 +39,20 @@ import { useForm } from 'react-hook-form';
   }, [isCounting, OTPTimer]);
 
   const sendOTP = async () => {
-    setOTPTimer(6)
+    await axios.post(`${api}/otp/send-otp`, {phone: formData.mobile}).then(response => {
+    setOTPTimer(20)
     setIsCounting(true);
+    }).catch((error) => {
+      setErrorMessage(error.response.data.errorMessage)
+    })
+  }
+
+  const varifyOTP = async (data) => {
+    await axios.post(`${api}/otp/verify-otp`, {phone: formData.mobile, otp: data.otp})
   }
 
   const onRegister = async () => {
+    // await axios.post(`${api}.otp/verify-otp`, formData.mobile)
     await axios.post(`${api}/customer/register`, formData).then(response => {
       navigate('/');
     }).catch((error) => {
@@ -74,8 +83,9 @@ import { useForm } from 'react-hook-form';
   <div className="mb-4 relative col-span-2">
     <label className="absolute left-3 -top-3 bg-white px-1 text-sm font-medium text-indigo-500">Enter OTP</label>
     <input
-      type="mobile"
-      name="mobile"
+      type="number"
+      name="otp"
+      {...register("otp", {required: "OTP is required"})}
       className="block w-full pl-4 pr-3 py-3 text-gray-800 border border-gray-300 rounded-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
     />
   </div>
