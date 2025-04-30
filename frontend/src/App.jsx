@@ -41,7 +41,9 @@ function App() {
           <Route path="/service/:id" element={<ServiceProfilePage />} />
           <Route path="/order" element={<Order />} />
           <Route path="/errorpage" element={<ErrorPage />} />
-          <Route path="/orders/orderdetails" element={<OrderDetails />} />
+          <Route path="/orders/" element={<OrderDetails />} >
+            <Route path=":id/view" element={<OrderDetails />} />
+          </Route>
           <Route path='/book' element={<BookOrderPage />} />
           <Route path='/login' element={<Login />}/>
           <Route path='/register' element={<Register />} />
