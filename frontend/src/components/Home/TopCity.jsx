@@ -50,20 +50,21 @@ function TopCity() {
         </div>
 
         {/* City Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 px-4 md:px-0">
+        <div className='w-full overflow-x-auto'>
+        <div className="flex gap-4 px-4 md:px-0 w-max">
           {cityData.map(({ city, imageUrl }) => (
             <div
               key={city}
-              className="bg-white border border-gray-200 hover:border-indigo-500 rounded-lg overflow-hidden"
+              className="bg-white border border-gray-200 hover:border-indigo-500 rounded-lg overflow-hidden w-[250px]"
             >
               <div className="flex">
                 <img
                   src={imageUrl}
                   alt={city}
-                  className="w-20 h-20 object-cover"
+                  className="w-18 h-18 object-cover"
                   loading="lazy"
                 />
-                <div className="p-3">
+                <div className="p-2">
                   <h3 className="font-bold text-lg">{city.toUpperCase()}</h3>
                   <a href="#" className="text-blue-500 flex items-center">
                     Explore
@@ -72,6 +73,7 @@ function TopCity() {
               </div>
             </div>
           ))}
+        </div>
         </div>
 
       </div>

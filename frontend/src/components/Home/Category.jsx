@@ -5,7 +5,7 @@ function Category({categories}) {
 
   return (
     
-    <section className="p-5 mx-auto container text-black">
+    <section className="p-5 mx-auto text-black">
     <div>
       <div className="overflow-x-auto">
         <div className="flex justify-center align-middle space-x-2 w-max">
