@@ -1,4 +1,5 @@
 import { ChevronRight } from "lucide-react"
+import { Link } from "react-router-dom"
 
 const ProductCategoryCards = ({services, city}) => {
 
@@ -16,6 +17,7 @@ const ProductCategoryCards = ({services, city}) => {
                 key={category.id}
                 className="flex flex-col items-center justify-center p-2 hover:shadow-md transition-shadow cursor-pointer border-b border-white hover:border-indigo-500"
               >
+                <Link to={`/services/${category.id}`} className="w-full h-full flex flex-col items-center justify-center">
                 <div className="w-40 h-40 mb-1">
                   <img
                     src={category.cover_image || "/placeholder.svg"}
@@ -25,6 +27,7 @@ const ProductCategoryCards = ({services, city}) => {
                 </div>
                 <h3 className="text-sm text-center font-medium line-clamp-2">{category.name}</h3>
                 <p className={`text-sm mt-1 text-blue-600 font-semibold`}>₹{category.visiting_charge}</p>
+                </Link>
               </div>
             ))}
           </div>

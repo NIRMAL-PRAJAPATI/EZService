@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { UserCheck, MapPin, Star, BriefcaseBusiness ,Tag} from "lucide-react";
 import api from "../../config/axios-config";
+import { Link } from "react-router-dom";
 
 export default function Services({services}) {
 
@@ -17,11 +18,12 @@ export default function Services({services}) {
           <div className="gap-2 flex w-max">
             {services.map((service) => (
             <div className="bg-white rounded-lg overflow-hidden border border-gray-300 p-4 w-[300px]">
+              <Link to={`/service/${service.id}`} className="flex flex-col gap-2">
             <div>
                     <h3 className="text-md font-bold -mb-1">
-                      {service.name}
+                      {service?.ProviderInfo?.name}
                     </h3>
-                    <p className="text-gray-600 text-xs">{service?.ServiceCategory?.name}</p>
+                    <p className="text-gray-600 text-xs">{service?.name}</p>
                   </div>
               <img src={service.cover_image ? service.cover_image : `https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQeJQeJyzgAzTEVqXiGe90RGBFhfp_4RcJJMQ&s`}
                 className="w-full h-40 object-cover p-4"
@@ -32,8 +34,7 @@ export default function Services({services}) {
                   <span className="bg-indigo-500/10 text-indigo-500 px-2 py-1 rounded-md text-sm">₹{service.visiting_charge}</span>
                 <div className="flex items-center gap-1">
                   <Star className="h-4 w-4 text-indigo-500 fill-indigo-500"/>
-                  <span className="font-medium text-sm">4.8</span>
-                  <span className="text-gray-600 text-[10px]">(156 reviews)</span>
+                  <span className="font-medium text-sm">{parseFloat(service?.average_rating || 0).toFixed(1)}</span>
                 </div>
                 </div>
                 <div className="flex items-center gap-2 my-1 text-sm">
@@ -41,6 +42,7 @@ export default function Services({services}) {
                   <span>{service.city}, {service.state}, {service.country}</span>
                 </div>
               </div>
+              </Link>
             </div>
             ))}
           </div>

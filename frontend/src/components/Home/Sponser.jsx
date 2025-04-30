@@ -1,6 +1,7 @@
 import { BriefcaseBusiness, MapPin, Tag, UserCheck, Verified } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
 import api from '../../config/axios-config'
+import { Link } from 'react-router-dom'
 
 function Sponser({services}) {
 
@@ -12,6 +13,7 @@ function Sponser({services}) {
           {services.map((service,key)=>{
 
             return (<div key={key} className="service-card bg-white rounded-xl overflow-hidden border border-gray-300 w-[270px]">
+              <Link to={`/service/${service.id}`} className="block h-full">
             <div className="relative">
               <img
                 src={service.cover_image || "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=500&q=80"}
@@ -30,7 +32,7 @@ function Sponser({services}) {
                     {service.name}
                   </h3>
                   <p className="text-sm text-gray-500 flex items-center -mt-1">
-                    {service.ServiceCategory.name}
+                    {service?.ProviderInfo?.name}
                   </p>
                 </div>
                 <div className="bg-indigo-500/10 text-indigo-500 font-medium px-2.5 py-0.5 rounded flex items-center">
@@ -66,6 +68,7 @@ function Sponser({services}) {
                 }
               </div>
             </div>
+            </Link>
           </div>)
           })}
         </div>

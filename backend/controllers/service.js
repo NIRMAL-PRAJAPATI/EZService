@@ -18,6 +18,10 @@ const getServices = async (req, res) => {
             include: [{
                 model: service_category,
                 attributes: ['name'],
+            },
+            {
+                model: providerInfo,
+                attributes: ['name','id']
             }],
             limit:limit
         })
@@ -43,7 +47,12 @@ const getVerifiedServices = async (req, res)=>{
             include: [{
                 model: service_category,
                 attributes: ['name'],
-            }],
+            },
+            {
+                model: providerInfo,
+                attributes: ['name','id']
+            }
+          ],
             limit:limit,
             where: {'badge_status':true}
         })
