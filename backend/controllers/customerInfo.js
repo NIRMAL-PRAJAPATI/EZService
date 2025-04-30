@@ -17,7 +17,7 @@ const getCustomerInfo = async (req, res) => {
 }
 
 const registerCustomer = async (req, res) => {
-    let { name, email, mobile, password } = req.body;
+    let { name, email, mobile, pincode, city, state, country, password } = req.body;
     
     try {
         const existanceCheck = await User.findOne({
@@ -33,7 +33,7 @@ const registerCustomer = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
     await User.create({name, email, mobile, password: hashedPassword});
     res.status(201).json({message: "Registration successfull",
-        data: { name, email, mobile, password }
+        data: { name, email, mobile, pincode, city, state, country, password }
     });
  } catch(error) {
         res.status(500).json({errorMessage: "Internal Server Error"});
@@ -41,7 +41,7 @@ const registerCustomer = async (req, res) => {
 }
 
 const varifyEmailMobile = async (req, res) => {
-    let { name, email, mobile, password } = req.body;
+    let { name, email, mobile, pincode, city, state, country, password } = req.body;
 
     try {
         const existanceCheck = await User.findOne({
@@ -51,7 +51,7 @@ const varifyEmailMobile = async (req, res) => {
         if(existanceCheck) {
             return res.status(409).json({
                 errorMessage: "email or mobile is already registered",
-                data: { name, email, mobile, password }
+                data: { name, email, mobile, pincode, city, state, country, password }
             });
         }
         res.status(201).json({message: "Registration successfull"});

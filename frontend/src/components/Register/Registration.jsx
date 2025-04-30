@@ -10,7 +10,8 @@ function Registration () {
   const [errorMessage, setErrorMessage] = useState("");
   const api = 'http://localhost:3000';
 
-  const onVarifyData = async (formData) => {
+  const onVarifyData = async (data) => {
+    const { confirmpassword, ...formData } = data;
 
       await axios.post(`${api}/customer/varifyemailmobile`, formData).then(response => {
         navigate('/register/mobilevarification', {state: {'formData': formData}});
@@ -66,6 +67,52 @@ function Registration () {
               })}
             />
             {errors.email && <p className="text-red-600 text-sm">{errors.email.message}</p>}
+          </div>
+
+          <div className='flex gap-2'>
+          <div className="mb-4 relative">
+            <label className="absolute left-3 -top-3 bg-white px-1 text-sm font-medium text-indigo-500">PIN Code</label>
+            <input
+              type="number"
+              name="pincode"
+              className="block w-full pl-4 pr-3 py-3 text-gray-800 border border-gray-300 rounded-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+              {...register("pincode", {required: "PIN Code is required"})}
+            />
+            {errors.pincode && <p className="text-red-600 text-sm">{errors.pincode.message}</p>}
+          </div>
+          <div className="mb-4 relative">
+            <label className="absolute left-3 -top-3 bg-white px-1 text-sm font-medium text-indigo-500">City / Village</label>
+            <input
+              type="text"
+              name="city"
+              className="block w-full pl-4 pr-3 py-3 text-gray-800 border border-gray-300 rounded-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+              {...register("city", {required: "city is required"})}
+            />
+            {errors.city && <p className="text-red-600 text-sm">{errors.city.message}</p>}
+          </div>
+          </div>
+
+          <div className='flex gap-2'>
+          <div className="mb-4 relative">
+            <label className="absolute left-3 -top-3 bg-white px-1 text-sm font-medium text-indigo-500">State</label>
+            <input
+              type="text"
+              name="state"
+              className="block w-full pl-4 pr-3 py-3 text-gray-800 border border-gray-300 rounded-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+              {...register("state", {required: "State is required"})}
+            />
+            {errors.state && <p className="text-red-600 text-sm">{errors.state.message}</p>}
+          </div>
+          <div className="mb-4 relative">
+            <label className="absolute left-3 -top-3 bg-white px-1 text-sm font-medium text-indigo-500">Country</label>
+            <input
+              type="text"
+              name="country"
+              className="block w-full pl-4 pr-3 py-3 text-gray-800 border border-gray-300 rounded-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+              {...register("country", {required: "country is required"})}
+            />
+            {errors.country && <p className="text-red-600 text-sm">{errors.country.message}</p>}
+          </div>
           </div>
 
           <div className="mb-4 relative">
