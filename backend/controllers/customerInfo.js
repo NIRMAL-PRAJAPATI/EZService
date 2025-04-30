@@ -18,15 +18,24 @@ const getCustomerInfo = async (req, res) => {
 
 const registerCustomer = async (req, res) => {
     let { name, email, mobile, password } = req.body;
-    console.log(req.body);
     
     try {
-        const hashedPassword = await bcrypt.hash(password, 10);
-        await User.create({name, email, mobile, password: hashedPassword});
+        const existanceCheck = await User.findOne({
+            where: {mobile}
+        });
 
-        res.status(201).json({message: "Registration successfull"});
-    } catch(error) {
-        console.log(error);
+        if(existanceCheck) {
+            return res.status(409).json({
+                errorMessage: "mobile number already varified",
+            });
+    }
+            
+    const hashedPassword = await bcrypt.hash(password, 10);
+    await User.create({name, email, mobile, password: hashedPassword});
+    res.status(201).json({message: "Registration successfull",
+        data: { name, email, mobile, password }
+    });
+ } catch(error) {
         res.status(500).json({errorMessage: "Internal Server Error"});
     }
 }

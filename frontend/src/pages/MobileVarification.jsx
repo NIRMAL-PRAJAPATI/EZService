@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
  function MobileVarification() {
@@ -14,6 +14,34 @@ import { useForm } from 'react-hook-form';
   const navigate = useNavigate();
 
   const api = "http://localhost:3000";
+
+  const [OTPTimer, setOTPTimer] = useState(6);
+  const [isCounting, setIsCounting] = useState(false);
+  const [buttonText, setButtonText] = useState("send OTP");
+
+  useEffect(() => {
+    let interval;
+
+    if (isCounting && OTPTimer > 0) {
+      interval = setInterval(() => {
+        setOTPTimer(prev => {
+          if (prev <= 1) {
+            clearInterval(interval);
+            setIsCounting(false);
+            setButtonText("resend OTP")
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [isCounting, OTPTimer]);
+
+  const sendOTP = async () => {
+    setOTPTimer(6)
+    setIsCounting(true);
+  }
 
   const onRegister = async () => {
     await axios.post(`${api}/customer/register`, formData).then(response => {
@@ -32,7 +60,7 @@ import { useForm } from 'react-hook-form';
       <div className="w-full max-w-md p-5">
       <h1 className="text-3xl font-extrabold text-center mb-8">Mobile Varification</h1>
 
-<form onClick={handleSubmit(onRegister)}>
+<form onSubmit={handleSubmit(onRegister)}>
   <div className="mb-4 relative">
     <label className="absolute left-3 -top-3 bg-white px-1 text-sm font-medium text-indigo-500">Mobile No.</label>
     <input
@@ -51,7 +79,7 @@ import { useForm } from 'react-hook-form';
       className="block w-full pl-4 pr-3 py-3 text-gray-800 border border-gray-300 rounded-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
     />
   </div>
-  <button type="button" className="border-none text-white rounded-sm h-12 bg-indigo-500">Get OTP</button>
+  <button type="button" className="border-none text-white rounded-sm h-12 bg-indigo-500 hover:bg-indigo-600" onClick={handleSubmit(sendOTP)}>{isCounting ? `0 : `+OTPTimer : buttonText}</button>
   </div>
   <p className="text-red-600 -mt-2 mb-1 text-sm">{errorMessage}</p>
   <button

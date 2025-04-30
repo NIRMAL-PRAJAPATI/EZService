@@ -8,12 +8,12 @@ export default function Services({services}) {
   return (
     <div>
       {/* Featured Services */}
-      <section className="p-5 container mx-auto  text-black">
+      <section className="p-5 mx-auto text-black">
         <div>
           <h2 className="text-3xl font-bold text-center mb-8">
             Top Performed Service Providers
           </h2>
-          <div className="w-max overflow-x-auto">
+          <div className="w-full overflow-x-auto">
           <div className="gap-2 flex w-max">
             {services.map((service) => (
             <div className="bg-white rounded-lg overflow-hidden border border-gray-300 p-4 w-[300px]">
