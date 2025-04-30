@@ -64,16 +64,16 @@ const Navbar = () => {
                 onClick={() => setDropdownOpen(true)}
                 onMouseLeave={() => setDropdownOpen(false)}
               >
-                <Link className="text-gray-600 hover:text-black flex items-center cursor-pointer">
+                <Link className="text-gray-600 hover:text-black flex items-center cursor-pointer" to="/templates">
                   Templates
-                  {dropdownOpen ? (
+                  {/* {dropdownOpen ? (
                     <ChevronUp className="h-5 w-5 mt-[2px] transition duration-150" />
                   ) : (
                     <ChevronDown className="h-5 w-5 mt-[2px] transition duration-150" />
-                  )}
+                  )} */}
                 </Link>
 
-                <ul
+                {/* <ul
                   className={`px-5 w-max py-3 absolute bg-white space-y-2 text-gray-600 -ml-10 pt-4 ${
                     dropdownOpen ? "block" : "hidden"
                   }`}
@@ -93,7 +93,7 @@ const Navbar = () => {
                   <li><Link className="hover:text-black cursor-pointer" to="/errorpage" onClick={toggleMenu}>
                     Party Things
                   </Link></li>
-                </ul>
+                </ul> */}
               </div>
               <Link onClick={toggleMenu}
                 to="/rankings"
