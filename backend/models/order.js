@@ -1,6 +1,6 @@
 const sequelize4 = require('../db');
 const { Sequelize, DataTypes } = require('sequelize');
-const CustomerInfo = require("./providerInfo")
+const CustomerInfo = require("./customerInfo")
 const ProviderInfo = require("./providerInfo")
 const Service = require("./service")
 

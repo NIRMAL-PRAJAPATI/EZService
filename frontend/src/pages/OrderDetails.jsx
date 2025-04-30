@@ -1,84 +1,34 @@
 "use client"
 
 import { Box, Contact, CreditCardIcon, Home, LucideTimerReset, Store, Timer } from "lucide-react"
-import { useState } from "react"
-import { Link } from "react-router-dom"
-
-// Sample order data
-const orderData = {
-  id: "ORD-7829-4321",
-  date: "2023-11-15",
-  status: "Fullfilled", // processing, shipped, delivered, cancelled
-  customer: {
-    name: "Alex Johnson",
-    email: "alex.johnson@example.com",
-    phone: "+1 (555) 123-4567",
-  },
-  shippingAddress: {
-    street: "123 Main Street",
-    city: "San Francisco",
-    state: "CA",
-    zipCode: "94105",
-    country: "United States",
-  },
-  shippingMethod: "Express Delivery (1-2 business days)",
-  payment: {
-    method: "Credit Card",
-    cardLast4: "4242",
-    billingAddress: {
-      street: "123 Main Street",
-      city: "San Francisco",
-      state: "CA",
-      zipCode: "94105",
-      country: "United States",
-    },
-  },
-  items: [
-    {
-      id: "PROD-001",
-      name: "Premium Wireless Headphones",
-      image: "/placeholder.svg?height=80&width=80",
-      price: 129.99,
-      quantity: 1,
-      color: "Black",
-      total: 129.99,
-    },
-    {
-      id: "PROD-042",
-      name: "Smart Fitness Tracker",
-      image: "/placeholder.svg?height=80&width=80",
-      price: 89.99,
-      quantity: 1,
-      color: "Silver",
-      total: 89.99,
-    },
-    {
-      id: "PROD-108",
-      name: "Portable Bluetooth Speaker",
-      image: "/placeholder.svg?height=80&width=80",
-      price: 59.99,
-      quantity: 2,
-      color: "Blue",
-      total: 119.98,
-    },
-  ],
-  subtotal: 339.96,
-  tax: 27.2,
-  shipping: 15.0,
-  total: 382.16,
-  estimatedDelivery: "2023-11-17",
-}
+import { useEffect, useState } from "react"
+import { Link, useParams } from "react-router-dom"
+import api from "../config/axios-config"
+import Loading from "../components/Loading"
 
 export default function OrderDetails() {
-  const [order, setOrder] = useState(orderData)
   const [showCancelDialog, setShowCancelDialog] = useState(false)
   const [showDateDialog, setShowDateDialog] = useState(false)
-  const [selectedDate, setSelectedDate] = useState(order.estimatedDelivery)
-  const [selectedTime, setSelectedTime] = useState("18:00")
+  const [selectedDate, setSelectedDate] = useState("")
+  const [selectedTime, setSelectedTime] = useState("")
   const [cancelReason, setCancelReason] = useState("")
   const [showSuccessAlert, setShowSuccessAlert] = useState(false)
   const [alertMessage, setAlertMessage] = useState("")
   const [showDatePicker, setShowDatePicker] = useState(false)
+  const [orderData, setOrderData] = useState({})
+  const {id} = useParams()
+  const [loading, setLoading] = useState(true)
+
+  useEffect(()=>{
+    api.get(`/orders/${id}`).then((res)=>{
+      console.log(res.data)
+      setOrderData(res.data)
+    }).catch((err)=>{
+      console.log(err)
+    }).finally(()=>{
+      setLoading(false)
+    })
+  },[])
 
   const handleCancelOrder = () => {
     setOrder({
@@ -94,9 +44,9 @@ export default function OrderDetails() {
   const getStatusBadge = (status) => {
     const baseStyle = "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
     switch (status) {
-      case "processing":
+      case "pending":
         return <span className={`${baseStyle} bg-amber-500 text-white`}>Processing</span>
-      case "Fullfilled":
+      case "fulfilled":
         return <span className={`${baseStyle} bg-indigo-500 text-white`}>Fullfilled</span>
         case "cancelled":
           return <span className={`${baseStyle} bg-red-500 text-white`}>Cancelled</span>
@@ -104,6 +54,9 @@ export default function OrderDetails() {
         return <span className={`${baseStyle} bg-gray-500 text-white`}>Unknown</span>
     }
   }
+
+  if(loading)
+    return <Loading />
 
   return (
     <div className="bg-gray-50">
@@ -122,10 +75,10 @@ export default function OrderDetails() {
 
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-2">
         <div>
-          <h1 className="text-xl font-bold">{order.id}</h1>
+          <h1 className="text-xl font-bold">{orderData.id}</h1>
         </div>
         <div className="flex gap-3 mt-4 md:mt-0">
-          {order.status !== "cancelled" && (
+          {orderData.status !== "cancelled" && (
             <>
               <button
                 className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
@@ -256,7 +209,7 @@ export default function OrderDetails() {
           <div className="px-6 pt-4">
             <div className="flex justify-between items-center">
               <h2 className="text-lg font-semibold">Order Status</h2>
-              {getStatusBadge(order.status)}
+              {getStatusBadge(orderData.status)}
             </div>
           </div>
           <div className="px-6 pb-6 pt-2">
@@ -265,7 +218,7 @@ export default function OrderDetails() {
                 <Timer className="h-6 w-6 text-indigo-500 mt-3" />
                 <div>
                   <p className="font-medium">Service Booked on</p>
-                  <p className="text-sm text-gray-500">{order.date}</p>
+                  <p className="text-sm text-gray-500">{orderData.date}</p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
@@ -273,7 +226,7 @@ export default function OrderDetails() {
                 <div>
                   <p className="font-medium">Service Delivery time</p>
                   <p className="text-sm text-gray-500">
-                    {order.estimatedDelivery}
+                    {orderData.date}
                   </p>
                 </div>
               </div>
@@ -282,7 +235,7 @@ export default function OrderDetails() {
                 <div>
                   <p className="font-medium">Payment Method</p>
                   <p className="text-sm text-gray-500">
-                    {order.payment.method} ending in {order.payment.cardLast4}
+                    {orderData?.payment?.method} ending in {orderData?.payment?.cardLast4}
                   </p>
                 </div>
               </div>
@@ -291,7 +244,7 @@ export default function OrderDetails() {
                 <div className="flex">
                   <p className="font-medium mr-2">Issue:</p>
                   <p className="text-sm text-gray-500 mt-1">
-                    Lorem ipsum dolor, sit amet consectetur adipisicing elit. Exercitationem nisi eum, fugit quos quam culpa! Aliquam laudantium nobis dolores aperiam dolore, fugit autem assumenda distinctio cum repellat, vitae, vero non?
+                    {orderData.issue}
                   </p>
                 </div>
               </div>
@@ -308,20 +261,24 @@ export default function OrderDetails() {
             <div className="space-y-2">
               <div className="flex justify-between">
                 <p className="text-gray-500">Subtotal</p>
-                <p>₹{order.subtotal.toFixed(2)}</p>
+                <p>₹{parseFloat(orderData?.subtotal || 0).toFixed(2)}</p>
               </div>
               <div className="flex justify-between">
                 <p className="text-gray-500">Plateform Charge</p>
-                <p>₹{order.shipping.toFixed(2)}</p>
+                <p>₹{parseFloat(orderData?.shipping || 0).toFixed(2)}</p>
               </div>
               <div className="flex justify-between">
                 <p className="text-gray-500">Tax</p>
-                <p>₹{order.tax.toFixed(2)}</p>
+                <p>₹{parseFloat(orderData?.tax || 0).toFixed(2)}</p>
+              </div>
+              <div className="flex justify-between">
+                <p className="text-gray-500">Visiting Charge</p>
+                <p>₹{parseFloat(orderData?.Service?.visiting_charge || orderData?.Service?.instant_visiting_charge  || 0).toFixed(2)}</p>
               </div>
               <hr className="my-2" />
               <div className="flex justify-between font-medium">
                 <p>Total</p>
-                <p>₹{order.total.toFixed(2)}</p>
+                <p>₹{parseFloat(orderData?.total || 0).toFixed(2)}</p>
               </div>
             </div>
           </div>
@@ -335,19 +292,18 @@ export default function OrderDetails() {
           <div className="px-6 pb-5">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
               <div>
-                <h3 className="font-medium flex">Ananta Plumbing Service</h3>
-                <p className="text-sm text-gray-700 tracking-wide">Jayantbhai Patel</p>
-                <p className="text-sm text-gray-700">{order.customer.phone}</p>
+                <h3 className="font-medium flex">{orderData?.ProviderInfo?.name}</h3>
+                <p className="text-sm text-gray-700 tracking-wide">{orderData?.ProviderInfo?.address}</p>
+                <p className="text-sm text-gray-700">{orderData?.ProviderInfo?.mobile}</p>
               </div>
               <div>
                 <h3 className="font-medium flex"><Store className="text-indigo-500 h-4 w-4 mr-1 mt-1" /> Shop Address</h3>
                 <div className="items-start gap-2 text-gray-700">
-                    <p>{order.shippingAddress.street} {order.shippingAddress.city}, {order.shippingAddress.state} {order.shippingAddress.zipCode}</p>
-                    <p>{order.shippingAddress.country}</p>
+                    <p>{orderData?.ProviderInfo?.address}</p>
                 </div>
               </div>
             </div>
-            <Link to={'/book'} className="hover:text-gray-500 cursor-pointer mt-3 text-indigo-500 text-xs">Open Profile</Link>
+            <Link to={`/service/${orderData?.Service?.id}`} className="hover:text-gray-500 cursor-pointer mt-3 text-indigo-500 text-xs">Open Profile</Link>
           </div>
         </div>
 
@@ -360,15 +316,14 @@ export default function OrderDetails() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
               <div>
                 <h3 className="font-medium flex"><Contact className="text-indigo-500 h-4 w-4 mr-1 mt-1" /> Contact Information</h3>
-                <p>{order.customer.name}</p>
-                <p className="text-sm text-gray-700">{order.customer.email}</p>
-                <p className="text-sm text-gray-700">{order.customer.phone}</p>
+                <p>{orderData?.CustomerInfo?.name}</p>
+                <p className="text-sm text-gray-700">{orderData.CustomerInfo?.email}</p>
+                <p className="text-sm text-gray-700">{orderData.CustomerInfo?.phone}</p>
               </div>
               <div>
                 <h3 className="font-medium flex"><Home className="text-indigo-500 h-4 w-4 mr-1 mt-1" /> Service Address</h3>
                 <div className="items-start gap-2 text-gray-700">
-                    <p>{order.shippingAddress.street} {order.shippingAddress.city}, {order.shippingAddress.state} {order.shippingAddress.zipCode}</p>
-                    <p>{order.shippingAddress.country}</p>
+                    <p>{orderData?.location} </p>
                     <button className="hover:text-gray-500 cursor-pointer mt-3 text-indigo-500 text-xs">Change Address</button>
                 </div>
               </div>
