@@ -32,7 +32,9 @@ function App() {
           <Route index element={<UserHome />} />
           <Route path="/about" element={<About />} />
           <Route path="/explore" element={<Explore />} />
-          <Route path="/services" element={<ServicePage />} />
+          <Route path="/services/" element={<ServicePage />} >
+            <Route path=":category" element={<ServicePage />} />
+          </Route>
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/complaint" element={<Complaint />} />
           <Route path='/Rankings' element={<Rankings />} />

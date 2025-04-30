@@ -9,7 +9,7 @@ const sequelize = new Sequelize(process.env.DATABASE_URL, {
       rejectUnauthorized: false
     }
   },
-  // logging: false, // Disable logging; default: console.log
+  logging: false, // Disable logging; default: console.log
 });
 
 module.exports = sequelize;

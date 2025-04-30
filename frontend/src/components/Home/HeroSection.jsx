@@ -10,6 +10,7 @@ import {
   PartyPopper,
   Search,
 } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const Hero = () => {
   const messages = [
@@ -99,12 +100,12 @@ const Hero = () => {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-10">
-              <a
-                href="/frontend/views/common/error.html"
+              <Link
+                to="/services"
                 className="px-6 py-3 bg-indigo-500 text-white font-medium rounded"
               >
                 Find Services
-              </a>
+              </Link>
               <a
                 href="/frontend/views/provider/index.html"
                 className="px-6 py-3 bg-transparent border-2 border-indigo-500 text-white font-medium rounded hover:bg-white/10"

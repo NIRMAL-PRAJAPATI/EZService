@@ -4,6 +4,7 @@ import Sidebar from '../components/Service/Sidebar';
 import api from '../config/axios-config';
 import ServiceCard from '../components/Service/ServiceCard';
 import Loading from "../components/Loading"
+import { useParams } from 'react-router-dom';
 
 function ServicesPage() {
   const [menuOpen, setMenuOpen] = useState(true);
@@ -11,27 +12,46 @@ function ServicesPage() {
   const [services, setServices] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   const [activeCategory, setActiveCategory] = useState('')
+  const {category} = useParams();
 
   useEffect(() => {
-    Promise.all([
-      api.get("/category/"),
-      api.get("/services/?limit=20")
-    ])
-      .then(([categoriesResponse, servicesResponse]) => {
-        setCategories(categoriesResponse.data);
-        setServices(servicesResponse.data);
-      })
-      .catch((err) => {
-        console.error(err);
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
+    if(category){
+
+      Promise.all([
+        api.get('/category/'),
+        api.get(`/services/${category}/category`)
+      ]).then(([response, servicesResponse]) => {
+        setCategories(response.data)
+        setServices(servicesResponse.data)
+        setActiveCategory(category)
+      }).catch((err) => {
+        console.log(err)
+      }).finally(() => {
+        setIsLoading(false)
+      }
+      )
+    }
+    else{
+      Promise.all([
+        api.get("/category/"),
+        api.get("/services/?limit=20")
+      ])
+        .then(([categoriesResponse, servicesResponse]) => {
+          setCategories(categoriesResponse.data);
+          setServices(servicesResponse.data);
+        })
+        .catch((err) => {
+          console.error(err);
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
+    }
   }, []);
 
   
   useEffect(()=>{
-    if(activeCategory=='')
+    if(activeCategory=='' || typeof(activeCategory) == String)
       return
 
     api.get(`/services/${activeCategory}/category`).then((response)=>{
@@ -39,6 +59,7 @@ function ServicesPage() {
     }).catch((err)=>{
       console.log(err)
     })
+    
   },[activeCategory])
 
   if(isLoading)
