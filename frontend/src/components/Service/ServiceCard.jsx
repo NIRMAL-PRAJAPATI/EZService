@@ -27,7 +27,7 @@ const ServiceCard = ({services})=>{
                           Available
                         </span> */}
                         <h3 className="font-semibold text-md leading-none py-1" title='Ananta Plumbing Service'>
-                          {service.name} <span className='text-sm text-indigo-400'>({service?.ProviderInfo?.name})</span>
+                          {service.name}<p className='text-xs text-gray-500 font-medium'>{service?.ProviderInfo?.name}</p>
                         </h3>
                         
                         <p className="text-sm text-gray-600 mb-1 font-semibold">

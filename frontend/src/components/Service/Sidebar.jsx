@@ -10,7 +10,7 @@ const Sidebar = ({categories, menuOpen, setActiveCategory})=>{
       <ul className="overflow-y-scroll h-[85vh] sm:h-[90vh]">
         {
             categories.length > 0 && categories?.map((category, id)=>{
-         return (<li className="p-2 bg-indigo-500/8 rounded-t cursor-pointer hover:bg-gray-50 transition-colors" key={id} onClick={()=>setActiveCategory(category.id)}>
+         return (<li className="p-2 rounded cursor-pointer hover:bg-gray-100 transition-colors" key={id} onClick={()=>setActiveCategory(category.id)}>
           <h3 className="font-semibold text-indigo-500">{category.name}</h3>
           <p className="text-xs text-gray-600">
             {category.description}
