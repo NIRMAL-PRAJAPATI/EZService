@@ -20,8 +20,8 @@ function Sponser({services}) {
                 alt="Plumbing service"
                 className="w-full h-38 object-cover"
                 />
-              <div className="flex absolute top-2 right-2 bg-indigo-500/70 text-white text-xs font-bold px-2 py-1 rounded">
-                <Verified className="h-4 w-4 mr-1" />
+              <div className="flex absolute top-2 right-2 bg-indigo-500/90 text-white text-[10px] font-bold px-1.5 py-1 rounded">
+                <Verified className="h-3 w-3 mr-0.5 mt-0.5" />
                 Verfied
               </div>
             </div>
@@ -35,23 +35,23 @@ function Sponser({services}) {
                     {service?.ProviderInfo?.name}
                   </p>
                 </div>
-                <div className="bg-indigo-500/10 text-indigo-500 font-medium px-2.5 py-0.5 rounded flex items-center">
+                <div className="bg-indigo-500/10 text-indigo-500 font-medium px-2.5 py-0.5 rounded flex items-center text-sm mt-1">
                   ₹{service.visiting_charge}
                 </div>
               </div>
-              <div className=" space-y-1">
+              <div className=" space-y-1 text-xs">
                 <div className="flex items-center text-sm mb-3">
                   <span className="text-gray-700">
                     {service.description}
                   </span>
                 </div>
-                <div className="flex items-center text-sm">
+                <div className="flex items-center">
                   <MapPin className="h-4 w-4 text-indigo-500 mr-2"/>
                   <span className="text-gray-700">
                     {`${service.city}, ${service.country}`}
                   </span>
                 </div>
-                <div className="flex items-center text-sm">
+                <div className="flex items-center">
                   <BriefcaseBusiness className="h-4 w-4 text-indigo-500 mr-2"/>
                   <span className="text-gray-700">Joined on {service.created}</span>
                 </div>
