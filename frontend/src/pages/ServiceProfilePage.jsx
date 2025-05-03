@@ -4,15 +4,14 @@ import { useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
 import {
   BadgeCheck,
-  ShieldIcon as ShieldUser,
-  ArrowUpIcon as ClockArrowUp,
   Briefcase,
   MapPin,
   CircleAlert,
   Star,
-  MessageCircle,
-  Calendar,
   ChevronRight,
+  Check,
+  ShieldUserIcon,
+  ClockArrowUpIcon,
 } from "lucide-react"
 import api from "../config/axios-config"
 import Loading from "../components/Loading"
@@ -68,9 +67,9 @@ const ServiceProfilePage = () => {
   return (
     <div className="bg-gray-50 min-h-screen pb-10">
       {/* Hero Section */}
-      <div className="bg-gradient-to-r from-indigo-900 to-indigo-700 text-white py-6">
+      <div className="bg-gradient-to-r from-indigo-900 to-indigo-700 text-white py-5">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center space-x-2 text-sm">
+          <div className="flex items-center space-x-2 text-sm text-white mb-7">
             <span>Services</span>
             <ChevronRight className="h-4 w-4" />
             <span>{serviceData?.ServiceCategory?.name}</span>
@@ -81,12 +80,12 @@ const ServiceProfilePage = () => {
       </div>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-10">
-        <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+      <div className="max-w-7xl mx-auto sm:px-6 lg:px-8 -mt-10">
+        <div className="sm:rounded-sm overflow-hidden">
           {/* Service Header */}
-          <div className="p-6 md:p-8 border-b">
-            <div className="flex flex-col md:flex-row gap-8">
-              <div className="flex-shrink-0">
+          <div className="p-5 md:p-8 border mb-2 bg-white sm:rounded-md border-gray-200">
+            <div className="flex flex-col sm:flex-row gap-5">
+              <div className="flex-shrink-0 mx-auto">
                 <div className="relative">
                   <img
                     src={serviceData?.cover_image || "/placeholder.svg?height=240&width=240"}
@@ -94,28 +93,17 @@ const ServiceProfilePage = () => {
                     className="w-60 h-60 object-cover rounded-lg border border-gray-200"
                   />
                   {serviceData?.badge_status && (
-                    <div className="absolute top-3 right-3 bg-indigo-600 text-white px-2 py-1 rounded-full text-xs flex items-center gap-1">
+                    <div className="absolute top-3 right-3 bg-indigo-500 text-white px-2 py-1 rounded-full text-xs flex items-center gap-1">
                       <BadgeCheck className="h-3 w-3" />
                       Verified
                     </div>
                   )}
                 </div>
-                <div className="mt-4 flex justify-between">
-                  <div className="flex items-center text-indigo-600 gap-0.5">
-                    {[...Array(5)].map((_, i) => (
-                      <Star
-                        key={i}
-                        className={`h-5 w-5 ${i < Math.floor(serviceData?.average_rating || 0) ? "fill-indigo-500" : ""}`}
-                      />
-                    ))}
-                  </div>
-                  <span className="text-sm text-gray-500">{serviceData?.reviews_count || reviews.length} reviews</span>
-                </div>
               </div>
 
               <div className="flex-1">
                 <div className="flex flex-wrap items-center gap-2">
-                  <h1 className="text-3xl md:text-4xl font-bold text-gray-800">{serviceData?.name}</h1>
+                  <h1 className="text-2xl md:text-4xl font-extrabold text-gray-800">{serviceData?.name}</h1>
                   {serviceData?.badge_status && (
                     <span className="hidden sm:flex bg-indigo-100 text-indigo-800 px-2 py-1 rounded-full text-xs items-center gap-1">
                       <BadgeCheck className="h-3 w-3" />
@@ -124,12 +112,25 @@ const ServiceProfilePage = () => {
                   )}
                 </div>
 
-                <p className="text-indigo-600 font-medium mt-1">{serviceData?.ServiceCategory?.name}</p>
+                <div className="mt-2 flex justify-between">
+                  <p className="text-indigo-500 font-medium">{serviceData?.ServiceCategory?.name}</p>
+                  <div className="flex gap-2">
+                    <div className="flex items-center text-indigo-500 gap-0.5">
+                      {[...Array(5)].map((_, i) => (
+                        <Star
+                          key={i}
+                          className={`h-4 w-4 ${i < Math.floor(serviceData?.average_rating || 0) ? "fill-indigo-500" : ""}`}
+                        />
+                      ))}
+                    </div>
+                    <span className="text-sm text-gray-500 mt-0.5">{serviceData?.reviews_count || reviews.length} reviews</span>
+                  </div>
+                </div>
 
-                <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="flex items-center gap-2 bg-gray-50 p-3 rounded-lg">
-                    <div className="bg-indigo-100 p-2 rounded-full">
-                      <ShieldUser className="h-5 w-5 text-indigo-600" />
+                <div className="mt-3 grid grid-cols-1 md:grid-cols-2 gap-2">
+                  <div className="flex items-center gap-2 bg-gray-50 p-3 rounded-sm">
+                    <div className="bg-indigo-100 p-2 rounded-sm">
+                      <ShieldUserIcon className="h-5 w-5 text-indigo-500" />
                     </div>
                     <div>
                       <p className="text-gray-800 font-medium">{serviceData?.ProviderInfo?.name}</p>
@@ -137,29 +138,29 @@ const ServiceProfilePage = () => {
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-2 bg-gray-50 p-3 rounded-lg">
-                    <div className="bg-indigo-100 p-2 rounded-full">
-                      <ClockArrowUp className="h-5 w-5 text-indigo-600" />
+                  <div className="flex items-center gap-2 bg-gray-50 p-3 rounded-sm">
+                    <div className="bg-indigo-100 p-2 rounded-sm">
+                      <ClockArrowUpIcon className="h-5 w-5 text-indigo-500" />
                     </div>
                     <div>
-                      <p className="text-gray-800 font-medium">{serviceData?.fulfillments || 0}+ Requests</p>
+                      <p className="text-gray-800 font-medium">{serviceData?.fulfillments || 0}+ Fullfilled Service Requiests</p>
                       <p className="text-xs text-gray-500">Successfully Fulfilled</p>
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-2 bg-gray-50 p-3 rounded-lg">
-                    <div className="bg-indigo-100 p-2 rounded-full">
-                      <Briefcase className="h-5 w-5 text-indigo-600" />
+                  <div className="flex items-center gap-2 bg-gray-50 p-3 rounded-sm">
+                    <div className="bg-indigo-100 p-2 rounded-sm">
+                      <Briefcase className="h-5 w-5 text-indigo-500" />
                     </div>
                     <div>
-                      <p className="text-gray-800 font-medium">{serviceData?.experience || 0}+ Years</p>
+                      <p className="text-gray-800 font-medium">{serviceData?.experience || 0}+ Years of Experiance</p>
                       <p className="text-xs text-gray-500">Professional Experience</p>
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-2 bg-gray-50 p-3 rounded-lg">
-                    <div className="bg-indigo-100 p-2 rounded-full">
-                      <MapPin className="h-5 w-5 text-indigo-600" />
+                  <div className="flex items-center gap-2 bg-gray-50 p-3 rounded-sm">
+                    <div className="bg-indigo-100 p-2 rounded-sm">
+                      <MapPin className="h-5 w-5 text-indigo-500" />
                     </div>
                     <div>
                       <p className="text-gray-800 font-medium truncate max-w-[200px]">
@@ -169,46 +170,25 @@ const ServiceProfilePage = () => {
                     </div>
                   </div>
                 </div>
-
-                {/* <div className="mt-6 flex flex-col sm:flex-row gap-3">
-                  <button
-                    onClick={handleGetService}
-                    className="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg transition-colors flex items-center justify-center gap-2"
-                  >
-                    <Calendar className="h-5 w-5" />
-                    Book Service
-                  </button>
-                  <button
-                    onClick={handleChat}
-                    className="px-6 py-3 border border-indigo-600 text-indigo-600 hover:bg-indigo-50 font-medium rounded-lg transition-colors flex items-center justify-center gap-2"
-                  >
-                    <MessageCircle className="h-5 w-5" />
-                    Chat with Provider
-                  </button>
-                </div> */}
               </div>
             </div>
           </div>
 
           {/* Service Details */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 p-6 md:p-8">
-            <div className="lg:col-span-2 space-y-8">
+          <div className="bg-white rounded-md border border-gray-200 shadow-sm grid grid-cols-1 lg:grid-cols-3 lg:gap-5">
+            <div className="lg:col-span-2 space-y-5 order-2 lg:order-1 p-6">
               {/* Description */}
               <section>
-                <h2 className="text-xl font-bold text-gray-800 mb-4">About This Service</h2>
-                <p className="text-gray-700 leading-relaxed">{serviceData?.description}</p>
+                <p className="text-gray-500">{serviceData?.description}</p>
               </section>
 
               {/* Services Provided */}
               <section>
-                <h2 className="text-xl font-bold text-gray-800 mb-4">Services Provided</h2>
-                <ul className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <h2 className="text-xl font-bold text-gray-800 mb-1">Services Provided</h2>
+                <ul className="">
                   {serviceData?.specifications?.map((service, index) => (
-                    <li key={index} className="flex items-start gap-2">
-                      <div className="mt-1 bg-indigo-100 rounded-full p-1 flex-shrink-0">
-                        <BadgeCheck className="h-4 w-4 text-indigo-600" />
-                      </div>
-                      <span className="text-gray-700">{service}</span>
+                    <li key={index} className="flex items-start gap-2 text-gray-700">
+                      {service}
                     </li>
                   ))}
                 </ul>
@@ -216,20 +196,21 @@ const ServiceProfilePage = () => {
 
               {/* Working Images */}
               <section>
-                <h2 className="text-xl font-bold text-gray-800 mb-4">Portfolio</h2>
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-                  {serviceData?.working_images?.map((image, index) => (
-                    <div
-                      key={index}
-                      className="aspect-square overflow-hidden rounded-lg border border-gray-200 hover:border-indigo-500 transition-colors"
-                    >
-                      <img
-                        src={image || "/placeholder.svg?height=200&width=200"}
-                        alt={`Work sample ${index + 1}`}
-                        className="h-full w-full object-cover hover:scale-105 transition-transform"
-                      />
-                    </div>
-                  ))}
+                <div className="overflow-x-auto">
+                  <div className="gap-4 flex justify-center w-max">
+                    {serviceData?.working_images?.map((image, index) => (
+                      <div
+                        key={index}
+                        className="aspect-square overflow-hidden rounded-lg border border-gray-200 hover:border-indigo-500 h-50 w-50 transition-colors"
+                      >
+                        <img
+                          src={image || "/placeholder.svg?height=200&width=200"}
+                          alt={`Work sample ${index + 1}`}
+                          className="h-full w-full object-cover hover:scale-105 transition-transform"
+                        />
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </section>
 
@@ -238,7 +219,7 @@ const ServiceProfilePage = () => {
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="text-xl font-bold text-gray-800">Customer Reviews</h2>
                   <div className="flex items-center gap-2">
-                    <div className="flex items-center text-indigo-600">
+                    <div className="flex items-center text-indigo-500">
                       {[...Array(5)].map((_, i) => (
                         <Star
                           key={i}
@@ -255,22 +236,22 @@ const ServiceProfilePage = () => {
                 {reviews?.length > 0 ? (
                   <div className="space-y-4">
                     {reviews.map((review, index) => (
-                      <div key={index} className="p-4 bg-gray-50 rounded-lg border border-gray-100">
-                        <div className="flex justify-between items-start mb-2">
+                      <div key={index} className="px-4 py-2 bg-gray-50 rounded-sm border border-gray-100">
+                        <div className="flex justify-between items-start">
                           <div>
                             <p className="font-semibold text-gray-800">{review.name}</p>
-                            <div className="flex items-center text-indigo-600 mt-1">
+                            <div className="flex items-center text-indigo-500">
                               {[...Array(5)].map((_, i) => (
                                 <Star
                                   key={i}
-                                  className={`h-4 w-4 ${i < Math.floor(review.rating || 0) ? "fill-indigo-500" : ""}`}
+                                  className={`h-3 w-3 mr-0.5 ${i < Math.floor(review.rating || 0) ? "fill-indigo-500" : ""}`}
                                 />
                               ))}
                             </div>
                           </div>
                           <span className="text-xs text-gray-500">{review.created}</span>
                         </div>
-                        <p className="text-gray-700 mt-2">{review.comment}</p>
+                        <p className="text-gray-700">{review.comment}</p>
                       </div>
                     ))}
                   </div>
@@ -281,49 +262,46 @@ const ServiceProfilePage = () => {
             </div>
 
             {/* Sidebar */}
-            <div className="lg:col-span-1">
-              <div className="bg-gray-50 rounded-lg p-6 sticky top-6 border border-gray-100">
-                <h3 className="text-xl font-bold text-gray-800 mb-4">Pricing</h3>
+            <div className="lg:col-span-1 order-1 lg:order-2">
+              <div className="lg:bg-gray-50 rounded-lg p-6 lg:m-6">
+                <h3 className="text-xl font-bold text-gray-800 mb-2">Service Charge</h3>
 
-                <div className="flex items-center gap-2 mb-6">
-                  <span className="text-3xl font-bold text-indigo-600">₹{serviceData?.visiting_charge}</span>
+                <div className="flex items-center gap-1 mb-2">
+                  <span className="text-3xl font-bold text-indigo-500">₹{serviceData?.visiting_charge}</span>
                   <div
                     onClick={handleTermsClick}
                     className="cursor-pointer text-gray-400 hover:text-gray-600"
                     title="View terms and conditions"
                   >
-                    <CircleAlert className="h-4 w-4" />
+                    <CircleAlert className="h-4 w-4 mt-1" />
                   </div>
                 </div>
 
-                <div className="space-y-3 mb-6">
+                <div className="text-sm mb-5">
                   <div className="flex items-center gap-2">
-                    <BadgeCheck className="h-5 w-5 text-green-500" />
+                    <Check className="h-4 w-4 text-indigo-500" />
                     <span className="text-gray-700">Verified Provider</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <BadgeCheck className="h-5 w-5 text-green-500" />
+                    <Check className="h-4 w-4 text-indigo-500" />
                     <span className="text-gray-700">Satisfaction Guaranteed</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <BadgeCheck className="h-5 w-5 text-green-500" />
+                    <Check className="h-4 w-4 text-indigo-500" />
                     <span className="text-gray-700">Secure Payments</span>
                   </div>
                 </div>
 
-                <button
-                  onClick={handleGetService}
-                  className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg transition-colors mb-3"
-                >
-                  Book Now
-                </button>
+                <div className="flex gap-2">
+                  <button
+                    onClick={handleGetService}
+                    className="py-2 px-4 bg-indigo-500 hover:bg-indigo-700 text-white font-medium rounded-sm transition-colors">Book Now</button>
 
-                <button
-                  onClick={handleChat}
-                  className="w-full py-3 border border-indigo-600 text-indigo-600 hover:bg-indigo-50 font-medium rounded-lg transition-colors"
-                >
-                  Contact Provider
-                </button>
+                  <button onClick={handleChat}
+                    className="py-2 px-4 border border-indigo-500 text-indigo-500 hover:bg-indigo-50 font-medium rounded-sm transition-colors">
+                    Contact Provider
+                  </button>
+                </div>
               </div>
             </div>
           </div>
