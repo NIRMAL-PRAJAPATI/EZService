@@ -20,10 +20,11 @@ import Login from './pages/Login';
 import MobileVarification from './pages/MobileVarification';
 const ErrorPage = lazy(() => import('./pages/ErrorPage'));
 const Register = lazy(() => import('./pages/register'));
+import Dashboard  from './pages/ProviderDashboard';
 
 function App() {
   const location = useLocation();
-  const hideHeaderFooter = (location.pathname === '/login') || (location.pathname === '/errorpage') || (location.pathname === '/register') || (location.pathname === '/register/mobilevarification');
+  const hideHeaderFooter = (location.pathname === '/login') || (location.pathname === '/errorpage') || (location.pathname === '/register') || (location.pathname === '/register/mobilevarification' || location.pathname?.startsWith('/provider/'));
 
   return (
       <div className="">
@@ -45,6 +46,9 @@ function App() {
           <Route path="/errorpage" element={<ErrorPage />} />
           <Route path="/orders/" element={<OrderDetails />} >
             <Route path=":id/view" element={<OrderDetails />} />
+          </Route>
+          <Route path="/provider/" >
+            <Route path="dashboard" element={<Dashboard />} />
           </Route>
           <Route path='/book' element={<BookOrderPage />} />
           <Route path='/login' element={<Login />}/>

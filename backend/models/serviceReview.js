@@ -41,6 +41,7 @@ ServiceReview.belongsTo(Service, {
 // One-to-Many: ProviderInfo -> ServiceReview
 ProviderInfo.hasMany(ServiceReview, {
   foreignKey: 'provider_id',
+  as: 'serviceReviews',
   sourceKey: 'id'
 });
 ServiceReview.belongsTo(ProviderInfo, {

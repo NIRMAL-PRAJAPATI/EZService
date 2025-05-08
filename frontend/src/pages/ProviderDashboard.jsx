@@ -1,0 +1,257 @@
+import { useEffect, useState } from "react"
+import { ArrowDown, ArrowUp, Bell, ChevronRight, Facebook, Instagram, Star, Twitter } from "lucide-react"
+import resources from "../resource"
+import api from "../config/axios-config"
+
+function Dashboard() {
+  const [isOnline, setIsOnline] = useState(true)
+  const [stats, setStats] = useState({
+    totalOrders: 0,
+    totalServices: 0,
+    averageRating: 0,
+    totalEarnings: 0,
+    pendingOrders: 0,
+    totalReviews: 0,
+    satisfactionChange: 0,
+    repeatCustomers: 0,
+    repeatCustomersChange: 0,
+    latestReview: {
+      comment: "",
+      rating: 0,
+      created: "",
+      customerName: ""
+    }
+  })
+
+  useEffect(()=>
+    {
+    api.get("provider/stats/1")
+    .then((response) => {
+      setStats(response.data)
+    })
+    .catch((error) => {
+      console.error("Error fetching provider stats:", error)
+    })},[])
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      {/* Navigation */}
+      <header className="sticky top-0 z-10 bg-white border-b shadow-sm">
+        <div className="container flex items-center justify-between h-16 px-4 mx-auto">
+          <div className="flex items-center gap-2">
+            <img src={resources.Logo.src} alt="EZService Logo" className="object-contain w-10 h-10" />
+            <h1 className="text-xl font-bold text-gray-800">EZService</h1>
+          </div>
+
+          <nav className="hidden md:flex">
+            <ul className="flex items-center space-x-8">
+              {["Dashboard", "Profile", "Orders", "Services", "Complaints", "Analysis"].map((item) => (
+                <li key={item}>
+                  <a
+                    href="#"
+                    className={`py-5 border-b-2 ${
+                      item === "Dashboard"
+                        ? "border-emerald-500 text-emerald-600 font-medium"
+                        : "border-transparent text-gray-600 hover:text-gray-900 hover:border-gray-300"
+                    }`}
+                  >
+                    {item}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+
+          <div className="flex items-center gap-4">
+            <button className="p-2 rounded-full hover:bg-gray-100">
+              <span className="sr-only">Notifications</span>
+              <div className="relative">
+                <div className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></div>
+                <Bell className="text-gray-600" size={20} />
+              </div>
+            </button>
+            <div className="w-8 h-8 overflow-hidden rounded-full bg-emerald-100">
+              <img src="https://via.placeholder.com/32" alt="User Avatar" className="object-cover w-full h-full" />
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <main className="container px-4 py-6 mx-auto">
+        {/* Service Status */}
+        <div className="p-4 mb-6 bg-white rounded-lg shadow-sm">
+          <div className="flex items-center gap-2">
+            <div className={`w-3 h-3 rounded-full ${isOnline ? "bg-emerald-500" : "bg-gray-400"}`}></div>
+            <span className="font-medium text-gray-800">Instant Service Status: {isOnline ? "Online" : "Offline"}</span>
+            <button
+              onClick={() => setIsOnline(!isOnline)}
+              className="px-3 py-1 ml-auto text-sm text-white rounded-full bg-emerald-500 hover:bg-emerald-600"
+            >
+              {isOnline ? "Go Offline" : "Go Online"}
+            </button>
+          </div>
+        </div>
+
+        {/* Overview */}
+        <section className="mb-8">
+          <h2 className="mb-4 text-xl font-bold text-gray-800">Overview</h2>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {/* Total Visitors */}
+            <div className="p-6 bg-white rounded-lg shadow-sm">
+              <h3 className="text-sm font-medium text-gray-500">Total Orders</h3>
+              <p className="mt-2 text-3xl font-bold text-gray-800">{stats.totalOrders}</p>
+              <a
+                href="#"
+                className="inline-flex items-center mt-4 text-sm font-medium text-gray-600 hover:text-emerald-600"
+              >
+                View all orders
+                <ChevronRight className="w-4 h-4 ml-1" />
+              </a>
+            </div>
+
+            {/* Total Orders */}
+            <div className="p-6 bg-white rounded-lg shadow-sm">
+              <h3 className="text-sm font-medium text-gray-500">Total Services</h3>
+              <p className="mt-2 text-3xl font-bold text-gray-800">{stats.totalServices}</p>
+              <a
+                href="#"
+                className="inline-flex items-center mt-4 text-sm font-medium text-gray-600 hover:text-emerald-600"
+              >
+                View all services
+                <ChevronRight className="w-4 h-4 ml-1" />
+              </a>
+            </div>
+
+            {/* Rating */}
+            <div className="p-6 bg-white rounded-lg shadow-sm">
+              <h3 className="text-sm font-medium text-gray-500">Rating</h3>
+              <div className="flex items-center mt-2">
+                <p className="text-3xl font-bold text-gray-800">{parseFloat(stats.averageRating).toFixed(2)}</p>
+                <span className="text-lg text-gray-500">/5</span>
+              </div>
+              <a
+                href="#"
+                className="inline-flex items-center mt-4 text-sm font-medium text-gray-600 hover:text-emerald-600"
+              >
+                View reviews
+                <ChevronRight className="w-4 h-4 ml-1" />
+              </a>
+            </div>
+
+            {/* Earnings */}
+            <div className="p-6 bg-white rounded-lg shadow-sm">
+              <h3 className="text-sm font-medium text-gray-500">Earnings (This Month)</h3>
+              <p className="mt-2 text-3xl font-bold text-gray-800">{stats.totalEarnings}</p>
+              <a
+                href="#"
+                className="inline-flex items-center mt-4 text-sm font-medium text-emerald-600 hover:text-emerald-700"
+              >
+                View earnings
+                <ChevronRight className="w-4 h-4 ml-1" />
+              </a>
+            </div>
+          </div>
+        </section>
+
+        {/* Performance Metrics */}
+        <section className="mb-8">
+          <h2 className="mb-4 text-xl font-bold text-gray-800">Performance Metrics</h2>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {/* Orders */}
+            <div className="p-6 bg-white rounded-lg shadow-sm">
+              <h3 className="text-sm font-medium text-gray-500">Orders</h3>
+              <p className="mt-2 text-3xl font-bold text-gray-800">19%</p>
+              <div className="flex items-center mt-2">
+                <ArrowDown className="w-4 h-4 mr-1 text-red-500" />
+                <span className="text-sm font-medium text-red-500">-12.9% from last month</span>
+              </div>
+            </div>
+
+            {/* Completion Rate */}
+            <div className="p-6 bg-white rounded-lg shadow-sm">
+              <h3 className="text-sm font-medium text-gray-500">Completion Rate</h3>
+              <p className="mt-2 text-3xl font-bold text-gray-800">95%</p>
+              <div className="flex items-center mt-2">
+                <ArrowUp className="w-4 h-4 mr-1 text-emerald-500" />
+                <span className="text-sm font-medium text-emerald-500">+2% from last month</span>
+              </div>
+            </div>
+
+            {/* Customer Satisfaction */}
+            <div className="p-6 bg-white rounded-lg shadow-sm">
+              <h3 className="text-sm font-medium text-gray-500">Customer Satisfaction</h3>
+              <p className="mt-2 text-3xl font-bold text-gray-800">68%</p>
+              <div className="flex items-center mt-2">
+                <ArrowDown className="w-4 h-4 mr-1 text-red-500" />
+                <span className="text-sm font-medium text-red-500">-6% from last month</span>
+              </div>
+            </div>
+
+            {/* Repeat Customers */}
+            <div className="p-6 bg-white rounded-lg shadow-sm">
+              <h3 className="text-sm font-medium text-gray-500">Repeat Customers</h3>
+              <p className="mt-2 text-3xl font-bold text-gray-800">43%</p>
+              <div className="flex items-center mt-2">
+                <ArrowUp className="w-4 h-4 mr-1 text-emerald-500" />
+                <span className="text-sm font-medium text-emerald-500">+3.4% from last month</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Recent Reviews */}
+        <section>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-bold text-gray-800">Recent Reviews</h2>
+            <a href="#" className="text-sm font-medium text-emerald-600 hover:text-emerald-700">
+              View all
+            </a>
+          </div>
+          <div className="bg-white rounded-lg shadow-sm">
+            <div className="p-6 border-b">
+              <div className="flex items-start justify-between">
+                <div>
+                  <h3 className="font-medium text-gray-800 capitalize">{stats.latestReview.customerName}</h3>
+                  <p className="mt-1 text-gray-600">
+                    {stats.latestReview.comment}
+                  </p>
+                  <div className="flex items-center mt-2 text-sm text-gray-500">
+                    <span>{stats.latestReview.serviceName}</span>
+                    <span className="mx-2">•</span>
+                    <span>{stats.latestReview.created}</span>
+                  </div>
+                </div>
+                <div className="flex items-center">
+                    <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
+                  <span className="ml-1 text-sm font-medium text-gray-600">{parseFloat(stats.latestReview.rating).toFixed(1)}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer className="py-6 mt-12 text-center text-gray-500 border-t">
+        <div className="container px-4 mx-auto">
+          <p>© 2023 ServicePro, Inc. All rights reserved.</p>
+          <div className="flex items-center justify-center mt-4 space-x-4">
+            <a href="#" className="text-gray-400 hover:text-gray-600">
+              <Facebook className="w-5 h-5" />
+              <span className="sr-only">Facebook</span>
+            </a>
+            <a href="#" className="text-gray-400 hover:text-gray-600">
+              <Instagram className="w-5 h-5" />
+              <span className="sr-only">Instagram</span>
+            </a>
+            <a href="#" className="text-gray-400 hover:text-gray-600">
+              <Twitter className="w-5 h-5" />
+              <span className="sr-only">Twitter</span>
+            </a>
+          </div>
+        </div>
+      </footer>
+    </div>
+  )
+}
+
+export default Dashboard;
