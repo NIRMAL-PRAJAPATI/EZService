@@ -21,6 +21,7 @@ const ProviderBank = sequelize6.define('ProviderBank', {
 
 ProviderInfo.hasOne(ProviderBank, {
   foreignKey: 'provider_id',
+  as: 'providerBank',
   sourceKey: 'id'
 });
 

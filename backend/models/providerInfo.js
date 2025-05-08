@@ -36,7 +36,7 @@ ProviderInfo.prototype.validPassword = async function (password) {
   return await bcrypt2.compare(password, this.password);
 };
 
-ProviderInfo.hasMany(Service, { foreignKey: 'provider_id' });
+ProviderInfo.hasMany(Service, { foreignKey: 'provider_id', as: 'services' });
 Service.belongsTo(ProviderInfo, { foreignKey: 'provider_id' });
 
 module.exports = ProviderInfo;
