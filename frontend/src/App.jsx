@@ -21,6 +21,9 @@ import MobileVarification from './pages/MobileVarification';
 const ErrorPage = lazy(() => import('./pages/ErrorPage'));
 const Register = lazy(() => import('./pages/register'));
 import Dashboard  from './pages/ProviderDashboard';
+import RegistrationForm from './components/Register/ProviderRegistration'
+import LoginForm from './components/Register/ProviderLogin';
+import ProviderProfile from './pages/ProviderProfile';
 
 function App() {
   const location = useLocation();
@@ -49,6 +52,9 @@ function App() {
           </Route>
           <Route path="/provider/" >
             <Route path="dashboard" element={<Dashboard />} />
+            <Route path='register' element={<RegistrationForm />} />
+            <Route path='login' element={<LoginForm />} />
+            <Route path='profile' element={<ProviderProfile />} />
           </Route>
           <Route path='/book' element={<BookOrderPage />} />
           <Route path='/login' element={<Login />}/>

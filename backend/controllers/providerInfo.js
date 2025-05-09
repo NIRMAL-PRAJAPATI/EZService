@@ -11,7 +11,13 @@ const Service = require('../models/service');
 
 const getProviderProfile = async (req, res) => {
     try{
-        const providerId = req.params.id;
+        console.log(req.userId, req.role);
+        const providerId = req.userId;
+        const role = req.role;
+        // if (role !== 'provider') {
+        //     return res.status(403).json({ message: 'Access denied' });
+        // }
+
         if (!providerId) {
             return res.status(400).json({ message: 'Provider ID is required' });
         }
@@ -34,7 +40,11 @@ const getProviderProfile = async (req, res) => {
 
 const getProviderWithServices = async (req, res)=>{
     try{
-        const providerId = req.params.id;
+        const providerId = req.userId;
+        const role = req.role;
+        if (role !== 'provider') {
+            return res.status(403).json({ message: 'Access denied' });
+        }
         if (!providerId) {
             return res.status(400).json({ message: 'Provider ID is required' });
         }
@@ -58,7 +68,11 @@ const getProviderWithServices = async (req, res)=>{
 
 const getProviderStats = async (req, res) => {
   try {
-    const providerId = req.params.id;
+    const providerId = req.userId;
+    const role = req.role;
+    if (role !== 'provider') {
+        return res.status(403).json({ message: 'Access denied' });
+    }
     if (!providerId) {
       return res.status(400).json({ message: 'Provider ID is required' });
     }
@@ -68,7 +82,7 @@ const getProviderStats = async (req, res) => {
       return res.status(404).json({ message: 'Provider not found' });
     }
 
-    const [totalServices, ratingStats, totalOrders, pendingOrders, completedOrders, lastMonthOrders, currentMonthOrders, totalEarnings, latestReview] = await Promise.all([
+    const [totalServices, ratingStats, totalOrders, pendingOrders, completedOrders, customer_satisfation, repeatedUser, lastMonthOrders, currentMonthOrders, totalEarnings, latestReview] = await Promise.all([
       services.count({ where: { provider_id: providerId } }),
       ServiceReview.findOne({
         where: { provider_id: providerId },
@@ -80,6 +94,17 @@ const getProviderStats = async (req, res) => {
       Order.count({ where: { provider_id: providerId } }),
       Order.count({ where: { provider_id: providerId, status: 'pending' } }),
       Order.count({ where: { provider_id: providerId, status: 'fulfilled' } }),
+      ServiceReview.findOne({
+        where: { provider_id: providerId },
+        attributes: [
+          [sequelize.fn('AVG', sequelize.col('customer_satisfation')), 'average']
+        ],
+      }),
+      Order.count({where: { provider_id: providerId},
+        distinct: true,
+        col: 'customer_id',
+        having: sequelize.literal('COUNT(customer_id) > 1')
+    }),
       Order.count({ where: { provider_id: providerId,
             created: {
                 [Op.gte]: literal(`DATE_TRUNC('month', NOW() - INTERVAL '1 MONTH')`),
@@ -141,8 +166,10 @@ const getProviderStats = async (req, res) => {
         customerName: latestReview.CustomerInfo.name,
         serviceName: latestReview.Service.name
       } : null,
-    lastMonthOrders,
-    currentMonthOrders
+    lastMonthOrders: lastMonthOrders?.count || 0,
+    currentMonthOrders: currentMonthOrders?.count || 0,
+    repeatCustomers: repeatedUser || 0,
+    customer_satisfation: customer_satisfation ? parseFloat(customer_satisfation.getDataValue('average')).toFixed(1) : 0,
     });
   } catch (e) {
     console.error('Error fetching provider stats:', e);
@@ -191,9 +218,11 @@ const loginProvider = async (req,res)=>{
         if (!isPasswordValid) {
             return res.status(401).json({ message: 'Invalid email or password' });
         }
-
+        const providerData = provider.toJSON();
+        delete providerData.password;
+        delete providerData.id;
         const token = jwt.sign({ id: provider.id, role: 'provider'}, process.env.JWT_SECRET, { expiresIn: '1h' });
-        res.status(200).json({provider, token});
+        res.status(200).json({provider:providerData ,token});
     }catch(e){
         console.error('Error logging in provider:', e);
         res.status(500).json({ message: 'Internal server error' });

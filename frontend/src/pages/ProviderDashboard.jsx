@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react"
-import { ArrowDown, ArrowUp, Bell, ChevronRight, Facebook, Instagram, Star, Twitter } from "lucide-react"
+import { ArrowDown, ArrowUp, Bell, ChevronRight, DotSquareIcon, Facebook, Instagram, ListOrdered, PercentIcon, Star, StarsIcon, Twitter, UserCheck2Icon } from "lucide-react"
 import resources from "../resource"
-import api from "../config/axios-config"
+import authApi from "../config/auth-config"
+import { Link } from "react-router-dom"
 
 function Dashboard() {
   const [isOnline, setIsOnline] = useState(true)
@@ -10,11 +11,15 @@ function Dashboard() {
     totalServices: 0,
     averageRating: 0,
     totalEarnings: 0,
+    completedOrders: 0,
     pendingOrders: 0,
+    lastMonthOrders: 0,
+    currentMonthOrders: 0,
     totalReviews: 0,
     satisfactionChange: 0,
     repeatCustomers: 0,
     repeatCustomersChange: 0,
+    customer_satisfation: 0,
     latestReview: {
       comment: "",
       rating: 0,
@@ -23,9 +28,18 @@ function Dashboard() {
     }
   })
 
+  const csGreet = [
+  "Something didn’t click — let’s aim to turn this around!",       // Rating 1
+  "Room for improvement — every great service starts with feedback!", // Rating 2
+  "You're halfway there — refine the experience and shine!",        // Rating 3
+  "Great work! Just a little more to reach perfection!",            // Rating 4
+  "Outstanding! Customers love your service!"                       // Rating 5
+];
+
+
   useEffect(()=>
     {
-    api.get("provider/stats/1")
+    authApi.get("provider/stats")
     .then((response) => {
       setStats(response.data)
     })
@@ -45,18 +59,18 @@ function Dashboard() {
 
           <nav className="hidden md:flex">
             <ul className="flex items-center space-x-8">
-              {["Dashboard", "Profile", "Orders", "Services", "Complaints", "Analysis"].map((item) => (
-                <li key={item}>
-                  <a
-                    href="#"
+              {[{id:"Dashboard",to:"/provider/dashboard"}, {id:"Profile",to:"/provider/profile"}, {id:"Orders",to:"/provider/orders"}, {id:"Services",to:"/provider/services"}, {id:"Complaints",to:"/provider/complaints"}].map((item) => (
+                <li key={item.id}>
+                  <Link
+                    to={item.to}
                     className={`py-5 border-b-2 ${
-                      item === "Dashboard"
+                      item.id === "Dashboard"
                         ? "border-emerald-500 text-emerald-600 font-medium"
                         : "border-transparent text-gray-600 hover:text-gray-900 hover:border-gray-300"
                     }`}
                   >
-                    {item}
-                  </a>
+                    {item.id}
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -160,40 +174,40 @@ function Dashboard() {
             {/* Orders */}
             <div className="p-6 bg-white rounded-lg shadow-sm">
               <h3 className="text-sm font-medium text-gray-500">Orders</h3>
-              <p className="mt-2 text-3xl font-bold text-gray-800">19%</p>
+              <p className="mt-2 text-3xl font-bold text-gray-800">{stats.lastMonthOrders == 0 && stats.currentMonthOrders > stats.lastMonthOrders? "100%": stats.currentMonthOrders == 0? "0%": ((stats.currentMonthOrders*100)/stats.lastMonthOrders)+"%"}</p>
               <div className="flex items-center mt-2">
-                <ArrowDown className="w-4 h-4 mr-1 text-red-500" />
-                <span className="text-sm font-medium text-red-500">-12.9% from last month</span>
+                <ListOrdered className="w-4 h-4 mr-1 text-black" />
+                <span className="text-sm font-medium text-black">{stats.lastMonthOrders} last month, {stats.currentMonthOrders} this month</span>
               </div>
             </div>
 
             {/* Completion Rate */}
             <div className="p-6 bg-white rounded-lg shadow-sm">
               <h3 className="text-sm font-medium text-gray-500">Completion Rate</h3>
-              <p className="mt-2 text-3xl font-bold text-gray-800">95%</p>
+              <p className="mt-2 text-3xl font-bold text-gray-800">{stats.totalOrders == 0? "No Orders" :(stats.completedOrders*100/stats.totalOrders)+"%"}</p>
               <div className="flex items-center mt-2">
-                <ArrowUp className="w-4 h-4 mr-1 text-emerald-500" />
-                <span className="text-sm font-medium text-emerald-500">+2% from last month</span>
+                <DotSquareIcon className="w-4 h-4 mr-1 text-black" />
+                <span className="text-sm font-medium text-black">{stats.completedOrders} completed, {stats.pendingOrders} pending</span>
               </div>
             </div>
 
             {/* Customer Satisfaction */}
             <div className="p-6 bg-white rounded-lg shadow-sm">
               <h3 className="text-sm font-medium text-gray-500">Customer Satisfaction</h3>
-              <p className="mt-2 text-3xl font-bold text-gray-800">68%</p>
+              <p className="mt-2 text-3xl font-bold text-gray-800">{stats.customer_satisfation}/5.0</p>
               <div className="flex items-center mt-2">
-                <ArrowDown className="w-4 h-4 mr-1 text-red-500" />
-                <span className="text-sm font-medium text-red-500">-6% from last month</span>
+                <StarsIcon className="w-4 h-4 mr-1 text-black" />
+                <span className="text-sm font-medium text-black">{csGreet[Math.floor(stats.customer_satisfation || 6)]}</span>
               </div>
             </div>
 
             {/* Repeat Customers */}
             <div className="p-6 bg-white rounded-lg shadow-sm">
               <h3 className="text-sm font-medium text-gray-500">Repeat Customers</h3>
-              <p className="mt-2 text-3xl font-bold text-gray-800">43%</p>
+              <p className="mt-2 text-3xl font-bold text-gray-800">{stats.repeatCustomers}</p>
               <div className="flex items-center mt-2">
-                <ArrowUp className="w-4 h-4 mr-1 text-emerald-500" />
-                <span className="text-sm font-medium text-emerald-500">+3.4% from last month</span>
+                <UserCheck2Icon className="w-4 h-4 mr-1 " />
+                <span className="text-sm font-medium ">{stats.repeatCustomers == 0? "No RepeatingDeliver excellence - loyalty will follow!": `Loyal customers alert — ${stats.repeatCustomers}% returned!`}</span>
               </div>
             </div>
           </div>

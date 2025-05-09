@@ -106,12 +106,12 @@ const Hero = () => {
               >
                 Find Services
               </Link>
-              <a
-                href="/frontend/views/provider/index.html"
+              <Link
+                to="/provider/register"
                 className="px-6 py-3 bg-transparent border-2 border-indigo-500 text-white font-medium rounded hover:bg-white/10"
               >
                 Become a Provider
-              </a>
+              </Link>
             </div>
 
             <div className="max-w-2xl mx-auto">

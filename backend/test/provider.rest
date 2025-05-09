@@ -1,5 +1,5 @@
 @baseUrl = http://localhost:3000
-@providerToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwicm9sZSI6InByb3ZpZGVyIiwiaWF0IjoxNzQ2NzA5OTA5LCJleHAiOjE3NDY3MTM1MDl9.lHmw_tCM4O1KlH3FtPdjoRwyfSOcSoVth1lJWB7v5jA
+@providerToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwicm9sZSI6InByb3ZpZGVyIiwiaWF0IjoxNzQ2ODA5NTg3LCJleHAiOjE3NDY4MTMxODd9.VHbQ8CuP5zq6YZg42GWfPDwCGigVQxlpsMI4ZdmdsHc
 
 ###
 POST {{baseUrl}}/provider/login
@@ -10,12 +10,14 @@ Content-Type: application/json
 "password": "Rohit@123."
 }
 
-
+###
+GET {{baseUrl}}/provider/profile
+Authorization: Bearer {{providerToken}}
 
 
 ###
 GET {{baseUrl}}/services
 
 ###
-GET {{baseUrl}}/provider/stats/1
+GET {{baseUrl}}/provider/stats
 Authorization: Bearer {{providerToken}}
