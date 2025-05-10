@@ -4,6 +4,7 @@ import {
   Phone, MapPin, Building, Globe, DollarSign
 } from 'lucide-react';
 import authApi from '../config/auth-config';
+import DashboardHeader from '../components/provider/Header';
 
 const ProfilePage = () => {
   const [photo, setPhoto] = useState("https://ui-avatars.com/api/?bold=true&name=n+p&color=4c51bf&background=82efe3");
@@ -126,12 +127,10 @@ const ProfilePage = () => {
   };
 
   const handleLogout = () => {
-    authApi.post('/provider/logout').then(() => {
       alert('Logged out successfully.');
-      // Redirect to login page or home
-    }).catch((error) => {
-      console.error('Logout error:', error);
-    });
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      window.location.reload();
   };
 
   const handleDeleteAccount = () => {
@@ -148,6 +147,7 @@ const ProfilePage = () => {
 
   return (
     <div className="bg-gray-100 font-sans">
+      <DashboardHeader />
       <main className="max-w-7xl mx-auto py-10 sm:px-6 lg:px-8">
         {/* Profile Section */}
         <Section
@@ -245,7 +245,7 @@ const ProfilePage = () => {
               <button
                 type="button"
                 onClick={handleLogout}
-                className="inline-flex items-center px-4 py-2 border border-red-600 text-red-600 rounded-md text-xs font-semibold uppercase"
+                className="inline-flex items-center px-4 py-2 border border-red-600 text-red-600 rounded-md text-xs font-semibold uppercase cursor-pointer"
               >
                 <LogOut className="w-4 h-4 mr-2" /> Logout
               </button>

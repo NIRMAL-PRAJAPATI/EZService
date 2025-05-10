@@ -1,11 +1,23 @@
-import { useEffect, useState } from "react"
-import { ArrowDown, ArrowUp, Bell, ChevronRight, DotSquareIcon, Facebook, Instagram, ListOrdered, PercentIcon, Star, StarsIcon, Twitter, UserCheck2Icon } from "lucide-react"
-import resources from "../resource"
-import authApi from "../config/auth-config"
-import { Link } from "react-router-dom"
+import { useEffect, useState } from "react";
+import {
+  ArrowDown, ArrowUp, Bell, IndianRupee, DotSquareIcon,
+  Facebook, Instagram, ListOrdered, Star,
+  Telescope, Twitter, ShoppingCart
+} from "lucide-react";
+import authApi from "../config/auth-config";
+import resources from "../resource";
+import { Link } from "react-router-dom";
+import DashboardHeader from "../components/provider/Header";
+
+const iconMap = {
+  telescope: Telescope,
+  "shopping-cart": ShoppingCart,
+  star: Star,
+  "indian-rupee": IndianRupee
+};
 
 function Dashboard() {
-  const [isOnline, setIsOnline] = useState(true)
+  const [isOnline, setIsOnline] = useState(true);
   const [stats, setStats] = useState({
     totalOrders: 0,
     totalServices: 0,
@@ -24,82 +36,42 @@ function Dashboard() {
       comment: "",
       rating: 0,
       created: "",
-      customerName: ""
+      customerName: "",
+      serviceName: ""
     }
-  })
+  });
 
   const csGreet = [
-  "Something didn’t click — let’s aim to turn this around!",       // Rating 1
-  "Room for improvement — every great service starts with feedback!", // Rating 2
-  "You're halfway there — refine the experience and shine!",        // Rating 3
-  "Great work! Just a little more to reach perfection!",            // Rating 4
-  "Outstanding! Customers love your service!"                       // Rating 5
-];
+    "Something didn’t click — let’s aim to turn this around!",
+    "Room for improvement — every great service starts with feedback!",
+    "You're halfway there — refine the experience and shine!",
+    "Great work! Just a little more to reach perfection!",
+    "Outstanding! Customers love your service!"
+  ];
 
-
-  useEffect(()=>
-    {
+  useEffect(() => {
     authApi.get("provider/stats")
-    .then((response) => {
-      setStats(response.data)
-    })
-    .catch((error) => {
-      console.error("Error fetching provider stats:", error)
-    })},[])
+      .then((response) => setStats(response.data))
+      .catch((error) => console.error("Error fetching stats:", error));
+  }, []);
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="bg-gray-50 min-h-screen">
       {/* Navigation */}
-      <header className="sticky top-0 z-10 bg-white border-b shadow-sm">
-        <div className="container flex items-center justify-between h-16 px-4 mx-auto">
-          <div className="flex items-center gap-2">
-            <img src={resources.Logo.src} alt="EZService Logo" className="object-contain w-10 h-10" />
-            <h1 className="text-xl font-bold text-gray-800">EZService</h1>
+      <DashboardHeader />
+
+      {/* Main Content */}
+      <main className="max-w-7xl mx-auto py-4 px-3 sm:px-6 lg:px-8 pt-20 z-0">
+        {/* Status Bar */}
+        <div className="bg-white shadow rounded-lg p-3 flex items-center justify-between">
+          <div className="flex items-center">
+            <span className={`h-3 w-3 ${isOnline ? "bg-green-400" : "bg-gray-400"} rounded-full mx-2`}></span>
+            <span className="text-sm font-medium">Instant Service Status: {isOnline ? "Online" : "Offline"}</span>
           </div>
-
-          <nav className="hidden md:flex">
-            <ul className="flex items-center space-x-8">
-              {[{id:"Dashboard",to:"/provider/dashboard"}, {id:"Profile",to:"/provider/profile"}, {id:"Orders",to:"/provider/orders"}, {id:"Services",to:"/provider/services"}, {id:"Complaints",to:"/provider/complaints"}].map((item) => (
-                <li key={item.id}>
-                  <Link
-                    to={item.to}
-                    className={`py-5 border-b-2 ${
-                      item.id === "Dashboard"
-                        ? "border-emerald-500 text-emerald-600 font-medium"
-                        : "border-transparent text-gray-600 hover:text-gray-900 hover:border-gray-300"
-                    }`}
-                  >
-                    {item.id}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </nav>
-
-          <div className="flex items-center gap-4">
-            <button className="p-2 rounded-full hover:bg-gray-100">
-              <span className="sr-only">Notifications</span>
-              <div className="relative">
-                <div className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></div>
-                <Bell className="text-gray-600" size={20} />
-              </div>
-            </button>
-            <div className="w-8 h-8 overflow-hidden rounded-full bg-emerald-100">
-              <img src="https://via.placeholder.com/32" alt="User Avatar" className="object-cover w-full h-full" />
-            </div>
-          </div>
-        </div>
-      </header>
-
-      <main className="container px-4 py-6 mx-auto">
-        {/* Service Status */}
-        <div className="p-4 mb-6 bg-white rounded-lg shadow-sm">
-          <div className="flex items-center gap-2">
-            <div className={`w-3 h-3 rounded-full ${isOnline ? "bg-emerald-500" : "bg-gray-400"}`}></div>
-            <span className="font-medium text-gray-800">Instant Service Status: {isOnline ? "Online" : "Offline"}</span>
+          <div>
             <button
               onClick={() => setIsOnline(!isOnline)}
-              className="px-3 py-1 ml-auto text-sm text-white rounded-full bg-emerald-500 hover:bg-emerald-600"
+              className="bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded-md text-sm font-medium"
             >
               {isOnline ? "Go Offline" : "Go Online"}
             </button>
@@ -107,165 +79,141 @@ function Dashboard() {
         </div>
 
         {/* Overview */}
-        <section className="mb-8">
-          <h2 className="mb-4 text-xl font-bold text-gray-800">Overview</h2>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {/* Total Visitors */}
-            <div className="p-6 bg-white rounded-lg shadow-sm">
-              <h3 className="text-sm font-medium text-gray-500">Total Orders</h3>
-              <p className="mt-2 text-3xl font-bold text-gray-800">{stats.totalOrders}</p>
-              <a
-                href="#"
-                className="inline-flex items-center mt-4 text-sm font-medium text-gray-600 hover:text-emerald-600"
-              >
-                View all orders
-                <ChevronRight className="w-4 h-4 ml-1" />
-              </a>
-            </div>
-
-            {/* Total Orders */}
-            <div className="p-6 bg-white rounded-lg shadow-sm">
-              <h3 className="text-sm font-medium text-gray-500">Total Services</h3>
-              <p className="mt-2 text-3xl font-bold text-gray-800">{stats.totalServices}</p>
-              <a
-                href="#"
-                className="inline-flex items-center mt-4 text-sm font-medium text-gray-600 hover:text-emerald-600"
-              >
-                View all services
-                <ChevronRight className="w-4 h-4 ml-1" />
-              </a>
-            </div>
-
-            {/* Rating */}
-            <div className="p-6 bg-white rounded-lg shadow-sm">
-              <h3 className="text-sm font-medium text-gray-500">Rating</h3>
-              <div className="flex items-center mt-2">
-                <p className="text-3xl font-bold text-gray-800">{parseFloat(stats.averageRating).toFixed(2)}</p>
-                <span className="text-lg text-gray-500">/5</span>
-              </div>
-              <a
-                href="#"
-                className="inline-flex items-center mt-4 text-sm font-medium text-gray-600 hover:text-emerald-600"
-              >
-                View reviews
-                <ChevronRight className="w-4 h-4 ml-1" />
-              </a>
-            </div>
-
-            {/* Earnings */}
-            <div className="p-6 bg-white rounded-lg shadow-sm">
-              <h3 className="text-sm font-medium text-gray-500">Earnings (This Month)</h3>
-              <p className="mt-2 text-3xl font-bold text-gray-800">{stats.totalEarnings}</p>
-              <a
-                href="#"
-                className="inline-flex items-center mt-4 text-sm font-medium text-emerald-600 hover:text-emerald-700"
-              >
-                View earnings
-                <ChevronRight className="w-4 h-4 ml-1" />
-              </a>
-            </div>
+        <section className="mt-3">
+          <h2 className="text-lg leading-6 font-medium text-gray-900 px-4 sm:px-0">Overview</h2>
+          <div className="mt-2 grid grid-cols-2 gap-2 sm:gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <DashboardCard icon="telescope" title="Total Visitors" value={stats.totalReviews} />
+            <DashboardCard icon="shopping-cart" title="Total Orders" value={stats.totalOrders} />
+            <DashboardCard icon="star" title="Rating" value={`${parseFloat(stats.averageRating).toFixed(1)}/5`} />
+            <DashboardCard icon="indian-rupee" title="Earnings (This Month)" value={stats.totalEarnings} />
           </div>
         </section>
 
         {/* Performance Metrics */}
-        <section className="mb-8">
-          <h2 className="mb-4 text-xl font-bold text-gray-800">Performance Metrics</h2>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {/* Orders */}
-            <div className="p-6 bg-white rounded-lg shadow-sm">
-              <h3 className="text-sm font-medium text-gray-500">Orders</h3>
-              <p className="mt-2 text-3xl font-bold text-gray-800">{stats.lastMonthOrders == 0 && stats.currentMonthOrders > stats.lastMonthOrders? "100%": stats.currentMonthOrders == 0? "0%": ((stats.currentMonthOrders*100)/stats.lastMonthOrders)+"%"}</p>
-              <div className="flex items-center mt-2">
-                <ListOrdered className="w-4 h-4 mr-1 text-black" />
-                <span className="text-sm font-medium text-black">{stats.lastMonthOrders} last month, {stats.currentMonthOrders} this month</span>
-              </div>
-            </div>
-
-            {/* Completion Rate */}
-            <div className="p-6 bg-white rounded-lg shadow-sm">
-              <h3 className="text-sm font-medium text-gray-500">Completion Rate</h3>
-              <p className="mt-2 text-3xl font-bold text-gray-800">{stats.totalOrders == 0? "No Orders" :(stats.completedOrders*100/stats.totalOrders)+"%"}</p>
-              <div className="flex items-center mt-2">
-                <DotSquareIcon className="w-4 h-4 mr-1 text-black" />
-                <span className="text-sm font-medium text-black">{stats.completedOrders} completed, {stats.pendingOrders} pending</span>
-              </div>
-            </div>
-
-            {/* Customer Satisfaction */}
-            <div className="p-6 bg-white rounded-lg shadow-sm">
-              <h3 className="text-sm font-medium text-gray-500">Customer Satisfaction</h3>
-              <p className="mt-2 text-3xl font-bold text-gray-800">{stats.customer_satisfation}/5.0</p>
-              <div className="flex items-center mt-2">
-                <StarsIcon className="w-4 h-4 mr-1 text-black" />
-                <span className="text-sm font-medium text-black">{csGreet[Math.floor(stats.customer_satisfation || 6)]}</span>
-              </div>
-            </div>
-
-            {/* Repeat Customers */}
-            <div className="p-6 bg-white rounded-lg shadow-sm">
-              <h3 className="text-sm font-medium text-gray-500">Repeat Customers</h3>
-              <p className="mt-2 text-3xl font-bold text-gray-800">{stats.repeatCustomers}</p>
-              <div className="flex items-center mt-2">
-                <UserCheck2Icon className="w-4 h-4 mr-1 " />
-                <span className="text-sm font-medium ">{stats.repeatCustomers == 0? "No RepeatingDeliver excellence - loyalty will follow!": `Loyal customers alert — ${stats.repeatCustomers}% returned!`}</span>
-              </div>
-            </div>
+        <section className="mt-8">
+          <h2 className="text-lg leading-6 font-medium text-gray-900 px-4 sm:px-0">Performance Metrics</h2>
+          <div className="mt-2 grid grid-cols-1 gap-2 sm:gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <MetricBar title="Orders" percent={calculatePercentage(stats.lastMonthOrders, stats.currentMonthOrders)} message={`${stats.lastMonthOrders} last month, ${stats.currentMonthOrders} this month`} />
+            <MetricBar title="Completion Rate" percent={calculatePercentage(stats.totalOrders, stats.completedOrders)} message={`${stats.completedOrders} completed, ${stats.pendingOrders} pending`} />
+            <MetricBar title="Customer Satisfaction" percent={stats.customer_satisfation * 20} message={csGreet[Math.floor(stats.customer_satisfation || 0)]} />
+            <MetricBar title="Repeat Customers" percent={stats.repeatCustomers} message={`${stats.repeatCustomers} repeat customers`} ispercentage={false} />
           </div>
         </section>
 
-        {/* Recent Reviews */}
-        <section>
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-bold text-gray-800">Recent Reviews</h2>
-            <a href="#" className="text-sm font-medium text-emerald-600 hover:text-emerald-700">
+        {/* Reviews */}
+        <section className="mt-8">
+          <div className="flex items-center justify-between px-4 sm:px-0">
+            <h2 className="text-lg font-medium text-gray-900">Recent Reviews</h2>
+            <a href="#" className="text-sm font-medium text-indigo-600 hover:text-indigo-700">
               View all
             </a>
           </div>
-          <div className="bg-white rounded-lg shadow-sm">
-            <div className="p-6 border-b">
-              <div className="flex items-start justify-between">
-                <div>
-                  <h3 className="font-medium text-gray-800 capitalize">{stats.latestReview.customerName}</h3>
-                  <p className="mt-1 text-gray-600">
-                    {stats.latestReview.comment}
-                  </p>
-                  <div className="flex items-center mt-2 text-sm text-gray-500">
-                    <span>{stats.latestReview.serviceName}</span>
-                    <span className="mx-2">•</span>
-                    <span>{stats.latestReview.created}</span>
+          <div className="mt-2 bg-white shadow overflow-hidden sm:rounded-md">
+            <ul role="list" className="divide-y divide-gray-200">
+              <li>
+                <div className="px-4 py-4 sm:px-6">
+                  <div className="flex items-start">
+                    <div className="flex-1">
+                      <div className="flex items-center justify-between">
+                        <p className="text-sm font-medium text-gray-900 capitalize">
+                          {stats.latestReview.customerName}
+                        </p>
+                        <div className="flex items-center">
+                          {[...Array(5)].map((_, i) => (
+                            <Star
+                              key={i}
+                              className={`h-4 w-4 ${i < Math.round(stats.latestReview.rating) ? "fill-yellow-400 text-yellow-400" : "text-gray-300"}`}
+                            />
+                          ))}
+                          <p className="ml-2 text-sm text-gray-500">
+                            {parseFloat(stats.latestReview.rating).toFixed(1)}
+                          </p>
+                        </div>
+                      </div>
+                      <p className="mt-1 text-sm text-gray-500">{stats.latestReview.comment}</p>
+                      <div className="mt-2 text-sm text-gray-500">
+                        <p>{stats.latestReview.serviceName || "Service"} • {stats.latestReview.created}</p>
+                      </div>
+                    </div>
                   </div>
                 </div>
-                <div className="flex items-center">
-                    <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
-                  <span className="ml-1 text-sm font-medium text-gray-600">{parseFloat(stats.latestReview.rating).toFixed(1)}</span>
-                </div>
-              </div>
-            </div>
+              </li>
+            </ul>
           </div>
         </section>
       </main>
 
-      <footer className="py-6 mt-12 text-center text-gray-500 border-t">
-        <div className="container px-4 mx-auto">
-          <p>© 2023 ServicePro, Inc. All rights reserved.</p>
-          <div className="flex items-center justify-center mt-4 space-x-4">
-            <a href="#" className="text-gray-400 hover:text-gray-600">
-              <Facebook className="w-5 h-5" />
-              <span className="sr-only">Facebook</span>
-            </a>
-            <a href="#" className="text-gray-400 hover:text-gray-600">
-              <Instagram className="w-5 h-5" />
-              <span className="sr-only">Instagram</span>
-            </a>
-            <a href="#" className="text-gray-400 hover:text-gray-600">
-              <Twitter className="w-5 h-5" />
-              <span className="sr-only">Twitter</span>
-            </a>
+      {/* Footer */}
+      <footer className="bg-white">
+        <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+          <div className="md:flex md:items-center md:justify-between">
+            <div className="flex justify-center space-x-6 md:order-2">
+              <a href="#" className="text-gray-400 hover:text-gray-500"><Facebook className="h-5 w-5" /></a>
+              <a href="#" className="text-gray-400 hover:text-gray-500"><Instagram className="h-5 w-5" /></a>
+              <a href="#" className="text-gray-400 hover:text-gray-500"><Twitter className="h-5 w-5" /></a>
+            </div>
+            <div className="mt-8 md:mt-0 md:order-1">
+              <p className="text-center text-base text-gray-400">
+                &copy; 2023 ServicePro, Inc. All rights reserved.
+              </p>
+            </div>
           </div>
         </div>
       </footer>
     </div>
-  )
+  );
+}
+
+function DashboardCard({ icon, title, value }) {
+  return (
+    <div className="bg-white overflow-hidden shadow rounded-lg">
+      <div className="p-4 flex items-center">
+        <div className="flex-shrink-0 bg-indigo-500 rounded-md p-3">
+          {renderLucideIcon(icon)}
+        </div>
+        <div className="ml-5 flex-1">
+          <dt className="text-sm font-medium text-gray-500 truncate">{title}</dt>
+          <dd className="mt-1 text-2xl font-bold text-gray-900">{value}</dd>
+        </div>
+      </div>
+      <div className="bg-gray-50 px-4 py-4">
+        <a href="#" className="text-sm font-medium text-indigo-600 hover:text-indigo-500">
+          View details
+        </a>
+      </div>
+    </div>
+  );
+}
+
+function MetricBar({ title, percent, message, ispercentage = true }) {
+  return (
+    <div className="bg-white overflow-hidden shadow rounded-lg p-4">
+      <h3 className="text-sm font-medium text-gray-900">{title}</h3>
+      <div className="mt-2 flex justify-between items-baseline">
+        <div className="text-2xl font-semibold text-indigo-600">{percent}{ispercentage? "%":''}</div>
+        <div className={`text-xs flex items-center`}>
+          {message}
+        </div>
+      </div>
+      <div className="mt-2 bg-gray-200 h-1 rounded">
+        <div
+          className="h-1 bg-indigo-500 rounded"
+          style={{ width: `${percent}%` }}
+        />
+      </div>
+    </div>
+  );
+}
+
+function calculatePercentage(base, current) {
+  if (base === 0 && current > 0) return 100;
+  if (base === 0 || current === 0) return 0;
+  return Math.min(100, Math.round((current * 100) / base));
+}
+
+function renderLucideIcon(name) {
+  const IconComponent = iconMap[name];
+  return IconComponent ? <IconComponent className="w-5 h-5 text-white" /> : null;
 }
 
 export default Dashboard;

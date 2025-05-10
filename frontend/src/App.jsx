@@ -24,6 +24,9 @@ import Dashboard  from './pages/ProviderDashboard';
 import RegistrationForm from './components/Register/ProviderRegistration'
 import LoginForm from './components/Register/ProviderLogin';
 import ProviderProfile from './pages/ProviderProfile';
+import ProviderReview from './pages/ProviderReview';
+import ProviderOrder from './pages/ProviderOrder';
+import ProviderServices from './pages/ProviderServices';
 
 function App() {
   const location = useLocation();
@@ -55,6 +58,10 @@ function App() {
             <Route path='register' element={<RegistrationForm />} />
             <Route path='login' element={<LoginForm />} />
             <Route path='profile' element={<ProviderProfile />} />
+            <Route path='complaints' element={<ProviderReview />} />
+            <Route path='orders' element={<ProviderOrder />} />
+            {/* <Route path='complaints' element={<Complaint />} /> */}
+            <Route path='services' element={<ProviderServices />} />
           </Route>
           <Route path='/book' element={<BookOrderPage />} />
           <Route path='/login' element={<Login />}/>

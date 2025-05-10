@@ -11,12 +11,11 @@ const Service = require('../models/service');
 
 const getProviderProfile = async (req, res) => {
     try{
-        console.log(req.userId, req.role);
         const providerId = req.userId;
         const role = req.role;
-        // if (role !== 'provider') {
-        //     return res.status(403).json({ message: 'Access denied' });
-        // }
+        if (role !== 'provider') {
+            return res.status(403).json({ message: 'Access denied' });
+        }
 
         if (!providerId) {
             return res.status(400).json({ message: 'Provider ID is required' });
