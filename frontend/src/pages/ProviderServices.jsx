@@ -11,102 +11,7 @@ import {
 } from 'lucide-react';
 import DashboardHeader from '../components/provider/Header';
 
-const dummyServices = [
-  {
-    id: 'dummy1',
-    name: 'Deep House Cleaning',
-    category: 'Cleaning',
-    visitingCharge: 20,
-    instantServiceCharge: 120.00,
-    description:
-      'Complete cleaning of your home including kitchen, bathrooms, bedrooms, and living areas. Includes dusting, vacuuming, mopping, and sanitizing surfaces.',
-    coverImage:
-      'https://static.vecteezy.com/system/resources/thumbnails/036/324/708/small/ai-generated-picture-of-a-tiger-walking-in-the-forest-photo.jpg',
-    serviceLocations: ['Naroda, ahmedaba, india', 'Narol', 'Nikol', 'memnagar'],
-    experience: '3+ Year Experiance',
-    providedServices: [
-      'Pipe Repairs & Replacements',
-      'Leak Detection & Fixing',
-      'Water Heater Installation',
-      'Drain Cleaning & Unclogging',
-      'Bathroom & Kitchen Plumbing',
-    ],
-    workingImages: [
-      'https://images.pexels.com/photos/674010/pexels-photo-674010.jpeg?cs=srgb&dl=pexels-anjana-c-169994-674010.jpg&fm=jpg',
-      'https://static.vecteezy.com/system/resources/thumbnails/036/324/708/small/ai-generated-picture-of-a-tiger-walking-in-the-forest-photo.jpg',
-    ],
-  },
-  {
-    id: 'dummy2',
-    name: 'Plumbing Repair',
-    category: 'Repair',
-    visitingCharge: 15,
-    instantServiceCharge: 85.00,
-    description:
-      'Professional plumbing repair service for leaky faucets, clogged drains, toilet issues, and other common plumbing problems.',
-    coverImage:
-      'https://static.vecteezy.com/system/resources/thumbnails/036/324/708/small/ai-generated-picture-of-a-tiger-walking-in-the-forest-photo.jpg',
-    serviceLocations: ['Naroda, ahmedaba, india', 'Narol'],
-    experience: '5+ Year Experiance',
-    providedServices: ['Leak Detection & Fixing', 'Toilet Repairs'],
-    workingImages: [
-      'https://images.pexels.com/photos/674010/pexels-photo-674010.jpeg?cs=srgb&dl=pexels-anjana-c-169994-674010.jpg&fm=jpg',
-    ],
-  },
-  {
-    id: 'dummy3',
-    name: 'Smart Home Installation',
-    category: 'Installation',
-    visitingCharge: 30,
-    instantServiceCharge: 150.00,
-    description:
-      'Installation and setup of smart home devices including thermostats, security cameras, smart locks, and voice assistants.',
-    coverImage:
-      'https://static.vecteezy.com/system/resources/thumbnails/036/324/708/small/ai-generated-picture-of-a-tiger-walking-in-the-forest-photo.jpg',
-    serviceLocations: ['Nikol', 'memnagar'],
-    experience: '1+ Year Experiance',
-    providedServices: ['Smart Locks', 'Security Cameras', 'Thermostats'],
-    workingImages: [
-      'https://images.pexels.com/photos/674010/pexels-photo-674010.jpeg?cs=srgb&dl=pexels-anjana-c-169994-674010.jpg&fm=jpg',
-      'https://static.vecteezy.com/system/resources/thumbnails/036/324/708/small/ai-generated-picture-of-a-tiger-walking-in-the-forest-photo.jpg',
-    ],
-  },
-  {
-    id: 'dummy4',
-    name: 'HVAC Maintenance',
-    category: 'Maintenance',
-    visitingCharge: 25,
-    instantServiceCharge: 95.00,
-    description:
-      'Regular maintenance for your heating, ventilation, and air conditioning systems to ensure optimal performance and energy efficiency.',
-    coverImage:
-      'https://static.vecteezy.com/system/resources/thumbnails/036/324/708/small/ai-generated-picture-of-a-tiger-walking-in-the-forest-photo.jpg',
-    serviceLocations: ['Naroda, ahmedaba, india'],
-    experience: '10+ Year Experiance',
-    providedServices: ['System Checkup', 'Filter Replacement'],
-    workingImages: [
-      'https://images.pexels.com/photos/674010/pexels-photo-674010.jpeg?cs=srgb&dl=pexels-anjana-c-169994-674010.jpg&fm=jpg',
-    ],
-  },
-  {
-    id: 'dummy5',
-    name: 'Interior Design Consultation',
-    category: 'Consultation',
-    visitingCharge: 50,
-    instantServiceCharge: 200.00,
-    description:
-      'Professional interior design consultation to help you transform your space with expert advice on layout, color schemes, furniture, and decor.',
-    coverImage:
-      'https://static.vecteezy.com/system/resources/thumbnails/036/324/708/small/ai-generated-picture-of-a-tiger-walking-in-the-forest-photo.jpg',
-    serviceLocations: ['Narol', 'memnagar'],
-    experience: '5+ Year Experiance',
-    providedServices: ['Space Planning', 'Color Scheme Advice', 'Furniture Selection'],
-    workingImages: [
-      'https://images.pexels.com/photos/674010/pexels-photo-674010.jpeg?cs=srgb&dl=pexels-anjana-c-169994-674010.jpg&fm=jpg',
-      'https://static.vecteezy.com/system/resources/thumbnails/036/324/708/small/ai-generated-picture-of-a-tiger-walking-in-the-forest-photo.jpg',
-    ],
-  },
-];
+import authApi from '../config/auth-config';
 
 function ServiceRow({ service, onEdit, onDelete }) {
   return (
@@ -520,10 +425,7 @@ function DeleteConfirmationModal({ isOpen, onClose, onConfirm }) {
 }
 
 function ServiceList() {
-  const [services, setServices] = useState(() => {
-    const storedServices = localStorage.getItem('services');
-    return storedServices ? JSON.parse(storedServices) : dummyServices;
-  });
+  const [services, setServices] = useState([]);
   const [filterCategory, setFilterCategory] = useState('');
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -533,6 +435,28 @@ function ServiceList() {
   useEffect(() => {
     localStorage.setItem('services', JSON.stringify(services));
   }, [services]);
+
+  useEffect(() => {
+    authApi.get('/provider/services').then((response) => {
+      const servicesData = response.data.map((service) => ({
+        id: service._id,
+        name: service.name,
+        category: service.category.name,
+        categoryId: service.category._id,
+        visitingCharge: parseFloat(service.visiting_charge || 0),
+        instantServiceCharge: parseFloat(service.instant_visiting_charge || 0),
+        description: service.description,
+        coverImage: service.cover_image,
+        serviceLocations: service.locations,
+        experience: service.experience,
+        providedServices: service.providedServices || [],
+        workingImages: service.working_images,
+      }));
+      setServices(servicesData);
+    }).catch((error) => {
+      console.error('Error fetching services:', error);
+    });
+  }, []);
 
   const filteredServices = services.filter((service) =>
     filterCategory === '' || service.category === filterCategory

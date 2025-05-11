@@ -8,6 +8,7 @@ const { Op, literal } = require('sequelize');
 const sequelize = require('../db');
 const CustomerInfo = require('../models/customerInfo');
 const Service = require('../models/service');
+const ServiceCategory = require('../models/serviceCategory');
 
 const getProviderProfile = async (req, res) => {
     try{
@@ -59,6 +60,37 @@ const getProviderWithServices = async (req, res)=>{
             return res.status(404).json({ message: 'Provider not found' });
         }
         res.status(200).json(provider);
+    }catch(e){
+        console.error('Error fetching provider with services:', e);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+}
+
+const getProviderServices = async (req, res)=>{
+    try{
+        const providerId = req.userId;
+        const role = req.role;
+        if (role !== 'provider') {
+            return res.status(403).json({ message: 'Access denied' });
+        }
+        if (!providerId) {
+            return res.status(400).json({ message: 'Provider ID is required' });
+        }
+        const services = await Service.findAll({
+            where: { provider_id: providerId },
+            order: [['created', 'DESC']],
+            include: [
+                {
+                    model: ServiceCategory,
+                    as: 'category',
+                    attributes: ['name','id'],
+                }
+            ]
+        });
+        if (!services) {
+            return res.status(404).json({ message: 'Provider not found' });
+        }
+        res.status(200).json(services);
     }catch(e){
         console.error('Error fetching provider with services:', e);
         res.status(500).json({ message: 'Internal server error' });
@@ -228,4 +260,46 @@ const loginProvider = async (req,res)=>{
     }
 }
 
-module.exports = {getProviderProfile, getProviderWithServices, getProviderStats, registerProvider, loginProvider}
+const getProviderOrders = async (req,res)=>{
+    try{
+        const providerId = req.userId;
+        const role = req.role;
+        if (role !== 'provider') {
+            return res.status(403).json({ message: 'Access denied' });
+        }
+
+        if (!providerId) {
+            return res.status(400).json({ message: 'Provider ID is required' });
+        }
+
+        const { limit, page, offset } = req.pagination;
+        const orders = await Order.findAndCountAll({
+            where: { provider_id: providerId },
+            limit,
+            offset,
+            order: [['created', 'DESC']],
+            include: [
+                {
+                    model: CustomerInfo,
+                    attributes: ['name', 'email'],
+                },
+                {
+                    model: Service,
+                    attributes: ['name'],
+                }
+            ]
+        });
+
+        if (!orders) {
+            return res.status(404).json({ message: 'No orders found' });
+        }
+
+        res.status(200).json({orders: orders.rows, total: orders.count, page: page, limit: limit});
+
+    }catch(err){
+        console.error('Error fetching provider orders:', err);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+}
+
+module.exports = {getProviderProfile, getProviderWithServices, getProviderStats, registerProvider, loginProvider, getProviderOrders, getProviderServices}

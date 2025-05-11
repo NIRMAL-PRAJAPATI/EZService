@@ -1,5 +1,5 @@
 @baseUrl = http://localhost:3000
-@providerToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwicm9sZSI6InByb3ZpZGVyIiwiaWF0IjoxNzQ2ODA5NTg3LCJleHAiOjE3NDY4MTMxODd9.VHbQ8CuP5zq6YZg42GWfPDwCGigVQxlpsMI4ZdmdsHc
+@providerToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwicm9sZSI6InByb3ZpZGVyIiwiaWF0IjoxNzQ2OTQ2NTc0LCJleHAiOjE3NDY5NTAxNzR9.8ICXKvSea-lmbzlGjPUyPMzZ_og8x1zna6BrEqwjsd0
 
 ###
 POST {{baseUrl}}/provider/login
@@ -16,7 +16,13 @@ Authorization: Bearer {{providerToken}}
 
 
 ###
-GET {{baseUrl}}/services
+GET {{baseUrl}}/provider/services
+Authorization: Bearer {{providerToken}}
+
+
+###
+GET {{baseUrl}}/provider/orders
+Authorization: Bearer {{providerToken}}
 
 ###
 GET {{baseUrl}}/provider/stats

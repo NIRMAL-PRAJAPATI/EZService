@@ -8,6 +8,7 @@ import authApi from "../config/auth-config";
 import resources from "../resource";
 import { Link } from "react-router-dom";
 import DashboardHeader from "../components/provider/Header";
+import Loading from "../components/Loading"
 
 const iconMap = {
   telescope: Telescope,
@@ -48,11 +49,16 @@ function Dashboard() {
     "Great work! Just a little more to reach perfection!",
     "Outstanding! Customers love your service!"
   ];
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     authApi.get("provider/stats")
-      .then((response) => setStats(response.data))
-      .catch((error) => console.error("Error fetching stats:", error));
+      .then((response) => {setStats(response.data)
+        setLoading(false);
+      })
+      .catch((error) => {console.error("Error fetching stats:", error)
+        setLoading(false);
+      });
   }, []);
 
   return (
@@ -61,6 +67,8 @@ function Dashboard() {
       <DashboardHeader />
 
       {/* Main Content */}
+      {loading ? <Loading /> : 
+      
       <main className="max-w-7xl mx-auto py-4 px-3 sm:px-6 lg:px-8 pt-20 z-0">
         {/* Status Bar */}
         <div className="bg-white shadow rounded-lg p-3 flex items-center justify-between">
@@ -142,6 +150,7 @@ function Dashboard() {
           </div>
         </section>
       </main>
+      }
 
       {/* Footer */}
       <footer className="bg-white">

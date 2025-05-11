@@ -32,7 +32,7 @@ const Service = sequelize4.define('Service', {
   timestamps: false
 });
 
-Service.belongsTo(ServiceCategory, { foreignKey: 'category_id' });
+Service.belongsTo(ServiceCategory, { foreignKey: 'category_id', as: 'category' });
 ServiceCategory.hasMany(Service, { foreignKey: 'category_id' });
 
 

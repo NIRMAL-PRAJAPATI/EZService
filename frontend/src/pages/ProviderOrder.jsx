@@ -1,6 +1,8 @@
 import { FileDigit, MapPin, Calendar } from 'lucide-react';
 import DashboardHeader from '../components/provider/Header';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import authApi from '../config/auth-config';
+import Loading from '../components/Loading';
 
 function OrderItem({ order }) {
   return (
@@ -8,7 +10,7 @@ function OrderItem({ order }) {
       <div className="px-4 py-4 sm:px-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center">
-            <p className="font-bold text-primary tracking-wide text-xl">
+            <p className="font-bold text-primary tracking-wide text-xl capitalize">
               {order.customerName}
             </p>
           </div>
@@ -41,7 +43,7 @@ function OrderItem({ order }) {
           <button className="inline-flex items-center px-4 py-2 border border-primary font-medium rounded text-primary">
             Decline
           </button>
-          <button className="inline-flex items-center px-4 py-2 border border-transparent font-medium rounded text-white bg-primary">
+          <button className="inline-flex items-center px-4 py-2 border border-transparent font-medium rounded text-white bg-indigo-500">
             Accept order
           </button>
         </div>
@@ -68,24 +70,37 @@ function OrderList({ orders }) {
 
 
 function ProviderOrder() {
-  const ordersData = [
-    {
-      customerName: 'Rajesh Prajapati',
-      serviceType: 'Plumbing',
-      orderNo: '12346',
-      address: 'Krishnapark socity Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolore veniam reprehenderit iure officia velit impedit iste distinctio fugiat, nobis libero voluptatum aspernatur? Ex dolor sed nihil! Ducimus soluta distinctio consectetur.',
-      serviceTime: 'Tomorrow after 10:00 AM',
-      issue: 'Lorem ipsum dolor, sit amet consectetur adipisicing elit. Eos vero sequi, inventore nulla nostrum delectus molestias incidunt ipsam sint minima nam impedit natus? Sed consequatur repellat fuga inventore? Aut, delectus!',
-    },
-    // Add more order data here
-  ];
+  const [ordersData, setOrdersData] = useState([]);
   const [filter, setFilter] = useState("All");
   const filteredOrders =
     filter === "All"
       ? ordersData
       : ordersData.filter((order) => order.status === filter);
 
-  const statusFilters = ["All", "Pending", "Fulfilled", "Cancelled", "Declined"];
+  const statusFilters = ["All", "pending", "fulfilled", "cancelled", "declined"];
+  const [loading, setLoading] = useState(true);
+
+  useEffect(()=>{
+    authApi
+      .get("/provider/orders")
+      .then((response) => {
+        const orders = response.data.orders.map((order) => ({
+          orderNo: order.order_id,
+          customerName: order.CustomerInfo.name,
+          serviceType: order.Service.name,
+          address: order.location,
+          serviceTime: order.updated,
+          issue: order.issue,
+          status: order.status
+        }));
+        setLoading(false);
+        setOrdersData(orders);
+      })
+      .catch((error) => {
+        console.error("Error fetching orders:", error);
+        setLoading(false);
+      });
+  },[])
 
   return (
     <>
@@ -109,7 +124,7 @@ function ProviderOrder() {
       </div>
       
     <main className="max-w-7xl mx-auto z-0">
-      <OrderList orders={filteredOrders} />
+      {loading ? <Loading />: <OrderList orders={filteredOrders} />}
     </main>
     </>
   );
