@@ -1,5 +1,5 @@
 const service = require('../models/service');
-const service_category = require('../models/serviceCategory');
+const ServiceCategory = require('../models/serviceCategory');
 const providerInfo = require("../models/providerInfo")
 const {getRatingsFromServiceId} = require("./serviceReview")
 const Sequelize = require("../db")
@@ -16,7 +16,8 @@ const getServices = async (req, res) => {
                       ]
             ],
             include: [{
-                model: service_category,
+                model: ServiceCategory,
+                as: 'category',
                 attributes: ['name'],
             },
             {
@@ -45,7 +46,8 @@ const getVerifiedServices = async (req, res)=>{
         const services = await service.findAll({
             attributes: ['id','name', 'cover_image', 'visiting_charge', 'description', 'city', 'state', 'country', 'category_id','badge_status','created','experience','working_images'],
             include: [{
-                model: service_category,
+                model: ServiceCategory,
+                as: 'category',
                 attributes: ['name'],
             },
             {
@@ -100,7 +102,8 @@ const getServiceById = async (req, res) => {
             model: providerInfo,
           },
           {
-            model: service_category,
+            model: ServiceCategory,
+            as: 'category',
             attributes: ["name", "id"],
           },
         ],

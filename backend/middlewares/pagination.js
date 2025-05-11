@@ -1,7 +1,7 @@
 module.exports = (req, res, next)=>{
     try{
         let {limit, page} = req.query;
-        limit = parseInt(limit) || 2;
+        limit = parseInt(limit) || 5;
         page = parseInt(page) || 1;
 
         if(limit > 100) limit = 100;

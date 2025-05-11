@@ -181,7 +181,6 @@ const getProviderStats = async (req, res) => {
 
     const averageRating = ratingStats?.getDataValue('averageRating') || 0;
     const totalReviews = ratingStats?.getDataValue('totalReviews') || 0;
-
     res.status(200).json({
       totalServices,
       totalEarnings: totalEarnings || 0,
@@ -200,7 +199,7 @@ const getProviderStats = async (req, res) => {
     lastMonthOrders: lastMonthOrders?.count || 0,
     currentMonthOrders: currentMonthOrders?.count || 0,
     repeatCustomers: repeatedUser || 0,
-    customer_satisfation: customer_satisfation ? parseFloat(customer_satisfation.getDataValue('average')).toFixed(1) : 0,
+    customer_satisfation: customer_satisfation.getDataValue('average') ? parseFloat(customer_satisfation.getDataValue('average')).toFixed(1) : 0,
     });
   } catch (e) {
     console.error('Error fetching provider stats:', e);
@@ -211,21 +210,21 @@ const getProviderStats = async (req, res) => {
 
 const registerProvider = async (req, res)=>{
     try{
-        const { name, email, phone, password } = req.body;
-        if (!name || !email || !phone || !password ) {
+        const { name, email, mobile, password, address, city, state, country } = req.body;
+        if (!name || !email || !mobile || !password ) {
             return res.status(400).json({ message: 'All fields are required' });
         }
         const existingProvider = await Provider.findOne({ where: {
             [Op.or]: [
                 { email: email },
-                { phone: phone }
+                { mobile: mobile }
             ]
         } });
         if (existingProvider) {
             return res.status(409).json({ message: 'Provider already exists' });
         }
 
-        const newProvider = await Provider.create({ name, email, phone, passowrd });
+        const newProvider = await Provider.create({ name, email, mobile, password, address, city, state, country });
         res.status(201).json(newProvider);
 
     }catch(e){

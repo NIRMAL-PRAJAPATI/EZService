@@ -10,6 +10,7 @@ router.post('/send-otp', async (req, res) => {
     console.log(phone);
     res.send({ status: 'OTP Sent', sid: response.sid });
   } catch (err) {
+    console.log(err)
     res.status(500).send({ errorMessage: err.message });
   }
 });

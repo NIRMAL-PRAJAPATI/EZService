@@ -55,6 +55,7 @@ function Dashboard() {
     authApi.get("provider/stats")
       .then((response) => {setStats(response.data)
         setLoading(false);
+        console.log(response.data)
       })
       .catch((error) => {console.error("Error fetching stats:", error)
         setLoading(false);
@@ -109,6 +110,8 @@ function Dashboard() {
         </section>
 
         {/* Reviews */}
+        {stats.totalReviews > 0 &&
+        
         <section className="mt-8">
           <div className="flex items-center justify-between px-4 sm:px-0">
             <h2 className="text-lg font-medium text-gray-900">Recent Reviews</h2>
@@ -149,6 +152,7 @@ function Dashboard() {
             </ul>
           </div>
         </section>
+        }
       </main>
       }
 
