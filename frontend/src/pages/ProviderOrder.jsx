@@ -1,5 +1,6 @@
 import { FileDigit, MapPin, Calendar } from 'lucide-react';
 import DashboardHeader from '../components/provider/Header';
+import { useState } from 'react';
 
 function OrderItem({ order }) {
   return (
@@ -64,6 +65,8 @@ function OrderList({ orders }) {
   );
 }
 
+
+
 function ProviderOrder() {
   const ordersData = [
     {
@@ -76,15 +79,37 @@ function ProviderOrder() {
     },
     // Add more order data here
   ];
+  const [filter, setFilter] = useState("All");
+  const filteredOrders =
+    filter === "All"
+      ? ordersData
+      : ordersData.filter((order) => order.status === filter);
+
+  const statusFilters = ["All", "Pending", "Fulfilled", "Cancelled", "Declined"];
 
   return (
     <>
     <DashboardHeader />
-      <div className="px-4 py-5 sm:px-6">
-        
+    <div className="bg-white shadow overflow-hidden sm:rounded-md max-w-7xl mx-auto pt-20">
+    <div className="px-4 py-5 sm:px-6">
+        <div className="flex space-x-2">
+          {statusFilters.map((status) => (
+            <button
+              key={status}
+              onClick={() => setFilter(status)}
+              className={
+                "px-4 py-2 rounded-md text-sm font-medium border bg-white text-gray-700 border-gray-300 hover:bg-gray-100"
+              }
+            >
+              {status}
+            </button>
+          ))}
+        </div>
       </div>
+      </div>
+      
     <main className="max-w-7xl mx-auto z-0">
-      <OrderList orders={ordersData} />
+      <OrderList orders={filteredOrders} />
     </main>
     </>
   );
