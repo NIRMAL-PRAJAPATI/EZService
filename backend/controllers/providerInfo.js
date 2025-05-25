@@ -301,4 +301,6 @@ const getProviderOrders = async (req,res)=>{
     }
 }
 
+
+
 module.exports = {getProviderProfile, getProviderWithServices, getProviderStats, registerProvider, loginProvider, getProviderOrders, getProviderServices}

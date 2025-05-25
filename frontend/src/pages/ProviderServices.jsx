@@ -481,6 +481,30 @@ function ServiceList() {
   };
 
   const saveEditedService = (editedService) => {
+
+    authApi.put(`/provider/services/${editedService.id}`, {
+      name: editedService.name,
+      category: editedService.category,
+      visiting_charge: editedService.visitingCharge,
+      instant_visiting_charge: editedService.instantServiceCharge,
+      description: editedService.description,
+      cover_image: editedService.coverImage,
+      locations: editedService.serviceLocations,
+      experience: editedService.experience,
+      providedServices: editedService.providedServices,
+      working_images: editedService.workingImages,
+    }, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+      },
+    }).then((response) => {
+      console.log('Service updated successfully:', response.data);
+    }).catch((error) => {
+      console.error('Error updating service:', error);
+    });
+    setEditModalOpen(false);
+
     const updatedServices = services.map((s) =>
       s.id === editedService.id ? editedService : s
     );

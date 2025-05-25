@@ -132,5 +132,48 @@ const getServiceById = async (req, res) => {
     }
   };
   
+const updateService = async (req, res)=>{
+    try{
+        const {userId, role} = req;
+        const {id} = req.body;
 
-module.exports = {getServices, getVerifiedServices, getServicesByCategoryId, getServiceById};
+        if(role !== "provider")
+            return res.status(403).json({message: "Unauthorized Action"})
+        const provider = await providerInfo.findByPk(id)
+
+        if(!provider)
+            return res.status(404).json({message: "Provider Doesn't Exists"})
+
+        const service_ = await service.findOne({ id, provider_id: userId})
+        const data = req.body;
+        const payload = {
+              name : data.name,
+              cover_image: data.cover_image,
+              visiting_charge: data.visiting_charge,
+              instant_visiting_charge: data.instant_visiting_charge,
+              description: data.description,
+              locations: data.locations,
+              experience: data.experience,
+              specifications: data.specifications,
+              working_images: data.working_images,
+              badge_status: data.badge_status,
+              city: data.city,
+              state: data.state,
+              country: data.country,
+              category_id: data.category_id,
+              service_type: data.service_type
+        } = req.body;
+        
+        await service_.update({
+          ...payload  
+        })
+
+        res.status(200).json({message: "Service Updated Successfully"})
+
+    }catch(err){
+        console.error(err)
+        res.status(500).json({message: "Internal Server Error"})
+    }
+}
+
+module.exports = {getServices, getVerifiedServices, getServicesByCategoryId, getServiceById, updateService};

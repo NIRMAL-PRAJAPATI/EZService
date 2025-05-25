@@ -1,0 +1,25 @@
+@baseUrl = http://localhost:3000
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEyIiwicm9sZSI6InByb3ZpZGVyIiwiaWF0IjoxNzQ4MDczMDc2LCJleHAiOjE3NDgwNzY2NzZ9.ENlexHORjOi3osLzp9UJVuSHi2WyzPCl0g7mNCyPdj8
+###
+GET {{baseUrl}}/services/
+
+###
+GET {{baseUrl}}/services/verified
+
+
+###
+PUT {{baseUrl}}/services/1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "string",
+  "description": "string",
+  "cover_image": "string",
+  "badge_status": true,
+  "specifications": [
+    {
+      "name": "string"
+    }
+  ]
+}
