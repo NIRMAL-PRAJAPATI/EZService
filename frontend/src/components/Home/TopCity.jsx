@@ -50,7 +50,7 @@ function TopCity() {
         </div>
 
         {/* City Grid */}
-        <div className='w-full overflow-x-auto'>
+        <div className='w-full overflow-x-auto removeScroll'>
         <div className="flex gap-4 px-4 md:px-0 w-max">
           {cityData.map(({ city, imageUrl }) => (
             <div

@@ -1,15 +1,20 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { ChevronDown, ChevronUp , UserRound , AlignRight, LucideShoppingCart, LucideShoppingBag, Heart} from "lucide-react";
+import { ChevronDown, ChevronUp , UserRound , AlignRight, LucideShoppingCart, LucideShoppingBag, Heart, Search, X, SearchIcon, ArrowUpRightFromCircle} from "lucide-react";
 import resources from "../resource";
 
 const Navbar = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [searchBoxOpen, setSearchBoxOpen] = useState(false);
 
   const toggleDropdown = () => {
     setDropdownOpen(!dropdownOpen);
   };
+  const toggleSearchBox = () => {
+    setSearchBoxOpen(!searchBoxOpen);
+    console.log("hdfvh")
+  }
 
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
@@ -99,7 +104,7 @@ const Navbar = () => {
                 to="/rankings"
                 className="text-gray-600 hover:text-black"
               >
-                Ranking
+                Rankings
               </Link>
               {/* <Link onClick={toggleMenu}
                 to="/complaint"
@@ -107,22 +112,28 @@ const Navbar = () => {
               >
                 Complaint
               </Link> */}
-              <Link onClick={toggleMenu}
+              {/* <Link onClick={toggleMenu}
                 to="/about"
                 className="text-gray-600 hover:text-black"
               >
                 About
-              </Link>
+              </Link> */}
             </div>
 
             {/* Account Button */}
             <div className="flex md:space-x-1 mt-4 md:mt-0">
-            <Link onClick={toggleMenu}
+              <Link onClick={toggleSearchBox}
+                className="py-2 px-4 text-gray-700 border border-gray-300 rounded flex"
+              >
+                <Search className="h-5 w-5 transition duration-150" />
+                <span className="-mt-0.5 ml-1">Search</span>
+              </Link>
+            {/* <Link onClick={toggleMenu}
                 to="/order"
                 className="p-2 text-gray-700"
               >
                 <Heart className="h-5 w-5 transition duration-150" />
-              </Link>
+              </Link> */}
             <Link onClick={toggleMenu}
                 to="/order"
                 className="p-2 text-gray-700"
@@ -135,6 +146,57 @@ const Navbar = () => {
               >
                 <UserRound className="h-5 w-5 transition duration-150" />
               </Link>
+            </div>
+          </div>
+        </div>
+
+        {/* searchBox */}
+        <div className={`h-full w-full bg-black/50 fixed top-0 flex justify-center left-0 md:p-5 z-20 ${searchBoxOpen ? `block` : `hidden`}`}>
+          <div className="max-w-7xl grid grid-cols-7 bg-white h-full w-full shadow-lg">
+            {/* recomandation box */}
+            <div className="hidden sm:block col-span-2 bg-gray-100 p-5 space-y-3 overflow-y-scroll h-full relative">
+              <div className="gap-1 flex flex-wrap">
+            <button
+            type="submit"
+            className="flex cursor-pointer text-sm py-1.5 px-3 bg-white rounded-sm hover:border-indigo-500 border border-gray-200 truncate"            
+            >Plumber</button>
+              </div>
+
+              <hr className="text-gray-300"></hr>
+
+              <div className="gap-1 flex flex-wrap">
+                <button
+            type="submit"
+            className="flex cursor-pointer text-sm py-1.5 px-3 bg-white rounded-sm hover:border-indigo-500 border border-gray-200 truncate"            
+            >Ananta Services</button>
+              </div>
+            </div>
+            {/* search container */}
+            <div className="col-span-7 sm:col-span-5 p-1">
+              <X className="ml-auto align-right m-1 border rounded-xs border-gray-500 cursor-pointer" onClick={toggleSearchBox}></X>
+              <div className="px-2 mx-auto text-black">
+                            <div className="flex gap-2">
+                              <input
+                                type="text"
+                                placeholder="Search for services . . ."
+                                className="w-full px-4 py-2 bg-transparent border border-gray-400 text-gray-800 rounded-sm focus:outline-none"
+                              />
+                              <button className="text-gray-400 border border-indigo-500 px-4 rounded-sm text-white bg-indigo-500">
+                                Search
+                              </button>
+                            </div>
+                          </div>
+                          <div className="overflow-y-scroll h-[85%] relative p-2 space-y-2">
+                            <div className="flex justify-between p-3 bg-gray-50 rounded-sm text-gray-900 font-semibold cursor-pointer">
+                              <p>Plumbing Services</p>
+                              <ArrowUpRightFromCircle className="h-5 w-5 text-indigo-700"></ArrowUpRightFromCircle>
+                            </div>
+                            <div>
+                            <ul className="p-2 text-gray-900">
+                              <li className="py-1.5 pt-3 border-b border-gray-200">Ananta Plumbing Services</li>
+                            </ul>
+                            </div>
+                          </div>
             </div>
           </div>
         </div>
