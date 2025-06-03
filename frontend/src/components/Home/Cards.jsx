@@ -8,10 +8,10 @@ const ProductCategoryCards = ({services, city}) => {
       {/* Electronics Section */}
       <div className="mb-8">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-bold capitalize">Services in {city}</h2>
         </div>
-        <div className="relative">
-          <div className="flex gap-2 bg-white p-4 rounded shadow-sm overflow-x-auto">
+        <div className="relative bg-white p-4 rounded shadow-sm">
+          <h2 className="text-xl font-bold capitalize mb-2">Services in {city}</h2>
+          <div className="overflow-x-auto flex gap-2">
             {services.map((category) => (
               <div
                 key={category.id}
@@ -31,9 +31,6 @@ const ProductCategoryCards = ({services, city}) => {
               </div>
             ))}
           </div>
-          <button className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-white rounded-full p-1 shadow-md">
-            <ChevronRight className="w-6 h-6" />
-          </button>
         </div>
       </div>
     </div>

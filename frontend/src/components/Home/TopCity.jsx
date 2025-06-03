@@ -37,8 +37,8 @@ const cityData = [
 
 function TopCity() {
   return (
-    <section className="bg-gray-100 py-5 text-black">
-      <div className="sm:p-6 mb-4">
+    <section className="bg-gray-50 pt-5 text-black">
+      <div className="sm:p-6">
         {/* Header */}
         <div className="flex items-center mb-4">
           <h2 className="text-2xl font-bold text-gray-900">

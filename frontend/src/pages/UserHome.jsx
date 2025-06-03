@@ -88,8 +88,8 @@ function UserHome() {
 
 <Card services={cityServices} city={city}/>
 
-    {/* <div className="p-5 container mx-auto">
-      <div className="bg-indigo-500/80 rounded-xl shadow-lg overflow-hidden flex w-full sm:h-100">
+    <div className="px-5 container mx-auto">
+      <div className="bg-indigo-500/80 rounded-xl shadow-lg overflow-hidden flex w-full sm:h-90">
       <div className="w-1/2 hidden sm:block">
         <img
           src="https://www.shutterstock.com/image-photo/authentic-indian-food-snacks-close-260nw-1960332085.jpg"
@@ -107,7 +107,7 @@ function UserHome() {
         </button>
       </div>
     </div>
-    </div> */}
+    </div>
       <TopCity />
       {/* <Card /> */}
       <Sponser services={verifiedServices}/>

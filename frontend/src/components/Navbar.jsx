@@ -22,7 +22,7 @@ const Navbar = () => {
 
   return (
     <nav className="bg-white shadow-sm top-0 left-0 w-full z-50 text-black border-b border-gray-200">
-      <div className="mx-auto py-3 px-4">
+      <div className="mx-auto py-2 px-4">
         <div className="flex items-center justify-between">
           {/* Logo and Brand */}
           <div className="flex items-center">
@@ -136,13 +136,13 @@ const Navbar = () => {
               </Link> */}
             <Link onClick={toggleMenu}
                 to="/order"
-                className="p-2 text-gray-700"
+                className="px-2 pt-2.5 text-gray-700"
               >
                 <LucideShoppingBag className="h-5 w-5 transition duration-150" />
               </Link>
               <Link onClick={toggleMenu}
                 to="/profile"
-                className="p-2 text-gray-700"
+                className="px-2 pt-2.5 text-gray-700"
               >
                 <UserRound className="h-5 w-5 transition duration-150" />
               </Link>
