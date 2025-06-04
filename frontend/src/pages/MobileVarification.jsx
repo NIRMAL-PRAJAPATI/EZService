@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { formToJSON } from "axios";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -10,13 +10,26 @@ function MobileVarification() {
   const [errorMessage, setErrorMessage] = useState("");
 
   const { formData } = location.state || {};
+  
+const [formDataState, setFormDataState] = useState(formData || {});
   const navigate = useNavigate();
+
+  const handleChange = (e) => {
+  const updatedMobile = e.target.value;
+
+  setFormDataState((prev) => ({
+    ...prev,
+    mobile: updatedMobile,
+  }));
+};
+
+console.log(formDataState)
 
   const api = "http://localhost:3000";
 
-  const [OTPTimer, setOTPTimer] = useState(20);
+  const [OTPTimer, setOTPTimer] = useState(30);
   const [isCounting, setIsCounting] = useState(false);
-  const [buttonText, setButtonText] = useState("send OTP");
+  const [buttonText, setButtonText] = useState("Get OTP");
 
   useEffect(() => {
     let interval;
@@ -38,8 +51,8 @@ function MobileVarification() {
   }, [isCounting, OTPTimer]);
 
   const sendOTP = async () => {
-    console.log("i am running" + formData.mobile)
-    await axios.post(`${api}/otp/send-otp`, { phone: `+91${formData.mobile}` }).then(response => {
+    console.log("i am running" + formDataState.mobile)
+    await axios.post(`${api}/otp/send-otp`, { phone: `+91${formDataState.mobile}` }).then(response => {
       setOTPTimer(20)
       setIsCounting(true);
       console.log("i am running")
@@ -50,13 +63,13 @@ function MobileVarification() {
   }
 
   const verifyOTP = async (data) => {
-    console.log(formData.mobile + data.otp + " password is : " +formData.password)
+    console.log(formDataState.mobile + data.otp + " password is : " +formDataState.password)
     await axios.post(`${api}/otp/verify-otp`, {
-      phone: `+91${formData.mobile}`,
+      phone: `+91${formDataState.mobile}`,
       code: data.otp
     }).then(response => {
       console.log("verified")
-      axios.post(`${api}/customer/register`, formData).then(response => {
+      axios.post(`${api}/customer/register`, formDataState).then(response => {
         console.log("registered")
         navigate('/');
       }).catch((error) => {
@@ -85,7 +98,8 @@ function MobileVarification() {
             <input
               type="mobile"
               name="mobile"
-              value={formData.mobile}
+              value={formDataState.mobile}
+              onChange={handleChange}
               className="block w-full pl-4 pr-3 py-3 text-gray-800 border border-gray-300 rounded-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
             />
           </div>
@@ -99,7 +113,7 @@ function MobileVarification() {
                 className="block w-full pl-4 pr-3 py-3 text-gray-800 border border-gray-300 rounded-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
               />
             </div>
-            <button type="button" className="border-none text-white rounded-sm h-12 bg-indigo-500 hover:bg-indigo-600 cursor-pointer" onClick={sendOTP}>{isCounting ? `0 : ` + OTPTimer : buttonText}</button>
+            <button type="button" className={`border-none rounded-sm h-12 cursor-pointer ${isCounting ? "bg-indigo-100 text-dark" : "text-white bg-indigo-500 hover:bg-indigo-600"}`} onClick={isCounting ? null : sendOTP} disabled={isCounting}>{isCounting ? `00 : ` + OTPTimer : buttonText}</button>
           </div>
           <p className="text-red-600 -mt-2 mb-1 text-sm">{errorMessage}</p>
           <button

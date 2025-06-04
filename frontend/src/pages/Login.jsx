@@ -24,7 +24,7 @@ function Login() {
         }).then((response) => {
             console.log("success login", response.data);
             localStorage.setItem('token', response.data.token)
-            const location = response.data.city + ", " + response.data.state + ", " + response.data.country + ", " + response.data.pincode;
+            const location = response.data.data.city + ", " + response.data.data.state + ", " + response.data.data.country + ", " + response.data.data.pincode;
             localStorage.setItem('location', location)
             navigate('/')
         }).catch((error) => {
@@ -63,7 +63,7 @@ function Login() {
                                     <input
                                         type="text"
                                         name="emailMobile"
-                                        className="block w-full pl-4 pr-3 py-3 border border-gray-300 bg-white rounded-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                                        className="block w-full pl-4 pr-3 py-4 md:py-3 border border-gray-300 bg-white rounded-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-lg md:text-sm"
                                         value={formData.emailMobile}
                                         onChange={handleChange}
                                         required />
@@ -73,7 +73,7 @@ function Login() {
                                     <input
                                         type="password"
                                         name="password"
-                                        className="block w-full pl-4 pr-3 py-3 border border-gray-300 bg-white rounded-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                                        className="block w-full pl-4 pr-3 py-4 md:py-3 border border-gray-300 bg-white rounded-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-lg md:text-sm"
                                         value={formData.password}
                                         onChange={handleChange}
                                         required />
@@ -81,10 +81,12 @@ function Login() {
                             </div>
                             <a className="text-sm text-red-500">Forgot Password?</a>
                             <div>
-                                <button id="formbtn" type="submit" className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-sm text-white bg-indigo-500 hover:bg-indigo-600 cursor-pointer focus:outline-none mt-1">LogIn Now</button>
-                                <button className='my-2 w-full text-gray-600 tracking-wide font-semibold'>Create a new account?</button>
+                                <button id="formbtn" type="submit" className="group relative w-full flex justify-center py-4 md:py-3 px-4 border border-transparent font-medium rounded-sm text-white bg-indigo-500 hover:bg-indigo-600 text-lg md:text-sm cursor-pointer focus:outline-none mt-1">LogIn Now</button>
                             </div>
                         </form>
+                        <div className='w-full flex'>
+                        <a href='/register' className='-mt-3 mx-auto text-gray-600 tracking-wide font-semibold cursor-pointer'>Create a new account?</a>
+                        </div>
                     </div>
                 </main>
             </div>
