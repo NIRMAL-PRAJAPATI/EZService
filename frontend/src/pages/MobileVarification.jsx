@@ -99,7 +99,7 @@ function MobileVarification() {
                 className="block w-full pl-4 pr-3 py-3 text-gray-800 border border-gray-300 rounded-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
               />
             </div>
-            <button type="button" className="border-none text-white rounded-sm h-12 bg-indigo-500 hover:bg-indigo-600" onClick={sendOTP}>{isCounting ? `0 : ` + OTPTimer : buttonText}</button>
+            <button type="button" className="border-none text-white rounded-sm h-12 bg-indigo-500 hover:bg-indigo-600 cursor-pointer" onClick={sendOTP}>{isCounting ? `0 : ` + OTPTimer : buttonText}</button>
           </div>
           <p className="text-red-600 -mt-2 mb-1 text-sm">{errorMessage}</p>
           <button

@@ -1,6 +1,8 @@
 const { Op, or } = require('sequelize');
 const User = require('../models/customerInfo');
 const bcrypt = require('bcrypt');
+require('dotenv').config();
+const jwt = require('jsonwebtoken');
 
 const getCustomerInfo = async (req, res) => {
     try {
@@ -31,16 +33,18 @@ const loginCustomer = async (req, res) => {
                 const passwordCheck = await existanceCheck.validPassword(password);
 
                 if (!passwordCheck) {
-                    res.status(401).json({ message: "email/mobile or password in incorrect !" })
+                    res.status(401).json({ message: "Incorrect password !" })
                 }
                 let userData = await existanceCheck.toJSON();
 
                 delete userData.id;
                 delete userData.password;
-                console.log(userData);
+                console.log('JWT_SECRET:', `"${process.env.JWT_SECRET}"`, typeof process.env.JWT_SECRET);
 
-                const token = jwt.sign({ id: existanceCheck.id, role: 'customer'}, process.env.JWT_SECRET, { expiresIn: '1d' });
 
+                const token = jwt.sign({ id: existanceCheck.id, role: 'customer'}, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+                console.log("success", token, userData)
                 res.status(200).json({ data: userData, token, message: "success" });
             } catch (error) {
                 res.status(500).json({ message: "problem in password varification" })
