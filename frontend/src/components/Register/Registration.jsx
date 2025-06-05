@@ -1,17 +1,31 @@
 import { useForm } from 'react-hook-form';
 import axios from 'axios';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 function Registration () {
-  const { register, handleSubmit, reset, watch, setError, formState: {errors} } = useForm();
+  const { register, handleSubmit, reset, watch,setValue, formState: {errors} } = useForm();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    fetch("https://ipapi.co/json/")
+      .then((res) => res.json())
+      .then((data) => {
+        reset({
+        city: data.city,
+        state: data.region,
+        country: data.country_name,
+      });
+      })
+      .catch((err) => console.error("IP fetch error:", err));
+  }, [setValue]);
     
   const [errorMessage, setErrorMessage] = useState("");
   const api = 'http://localhost:3000';
 
   const onVarifyData = async (data) => {
     const { confirmpassword, ...formData } = data;
+    console.log(formData);
 
       await axios.post(`${api}/customer/varifyemailmobile`, formData).then(response => {
         navigate('/register/mobilevarification', {state: {'formData': formData}});
@@ -35,7 +49,7 @@ function Registration () {
             <input
               type="text"
               name="name"
-              className="block w-full pl-4 pr-3 py-3 text-gray-800 border border-gray-300 rounded-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+              className="block w-full pl-4 pr-3 py-3 text-lg md:text-sm text-gray-800 border border-gray-300 rounded-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
               {...register("name", {required: "name is required",
                 minLength: {value: 3, message: "name must be at least 3 characters"}
               })}
@@ -48,7 +62,7 @@ function Registration () {
             <input
               type="mobile"
               name="mobile"
-              className="block w-full pl-4 pr-3 py-3 text-gray-800 border border-gray-300 rounded-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+              className="block w-full pl-4 pr-3 py-3 text-lg md:text-sm text-gray-800 border border-gray-300 rounded-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
               {...register("mobile", {required: "mobile is required",
                 pattern: {value: /^[0-9]{10}$/, message: "Mobile number must be 10 digits"}
               })}
@@ -61,7 +75,7 @@ function Registration () {
             <input
               type="email"
               name="email"
-              className="block w-full pl-4 pr-3 py-3 text-gray-800 border border-gray-300 rounded-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+              className="block w-full pl-4 pr-3 py-3 text-lg md:text-sm text-gray-800 border border-gray-300 rounded-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
               {...register("email", {required: "email is required",
                 pattern: {value: /^\S+@\S+\.\S+$/, message: "Invalid email format"}
               })}
@@ -75,17 +89,17 @@ function Registration () {
             <input
               type="number"
               name="pincode"
-              className="block w-full pl-4 pr-3 py-3 text-gray-800 border border-gray-300 rounded-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-              {...register("pincode", {required: "PIN Code is required"})}
+              className="block w-full pl-4 pr-3 py-3 text-lg md:text-sm text-gray-800 border border-gray-300 rounded-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+              {...register("pincode")}
             />
             {errors.pincode && <p className="text-red-600 text-sm">{errors.pincode.message}</p>}
           </div>
           <div className="mb-4 relative">
-            <label className="absolute left-3 -top-3 bg-white px-1 text-sm font-medium text-indigo-500">City / Village</label>
+            <label className="absolute left-3 -top-3 bg-white px-1 text-sm font-medium text-indigo-500">City / Town</label>
             <input
               type="text"
               name="city"
-              className="block w-full pl-4 pr-3 py-3 text-gray-800 border border-gray-300 rounded-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+              className="block w-full pl-4 pr-3 py-3 text-lg md:text-sm text-gray-800 border border-gray-300 rounded-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
               {...register("city", {required: "city is required"})}
             />
             {errors.city && <p className="text-red-600 text-sm">{errors.city.message}</p>}
@@ -98,7 +112,7 @@ function Registration () {
             <input
               type="text"
               name="state"
-              className="block w-full pl-4 pr-3 py-3 text-gray-800 border border-gray-300 rounded-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+              className="block w-full pl-4 pr-3 py-3 text-lg md:text-sm text-gray-800 border border-gray-300 rounded-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
               {...register("state", {required: "State is required"})}
             />
             {errors.state && <p className="text-red-600 text-sm">{errors.state.message}</p>}
@@ -108,7 +122,7 @@ function Registration () {
             <input
               type="text"
               name="country"
-              className="block w-full pl-4 pr-3 py-3 text-gray-800 border border-gray-300 rounded-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+              className="block w-full pl-4 pr-3 py-3 text-lg md:text-sm text-gray-800 border border-gray-300 rounded-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
               {...register("country", {required: "country is required"})}
             />
             {errors.country && <p className="text-red-600 text-sm">{errors.country.message}</p>}
@@ -120,7 +134,7 @@ function Registration () {
             <input
               type="password"
               name="password"
-              className="block w-full pl-4 pr-3 py-3 text-gray-800 border border-gray-300 rounded-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+              className="block w-full pl-4 pr-3 py-3 text-lg md:text-sm text-gray-800 border border-gray-300 rounded-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
               {...register("password", {required: "password is required",
                 pattern: {value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/,
                   message: "Password must be strong (8+ characters, one special char, uppercase, number)"}
@@ -134,7 +148,7 @@ function Registration () {
             <input
               type="password"
               name="confirmpassword"
-              className="block w-full pl-4 pr-3 py-3 text-gray-800 border border-gray-300 rounded-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+              className="block w-full pl-4 pr-3 py-3 text-lg md:text-sm text-gray-800 border border-gray-300 rounded-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
               {...register("confirmpassword", {required: "Confirm Password is required",
                 validate: (value) => value === watch('password') || "Passwords do not match"})}
             />
@@ -143,7 +157,7 @@ function Registration () {
           <p className="text-red-600 -mt-2 mb-1 text-sm">{errorMessage}</p>
           <button
             type="submit"
-            className="w-full bg-indigo-500 text-white py-3 px-4 rounded-sm hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">Register</button>
+            className="w-full bg-indigo-500 text-white text-lg md:text-sm py-3 px-4 rounded-sm hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">Register</button>
         </form>
 
         <div className="mt-4 text-center">

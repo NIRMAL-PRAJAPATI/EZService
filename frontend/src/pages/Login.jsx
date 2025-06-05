@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom'
 import api from '../config/axios-config'
 
 function Login() {
-    const [formData, setFormData] = useState({ emailMobile: "", password: "" })
+    const [formData, setFormData] = useState({ mobile: "", password: "" })
     const [errorMessage, setErrorMessage] = useState("");
     const navigate = useNavigate();
 
@@ -62,9 +62,9 @@ function Login() {
                                     <label className="absolute left-3 -top-3 bg-white px-1 text-sm font-medium text-indigo-500">Email/Mobile No.</label>
                                     <input
                                         type="text"
-                                        name="emailMobile"
+                                        name="mobile"
                                         className="block w-full pl-4 pr-3 py-4 md:py-3 border border-gray-300 bg-white rounded-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-lg md:text-sm"
-                                        value={formData.emailMobile}
+                                        value={formData.mobile}
                                         onChange={handleChange}
                                         required />
                                 </div><br />

@@ -2,6 +2,7 @@ import axios, { formToJSON } from "axios";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import api from '../config/axios-config'
 
 function MobileVarification() {
   const { handleSubmit, register } = useForm();
@@ -24,8 +25,6 @@ const [formDataState, setFormDataState] = useState(formData || {});
 };
 
 console.log(formDataState)
-
-  const api = "http://localhost:3000";
 
   const [OTPTimer, setOTPTimer] = useState(30);
   const [isCounting, setIsCounting] = useState(false);
@@ -52,7 +51,7 @@ console.log(formDataState)
 
   const sendOTP = async () => {
     console.log("i am running" + formDataState.mobile)
-    await axios.post(`${api}/otp/send-otp`, { phone: `+91${formDataState.mobile}` }).then(response => {
+    await api.post(`/otp/send-otp`, { phone: `+91${formDataState.mobile}` }).then(response => {
       setOTPTimer(20)
       setIsCounting(true);
       console.log("i am running")
@@ -64,14 +63,28 @@ console.log(formDataState)
 
   const verifyOTP = async (data) => {
     console.log(formDataState.mobile + data.otp + " password is : " +formDataState.password)
-    await axios.post(`${api}/otp/verify-otp`, {
+    await api.post(`/otp/verify-otp`, {
       phone: `+91${formDataState.mobile}`,
       code: data.otp
     }).then(response => {
       console.log("verified")
-      axios.post(`${api}/customer/register`, formDataState).then(response => {
+      api.post(`/customer/register`, formDataState).then(response => {
         console.log("registered")
-        navigate('/');
+        api.post('/customer/login', {mobile: formDataState.mobile, password: formDataState.password}, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                }).then((response) => {
+                    console.log("success login", response.data);
+                    localStorage.setItem('token', response.data.token)
+                    const location = response.data.data.city + ", " + response.data.data.state + ", " + response.data.data.country + ", " + response.data.data.pincode;
+                    localStorage.setItem('location', location)
+                    navigate('/')
+                }).catch((error) => {
+                    console.error(error);
+                    setErrorMessage(error.response.data.message);
+        
+                });
       }).catch((error) => {
         if (error.response) {
           console.log("problem in register");

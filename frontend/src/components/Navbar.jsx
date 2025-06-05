@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { ChevronDown, ChevronUp , UserRound , AlignRight, LucideShoppingCart, LucideShoppingBag, Heart, Search, X, SearchIcon, ArrowUpRightFromCircle} from "lucide-react";
 import resources from "../resource";
@@ -7,6 +7,7 @@ const Navbar = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchBoxOpen, setSearchBoxOpen] = useState(false);
+  const [tokenCheck, setTokenCheck] = useState(false);
 
   const toggleDropdown = () => {
     setDropdownOpen(!dropdownOpen);
@@ -19,6 +20,11 @@ const Navbar = () => {
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
   };
+
+   useEffect(() => {
+    const token = localStorage.getItem("token");
+    setTokenCheck(!!token); // true if token exists
+  }, []);
 
   return (
     <nav className="bg-white shadow-sm top-0 left-0 w-full z-50 text-black border-b border-gray-200">
@@ -39,7 +45,7 @@ const Navbar = () => {
 
           {/* Navigation Menu */}
           <div
-            className={`md:flex items-center justify-between absolute md:w-full md:relative z-10 top-14 md:top-0 w-[70vw] sm:w-[50vw] ${
+            className={`md:flex items-center justify-between absolute md:w-full md:relative z-10 top-12 md:top-0 w-[70vw] sm:w-[50vw] ${
               menuOpen ? "right-0" : "right-[100vw]"
             } md:right-0 bg-white text-left md:bg-transparent p-6 md:p-0 z-20 border-none transition-all duration-100`}
           >
@@ -121,19 +127,13 @@ const Navbar = () => {
             </div>
 
             {/* Account Button */}
-            <div className="flex md:space-x-1 mt-4 md:mt-0">
+            {/* <div className="flex md:space-x-1 mt-4 md:mt-0">
               <Link onClick={toggleSearchBox}
                 className="py-2 px-4 text-gray-700 border border-gray-300 rounded flex"
               >
                 <Search className="h-5 w-5 transition duration-150" />
                 <span className="-mt-0.5 ml-1">Search</span>
               </Link>
-            {/* <Link onClick={toggleMenu}
-                to="/order"
-                className="p-2 text-gray-700"
-              >
-                <Heart className="h-5 w-5 transition duration-150" />
-              </Link> */}
             <Link onClick={toggleMenu}
                 to="/order"
                 className="px-2 pt-2.5 text-gray-700"
@@ -145,6 +145,16 @@ const Navbar = () => {
                 className="px-2 pt-2.5 text-gray-700"
               >
                 <UserRound className="h-5 w-5 transition duration-150" />
+              </Link>
+            </div> */}
+            <div className="flex md:space-x-1 mt-4 md:mt-0 gap-2">
+              <Link onClick={toggleSearchBox}
+                className="py-2 px-4 text-white bg-indigo-500 hover:bg-indigo-600 border-none rounded"
+              >Login
+              </Link>
+              <Link onClick={toggleSearchBox}
+                className="py-2 px-4 text-white bg-indigo-500 hover:bg-indigo-600 border-none rounded"
+              >Register
               </Link>
             </div>
           </div>

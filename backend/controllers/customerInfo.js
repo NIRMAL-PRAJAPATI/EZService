@@ -19,11 +19,11 @@ const getCustomerInfo = async (req, res) => {
 }
 
 const loginCustomer = async (req, res) => {
-    let { emailMobile, password } = req.body;
+    let { mobile, password } = req.body;
 
     try {
         const existanceCheck = await User.findOne({
-            where: { [Op.or]: [{ mobile: emailMobile }, { email: emailMobile }] }
+            where: { [Op.or]: [{ mobile: mobile }, { email: mobile }] }
         })
 
         if (!existanceCheck) {
