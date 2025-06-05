@@ -23,7 +23,7 @@ const Navbar = () => {
 
    useEffect(() => {
     const token = localStorage.getItem("token");
-    setTokenCheck(!!token); // true if token exists
+    setTokenCheck(token);
   }, []);
 
   return (
@@ -127,7 +127,7 @@ const Navbar = () => {
             </div>
 
             {/* Account Button */}
-            {/* <div className="flex md:space-x-1 mt-4 md:mt-0">
+            {tokenCheck ? (<div className="flex md:space-x-1 mt-4 md:mt-0">
               <Link onClick={toggleSearchBox}
                 className="py-2 px-4 text-gray-700 border border-gray-300 rounded flex"
               >
@@ -146,17 +146,18 @@ const Navbar = () => {
               >
                 <UserRound className="h-5 w-5 transition duration-150" />
               </Link>
-            </div> */}
-            <div className="flex md:space-x-1 mt-4 md:mt-0 gap-2">
-              <Link onClick={toggleSearchBox}
-                className="py-2 px-4 text-white bg-indigo-500 hover:bg-indigo-600 border-none rounded"
+            </div>) : (
+            
+            <div className="flex mt-4 md:mt-0 gap-2 font-bold text-gray-700">
+              <Link to="/login"
+                className="py-2 hover:text-indigo-500"
               >Login
-              </Link>
-              <Link onClick={toggleSearchBox}
-                className="py-2 px-4 text-white bg-indigo-500 hover:bg-indigo-600 border-none rounded"
+              </Link><span className="py-2">/</span>
+              <Link to="register"
+                className="py-2 hover:text-indigo-500"
               >Register
               </Link>
-            </div>
+            </div>)}
           </div>
         </div>
 
