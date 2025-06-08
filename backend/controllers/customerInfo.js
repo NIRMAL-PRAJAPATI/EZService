@@ -6,8 +6,18 @@ const jwt = require('jsonwebtoken');
 
 const getCustomerInfo = async (req, res) => {
     try {
-        const userId = req.params.id;
-        const user = await User.findByPk(userId);
+        const customerId = req.userId;
+        const customerRole = req.role;
+        
+        if(customerRole !== 'customer') {
+            return res.status(403).json({message: "Access denied"})
+        }
+
+        if(!customerId) {
+            return res.status(400).json({message: "You are not a legetimate user"});
+        }
+
+        const user = await User.findByPk(customerId);
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
@@ -102,6 +112,10 @@ const varifyEmailMobile = async (req, res) => {
         console.log(error);
         res.status(500).json({ errorMessage: "Internal Server Error" });
     }
+}
+
+const editCustoerDetails = async (req, res) => {
+    const { name, mobile, email, city, state, country, password } = req.body;
 }
 
 module.exports = {
