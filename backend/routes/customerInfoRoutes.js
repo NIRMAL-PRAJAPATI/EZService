@@ -8,5 +8,7 @@ router.get('/profile', verifyToken, Controller.getCustomerInfo);
 router.post('/login', Controller.loginCustomer);
 router.post('/register', Controller.registerCustomer);
 router.post('/varifyemailmobile', Controller.varifyEmailMobile);
+router.put('/profile/update', verifyToken, Controller.updateCustomer);
+router.put('/password', verifyToken, Controller.updatePassword);
 
 module.exports = router;

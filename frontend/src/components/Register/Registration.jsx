@@ -84,7 +84,7 @@ function Registration () {
           </div>
 
           <div className='flex gap-2'>
-          <div className="mb-4 relative">
+          <div className="mb-4 relative w-full">
             <label className="absolute left-3 -top-3 bg-white px-1 text-sm font-medium text-indigo-500">PIN Code</label>
             <input
               type="number"
@@ -94,7 +94,7 @@ function Registration () {
             />
             {errors.pincode && <p className="text-red-600 text-sm">{errors.pincode.message}</p>}
           </div>
-          <div className="mb-4 relative">
+          <div className="mb-4 relative w-full">
             <label className="absolute left-3 -top-3 bg-white px-1 text-sm font-medium text-indigo-500">City / Town</label>
             <input
               type="text"
@@ -107,7 +107,7 @@ function Registration () {
           </div>
 
           <div className='flex gap-2'>
-          <div className="mb-4 relative">
+          <div className="mb-4 relative w-full">
             <label className="absolute left-3 -top-3 bg-white px-1 text-sm font-medium text-indigo-500">State</label>
             <input
               type="text"
@@ -117,7 +117,7 @@ function Registration () {
             />
             {errors.state && <p className="text-red-600 text-sm">{errors.state.message}</p>}
           </div>
-          <div className="mb-4 relative">
+          <div className="mb-4 relative w-full">
             <label className="absolute left-3 -top-3 bg-white px-1 text-sm font-medium text-indigo-500">Country</label>
             <input
               type="text"

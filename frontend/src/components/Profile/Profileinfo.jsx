@@ -1,14 +1,21 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import authApi from '../../config/auth-config';
+import CustomAlert from "../CustomAlert";
 
 function ProfileInfo() {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     mobile: "",
-    // photo: `${NP}`,
+    city: "",
+    state: "",
+    country: ""
   });
+
+  const [alert, setAlert] = useState({
+      status: false,
+    })
 
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -36,24 +43,40 @@ function ProfileInfo() {
     }
   };
 
+  const handleClose = () => {
+    setAlert(prev => ({ ...prev, status: false }));
+  };
+
   const handleEditOrSave = async () => {
     if (isEditing) {
       try {
-        await authApi.put("/api/user/profile/edit", formData);
-        alert("Profile updated successfully");
+        await authApi.put("/customer/profile/update", formData);
         setIsEditing(false);
+        setAlert({
+        title: "Profile Updated !",
+        description: "Your profile details updated successfully.",
+        status: true,
+        buttonText: "Ok",
+        onClose: handleClose
+      })
       } catch (error) {
         console.error("Error updating profile:", error);
-        alert("Failed to update profile");
       }
     } else {
-      // Enable edit mode
       setIsEditing(true);
     }
   };
 
   return (
     <div className="md:grid md:grid-cols-3 md:gap-6">
+      <CustomAlert
+              title={alert.title}
+              description={alert.description}
+              status={alert.status}
+              buttonText={alert.buttonText}
+              onClose={alert.onClose}
+            />
+
       <div className="md:col-span-1 flex justify-between">
         <div className="px-4 sm:px-0">
           <h3 className="text-xl font-medium text-gray-900">Profile Information</h3>
@@ -127,7 +150,7 @@ function ProfileInfo() {
                   <label className="block text-sm font-semibold text-gray-700">City</label>
                   <input
                     type="text"
-                    name="mobile"
+                    name="city"
                     value={formData.city}
                     onChange={handleChange}
                     disabled={!isEditing}
@@ -139,7 +162,7 @@ function ProfileInfo() {
                   <label className="block text-sm font-semibold text-gray-700">State</label>
                   <input
                     type="text"
-                    name="mobile"
+                    name="state"
                     value={formData.state}
                     onChange={handleChange}
                     disabled={!isEditing}
@@ -151,7 +174,7 @@ function ProfileInfo() {
                   <label className="block text-sm font-semibold text-gray-700">Country</label>
                   <input
                     type="text"
-                    name="mobile"
+                    name="country"
                     value={formData.country}
                     onChange={handleChange}
                     disabled={!isEditing}
