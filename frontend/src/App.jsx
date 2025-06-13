@@ -13,6 +13,7 @@ const Order = lazy(() => import('./pages/Order'));
 const Rankings = lazy(()=> import('./pages/Rankings'))
 const ServiceProfilePage = lazy(() => import('./pages/ServiceProfilePage'));
 const Templates = lazy(() => import('./pages/Templates/Templates'));
+const HomeRenovation = lazy(() => import('./components/Templates/home-renovation'));
 import Loading from './components/Loading'
 import OrderDetails from './pages/OrderDetails';
 import BookOrderPage from './pages/BookOrder';
@@ -48,6 +49,7 @@ function App() {
           <Route path='/Rankings' element={<Rankings />} />
           <Route path="/service/:id" element={<ServiceProfilePage />} />
           <Route path="/templates" element={<Templates />} />
+          <Route path="/home-renovation" element={<HomeRenovation />} />
           <Route path="/order" element={<Order />} />
           <Route path="/errorpage" element={<ErrorPage />} />
           <Route path="/orders/" element={<OrderDetails />} >
