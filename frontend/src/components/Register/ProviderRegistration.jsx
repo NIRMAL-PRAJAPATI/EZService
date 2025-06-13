@@ -173,7 +173,7 @@ function RegistrationForm() {
         <BriefcaseBusiness className="absolute top-24 right-[25vw] rotate-[330deg] z-0" />
         <Dumbbell className="absolute top-[90vh] left-20 rotate-[330deg] z-0" />
         <ScanHeart className="absolute top-[35vh] left-10 rotate-[330deg] z-0" />
-        <PartyPopper className="absolute top-[40vh] right-[35%] rotate-[330deg] z-0" />
+        <PartyPopper className="absolute top-[30vh] right-[40%] rotate-[330deg] z-0" />
       </div>
 
       {/* Main Card */}
