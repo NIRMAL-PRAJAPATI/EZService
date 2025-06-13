@@ -27,10 +27,10 @@ const Loading = () => {
       <img
         src={resources.Logo.src}
         alt="Loading logo"
-        className="w-16 h-16 loading-animation"
+        className="w-12 h-12 loading-animation"
       />
 
-      <p className="mt-3 text-gray-700 tracking-wide font-medium text-sm font-sans">
+      <p className="mt-1 text-gray-700 tracking-wide font-medium text-sm font-sans">
         Loading...
       </p>
     </div>

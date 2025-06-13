@@ -1,6 +1,6 @@
 import React from 'react';
 
-const AlertPage = ({ title, description, buttonText, status, onClose }) => {
+const AlertPage = ({ title, description, buttonText, status, onClose, cancel }) => {
     console.log(status);
 
   return (
@@ -9,6 +9,7 @@ const AlertPage = ({ title, description, buttonText, status, onClose }) => {
       <h2 className="text-xl font-semibold">{title}</h2>
       <p className="text-gray-800">{description}</p>
       <button onClick={onClose} className='px-5 border py-1 text-lg mt-5 rounded-sm bg-indigo-500 text-white cursor-pointer'>{buttonText}</button>
+      <button onClick={cancel} className='px-5 border border-indigo-500 py-1 text-lg mt-5 rounded-sm bg-transperent text-indigo-500 cursor-pointer ml-2'>Cancel</button>
       </div>
     </div>
   );

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
 import authApi from '../../config/auth-config';
 import CustomAlert from "../CustomAlert";
+import Loading from "../Loading";
 
 function ProfileInfo() {
   const [formData, setFormData] = useState({
@@ -18,7 +18,7 @@ function ProfileInfo() {
     })
 
   const [isEditing, setIsEditing] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -57,15 +57,26 @@ function ProfileInfo() {
         description: "Your profile details updated successfully.",
         status: true,
         buttonText: "Ok",
-        onClose: handleClose
+        onClose: handleClose,
+        cancel: handleClose
       })
       } catch (error) {
+        setAlert({
+        title: "Error in Profile Update !",
+        description: "Something gone wrong to update profile try again after sometimes.",
+        status: true,
+        buttonText: "Ok",
+        onClose: handleClose,
+        cancel: handleClose
+      })
         console.error("Error updating profile:", error);
       }
     } else {
       setIsEditing(true);
     }
   };
+if(loading)
+    return <Loading />
 
   return (
     <div className="md:grid md:grid-cols-3 md:gap-6">

@@ -8,6 +8,10 @@ function Logoutdelete() {
     status: false,
   })
 
+  const cancel = () => {
+    setAlert(prev => ({ ...prev, status: false }))
+  }
+
   const handleLogout = () => {
   localStorage.removeItem('token');
   setAlert(prev => ({ ...prev, status: false }));
@@ -20,7 +24,8 @@ function Logoutdelete() {
       description: "would you like to logout the current account?",
       status: true,
       buttonText: "Yes, Logout",
-      onClose: handleLogout
+      onClose: handleLogout,
+      cancel: cancel
     })
   }
 
@@ -39,7 +44,8 @@ function Logoutdelete() {
       description: "would you like to delete the account?",
       status: true,
       buttonText: "Yes, Delete",
-      onClose: handleDelete
+      onClose: handleDelete,
+      cancel: cancel
     })
   }
 
@@ -51,6 +57,7 @@ function Logoutdelete() {
         status={alert.status}
         buttonText={alert.buttonText}
         onClose={alert.onClose}
+        cancel={alert.cancel}
       />
 
       <div className="md:grid md:grid-cols-3 md:gap-6 mt-10 sm:mt-0">
