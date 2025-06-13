@@ -23,10 +23,16 @@ const Templates = () => {
             <p className="text-gray-600">Professional home renovation services and templates</p>
           </Link>
 
-          <div className="bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow cursor-pointer">
-            <h2 className="text-xl font-semibold text-gray-800 mb-2">Wedding Requisites</h2>
-            <p className="text-gray-600">Complete wedding planning and service templates</p>
-          </div>
+          <Link
+            to="/wedding-requisites"
+            className="bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow cursor-pointer block"
+          >
+              <h2 className="text-xl font-semibold text-gray-800 mb-2">Wedding Requisites</h2>
+              <p className="text-gray-600">Complete wedding planning and service templates</p>
+          </Link>
+
+         
+          
 
           <div className="bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow cursor-pointer">
             <h2 className="text-xl font-semibold text-gray-800 mb-2">Home Appliances</h2>
