@@ -58,7 +58,7 @@ const Hero = () => {
 
   return (
     <div>
-      <section className="bg-gradient-to-r from-gray-900 to-gray-700 text-white py-20 overflow-hidden m-0 p-0 relative">
+      <section className="bg-gradient-to-r from-gray-900 to-gray-700 text-white py-20 overflow-hidden relative">
         {/* Floating icons */}
         <div className="text-gray-600">
           <Plug className="absolute top-24 left-60 rotate-[330deg] z-0" />

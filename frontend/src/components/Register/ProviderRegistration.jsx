@@ -158,11 +158,17 @@ function RegistrationForm() {
 
   return (
     <div className="bg-gray-50 min-h-screen flex items-center justify-center p-4">
+      <div className="w-full bg-gray-200 h-2 absolute top-0">
+          <div
+            className="bg-indigo-400 h-2 transition-all duration-300"
+            style={{ width: `${progress}%` }}
+          ></div>
+        </div>
       {/* Background Icons */}
       <div className="text-gray-400 overflow-hidden absolute top-0 left-0 w-full h-full pointer-events-none">
         <Plug className="absolute top-24 left-60 rotate-[330deg] z-0" />
         <LibraryBig className="absolute top-[30vh] right-20 z-0" />
-        <Car className="absolute top-[50vh] left-[30vw] rotate-[330deg] z-0" />
+        <Car className="absolute top-[70vh] left-[30vw] rotate-[330deg] z-0" />
         <Wrench className="absolute top-[80vh] right-60 rotate-[10deg] z-0" />
         <BriefcaseBusiness className="absolute top-24 right-[25vw] rotate-[330deg] z-0" />
         <Dumbbell className="absolute top-[90vh] left-20 rotate-[330deg] z-0" />
@@ -171,13 +177,7 @@ function RegistrationForm() {
       </div>
 
       {/* Main Card */}
-      <div className="w-full max-w-3xl rounded-lg overflow-hidden z-10 bg-white shadow-lg">
-        <div className="w-full bg-gray-200 h-1">
-          <div
-            className="bg-indigo-400 h-1 transition-all duration-300"
-            style={{ width: `${progress}%` }}
-          ></div>
-        </div>
+      <div className="w-full max-w-3xl rounded-lg overflow-hidden z-10">
         <div className="p-6">
           <h1 className="text-3xl font-bold text-center mb-6 text-gray-800">Create Your Account</h1>
           <form className="space-y-4">
@@ -189,7 +189,7 @@ function RegistrationForm() {
                 <input
                   type="text"
                   id="name"
-                  className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md"
+                  className="w-full mt-1 px-4 py-3 outline-none border border-gray-300 rounded-sm"
                   placeholder="Your name"
                   value={formData.name}
                   onChange={handleChange}
@@ -205,7 +205,7 @@ function RegistrationForm() {
                 <input
                   type="email"
                   id="email"
-                  className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md"
+                  className="w-full mt-1 px-4 py-3 outline-none border border-gray-300 rounded-sm"
                   placeholder="you@example.com"
                   value={formData.email}
                   onChange={handleChange}
@@ -221,7 +221,7 @@ function RegistrationForm() {
                 <input
                   type="tel"
                   id="mobile"
-                  className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md"
+                  className="w-full mt-1 px-4 py-3 outline-none border border-gray-300 rounded-sm"
                   placeholder="+1234567890"
                   value={formData.mobile}
                   onChange={handleChange}
@@ -237,7 +237,7 @@ function RegistrationForm() {
                 <input
                   type="password"
                   id="password"
-                  className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md"
+                  className="w-full mt-1 px-4 py-3 outline-none border border-gray-300 rounded-sm"
                   placeholder="••••••••"
                   value={formData.password}
                   onChange={handleChange}
@@ -248,7 +248,7 @@ function RegistrationForm() {
                 <input
                   type="password"
                   id="confirmPassword"
-                  className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md"
+                  className="w-full mt-1 px-4 py-3 outline-none border border-gray-300 rounded-sm"
                   placeholder="••••••••"
                   value={formData.confirmPassword}
                   onChange={handleChange}
@@ -267,7 +267,7 @@ function RegistrationForm() {
                 <textarea
                   id="address"
                   rows="3"
-                  className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md"
+                  className="w-full mt-1 px-4 py-3 outline-none border border-gray-300 rounded-sm"
                   placeholder="Street, Apartment, etc."
                   value={formData.address}
                   onChange={handleChange}
@@ -277,7 +277,7 @@ function RegistrationForm() {
                     type="text"
                     id="city"
                     placeholder="City"
-                    className="px-3 py-2 border border-gray-300 rounded-md"
+                    className="px-3 py-2 border border-gray-300 rounded-sm"
                     value={formData.city}
                     onChange={handleChange}
                   />
@@ -285,7 +285,7 @@ function RegistrationForm() {
                     type="text"
                     id="state"
                     placeholder="State"
-                    className="px-3 py-2 border border-gray-300 rounded-md"
+                    className="px-3 py-2 border border-gray-300 rounded-sm"
                     value={formData.state}
                     onChange={handleChange}
                   />
@@ -293,7 +293,7 @@ function RegistrationForm() {
                     type="text"
                     id="country"
                     placeholder="Country"
-                    className="px-3 py-2 border border-gray-300 rounded-md"
+                    className="px-3 py-2 border border-gray-300 rounded-sm"
                     value={formData.country}
                     onChange={handleChange}
                   />
@@ -310,7 +310,7 @@ function RegistrationForm() {
                 {!otpRequested ? (
                   <button
                     type="button"
-                    className="px-4 py-2 bg-indigo-500 text-white text-sm rounded-md hover:bg-indigo-600"
+                    className="px-4 py-2 bg-indigo-500 text-white text-sm rounded-sm hover:bg-indigo-600"
                     onClick={handleGetOtp}
                   >
                     Get OTP
@@ -324,7 +324,7 @@ function RegistrationForm() {
                       type="text"
                       id="otp"
                       maxLength={6}
-                      className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md"
+                      className="w-full mt-1 px-4 py-3 outline-none border border-gray-300 rounded-sm"
                       placeholder="Enter 6-digit OTP"
                       value={formData.otp}
                       onChange={handleChange}
@@ -347,10 +347,10 @@ function RegistrationForm() {
             )}
 
             {/* Navigation Buttons */}
-            <div className="flex justify-between mt-6">
+            <div className="flex justify-between mt-2">
               <button
                 type="button"
-                className={`px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 ${
+                className={`px-5 py-3 font-medium text-gray-700 bg-gray-100 rounded-sm hover:bg-gray-200 ${
                   currentStep === 0 || currentStep === totalSteps ? 'hidden' : ''
                 }`}
                 onClick={prevStep}
@@ -361,7 +361,7 @@ function RegistrationForm() {
               {currentStep < totalSteps - 1 && (
                 <button
                   type="button"
-                  className="ml-auto px-4 py-2 text-sm font-medium text-white bg-indigo-400 rounded-md hover:bg-indigo-400/90"
+                  className="ml-auto px-5 py-3 font-medium text-white bg-indigo-400 rounded-sm hover:bg-indigo-400/90"
                   onClick={nextStep}
                 >
                   Next <ArrowRight className="w-4 h-4 inline ml-1" />
@@ -371,7 +371,7 @@ function RegistrationForm() {
               {currentStep === totalSteps - 1 && otpRequested && (
                 <button
                   type="button"
-                  className="ml-auto px-4 py-2 text-sm font-medium text-white bg-green-500 rounded-md hover:bg-green-600"
+                  className="ml-auto px-4 py-2 text-sm font-medium text-white bg-green-500 rounded-sm hover:bg-green-600"
                   onClick={handleSubmit}
                 >
                   Complete <Check className="w-4 h-4 inline ml-1" />

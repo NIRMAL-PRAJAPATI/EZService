@@ -60,7 +60,7 @@ function UserHome() {
 
   return (
     <div className="bg-gray-50">
-      {/* <HeroSection /> */}
+      <HeroSection />
       {/* <Search /> */}
       <Category categories={categories} />
       <Services services={services}/>

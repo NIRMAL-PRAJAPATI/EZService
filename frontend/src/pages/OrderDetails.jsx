@@ -59,8 +59,8 @@ export default function OrderDetails() {
     return <Loading />
 
   return (
-    <div className="bg-gray-50">
-    <div className="container mx-auto pb-5 pt-3 px-4">
+    <div className="bg-gray-100">
+    <div className="container mx-auto pb-5 pt-3 px-2">
       {showSuccessAlert && (
         <div className="mb-6 bg-green-50 border border-green-200 rounded-md p-4">
           <div className="flex items-center">
