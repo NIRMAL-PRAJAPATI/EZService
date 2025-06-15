@@ -61,7 +61,6 @@ function UserHome() {
   return (
     <div className="bg-gray-50">
       <HeroSection />
-      {/* <Search /> */}
       <Category categories={categories} />
       <Services services={services}/>
       {/* <div className="p-5 container mx-auto">
@@ -112,6 +111,7 @@ function UserHome() {
       <Sponser services={verifiedServices}/>
       <Template templates={templates}/>
       <UserReview />
+
       <LRAlert />
     </div>
   );
