@@ -128,33 +128,6 @@ function Registration () {
             {errors.country && <p className="text-red-600 text-sm">{errors.country.message}</p>}
           </div>
           </div>
-
-          <div className="mb-4 relative">
-            <label className="absolute left-3 -top-3 bg-white px-1 text-sm font-medium text-indigo-500">Password</label>
-            <input
-              type="password"
-              name="password"
-              className="block w-full pl-4 pr-3 py-3 text-lg md:text-sm text-gray-800 border border-gray-300 rounded-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-              {...register("password", {required: "password is required",
-                pattern: {value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/,
-                  message: "Password must be strong (8+ characters, one special char, uppercase, number)"}
-              })}
-            />
-            {errors.password && <p className="text-red-600 text-sm">{errors.password.message}</p>}
-          </div>
-
-          <div className="mb-4 relative">
-            <label className="absolute left-3 -top-3 bg-white px-1 text-sm font-medium text-indigo-500">Confirm Password</label>
-            <input
-              type="password"
-              name="confirmpassword"
-              className="block w-full pl-4 pr-3 py-3 text-lg md:text-sm text-gray-800 border border-gray-300 rounded-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-              {...register("confirmpassword", {required: "Confirm Password is required",
-                validate: (value) => value === watch('password') || "Passwords do not match"})}
-            />
-            {errors.confirmpassword && <p className="text-red-600 text-sm">{errors.confirmpassword.message}</p>}
-          </div>
-          <p className="text-red-600 -mt-2 mb-1 text-sm">{errorMessage}</p>
           <button
             type="submit"
             className="w-full bg-indigo-500 text-white text-lg md:text-sm py-3 px-4 rounded-sm hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">Register</button>
