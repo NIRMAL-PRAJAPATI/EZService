@@ -68,7 +68,7 @@ function ServicesPage() {
   return (
       <div className="text-black mx-auto bg-gray-100">
         <div className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-5">
-          <Sidebar menuOpen={menuOpen} categories={categories} setActiveCategory={setActiveCategory}/>
+          <Sidebar menuOpen={menuOpen} categories={categories} setActiveCategory={setActiveCategory} setMenuOpen={setMenuOpen}/>
           {/* Right Content Area */}
           <div className="sm:col-span-3 md:col-span-3 lg:col-span-4 space-y-4 overflow-y-scroll h-[90vh] z-0">
             {/* Search and Filter Section */}

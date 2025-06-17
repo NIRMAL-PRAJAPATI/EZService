@@ -1,7 +1,7 @@
 import { XIcon } from 'lucide-react'
 
 
-const Sidebar = ({categories, menuOpen, setActiveCategory})=>{
+const Sidebar = ({categories, menuOpen, setActiveCategory, setMenuOpen})=>{
 
     return  (
     
