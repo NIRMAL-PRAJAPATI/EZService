@@ -10,8 +10,8 @@ const Footer = () => {
     return (
         <footer className="bg-gray-900 text-white pt-12 pb-5">
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
-            <div>
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
+            <div className="col-span-2">
             <img
               src={resources.Logo.src}
               className="h-8 w-8 mr-2 md:mt-2 mb-3"
@@ -26,6 +26,11 @@ const Footer = () => {
             <div>
               <h3 className="text-lg font-semibold mb-4">Company</h3>
               <ul className="space-y-2">
+                <li>
+                  <a href="#" className="text-gray-500 hover:text-indigo-500">
+                    About Us
+                  </a>
+                </li>
                 <li>
                   <a href="#" className="text-gray-500 hover:text-indigo-500">
                     Investors
@@ -106,7 +111,7 @@ const Footer = () => {
             </div>
           </div>
           <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
-            <p>© 2024 ServiceHub. All rights reserved.</p>
+            <p>© 2024 EZService. All rights reserved.</p>
           </div>
         </div>
       </footer>

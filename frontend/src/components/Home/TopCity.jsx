@@ -37,8 +37,8 @@ const cityData = [
 
 function TopCity() {
   return (
-    <section className="bg-gray-100 py-5 text-black">
-      <div className="sm:p-6 mb-4">
+    <section className="bg-gray-50 pt-5 text-black">
+      <div className="sm:p-6">
         {/* Header */}
         <div className="flex items-center mb-4">
           <h2 className="text-2xl font-bold text-gray-900">
@@ -50,7 +50,7 @@ function TopCity() {
         </div>
 
         {/* City Grid */}
-        <div className='w-full overflow-x-auto'>
+        <div className='w-full overflow-x-auto removeScroll'>
         <div className="flex gap-4 px-4 md:px-0 w-max">
           {cityData.map(({ city, imageUrl }) => (
             <div

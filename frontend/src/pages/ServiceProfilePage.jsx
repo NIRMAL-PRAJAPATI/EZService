@@ -175,8 +175,8 @@ const ServiceProfilePage = () => {
           </div>
 
           {/* Service Details */}
-          <div className="bg-white rounded-md border border-gray-200 shadow-sm grid grid-cols-1 lg:grid-cols-3 lg:gap-5">
-            <div className="lg:col-span-2 space-y-5 order-2 lg:order-1 p-6">
+          <div className="bg-white rounded-md border border-gray-200 shadow-sm grid grid-cols-1 lg:grid-cols-5 lg:gap-5">
+            <div className="lg:col-span-3 space-y-5 order-2 lg:order-1 p-6">
               {/* Description */}
               <section>
                 <p className="text-gray-500">{serviceData?.description}</p>
@@ -262,12 +262,11 @@ const ServiceProfilePage = () => {
             </div>
 
             {/* Sidebar */}
-            <div className="lg:col-span-1 order-1 lg:order-2">
+            <div className="lg:col-span-2 order-1 lg:order-2">
               <div className="lg:bg-gray-50 rounded-lg p-6 lg:m-6">
-                <h3 className="text-xl font-bold text-gray-800 mb-2">Service Charge</h3>
-
+                <div className="flex justify-between">
                 <div className="flex items-center gap-1 mb-2">
-                  <span className="text-3xl font-bold text-indigo-500">₹{serviceData?.visiting_charge}</span>
+                  <span className="text-2xl font-bold text-indigo-500">₹{serviceData?.visiting_charge}</span>
                   <div
                     onClick={handleTermsClick}
                     className="cursor-pointer text-gray-400 hover:text-gray-600"
@@ -276,8 +275,10 @@ const ServiceProfilePage = () => {
                     <CircleAlert className="h-4 w-4 mt-1" />
                   </div>
                 </div>
+                <h3 className="text-gray-500 tracking-wide text-sm ">visiting charge</h3>
+                </div>
 
-                <div className="text-sm mb-5">
+                <div className="text-sm mb-5 space-y-2 tracking-wide">
                   <div className="flex items-center gap-2">
                     <Check className="h-4 w-4 text-indigo-500" />
                     <span className="text-gray-700">Verified Provider</span>
@@ -292,13 +293,13 @@ const ServiceProfilePage = () => {
                   </div>
                 </div>
 
-                <div className="flex gap-2">
+                <div className="flex gap-2 w-full">
                   <button
                     onClick={handleGetService}
-                    className="py-2 px-4 bg-indigo-500 hover:bg-indigo-700 text-white font-medium rounded-sm transition-colors">Book Now</button>
+                    className="py-2 w-full px-4 bg-indigo-500 hover:bg-indigo-700 text-white font-medium rounded-sm transition-colors">Book Now</button>
 
                   <button onClick={handleChat}
-                    className="py-2 px-4 border border-indigo-500 text-indigo-500 hover:bg-indigo-50 font-medium rounded-sm transition-colors">
+                    className="py-2 w-full px-4 border border-indigo-500 text-indigo-500 hover:bg-indigo-50 font-medium rounded-sm transition-colors">
                     Contact Provider
                   </button>
                 </div>

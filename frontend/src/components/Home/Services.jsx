@@ -11,13 +11,10 @@ export default function Services({services}) {
       {/* Featured Services */}
       <section className="p-5 mx-auto text-black">
         <div>
-          <h2 className="text-3xl font-bold text-center mb-8">
-            Top Performed Service Providers
-          </h2>
-          <div className="w-full overflow-x-auto">
+          <div className="w-full overflow-x-auto removeScroll">
           <div className="gap-2 flex w-max">
             {services.map((service) => (
-            <div className="bg-white rounded-lg overflow-hidden border border-gray-300 p-4 w-[300px]">
+            <div className="bg-white rounded-lg overflow-hidden border border-gray-300 p-4 w-[270px]">
               <Link to={`/service/${service.id}`} className="flex flex-col gap-2">
             <div>
                     <h3 className="text-md font-bold -mb-1">
@@ -26,7 +23,7 @@ export default function Services({services}) {
                     <p className="text-gray-600 text-xs">{service?.name}</p>
                   </div>
               <img src={service.cover_image ? service.cover_image : `https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQeJQeJyzgAzTEVqXiGe90RGBFhfp_4RcJJMQ&s`}
-                className="w-full h-40 object-cover p-4"
+                className="w-full h-35 object-cover p-0"
               />
               <p className="line-clamp-2 text-sm text-gray-600">{service.description ? service.description : `lorem this is my service description for basic knowledge of service provided by the provider`}</p>
               <div className="mt-2">

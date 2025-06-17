@@ -12,20 +12,31 @@ const OrderItem = ({ order }) => {
         <div className="flex items-center space-x-4">
           <img src={order.image || "/placeholder.svg"} alt={order.Service?.name} className="sm:w-25 w-22 sm:h-25 h-22 object-cover rounded-sm" />
           <div>
-            <h3 className="font-medium text-lg md:text-xl">{order?.Service?.name}</h3>
-            <p className="text-xs text-gray- mt-0.5">{order?.issue}</p>
-            <p className="text-indigo-500 font-bold mt-1">₹{parseFloat(order?.Service?.visiting_charge).toFixed(2)}</p>
-            <div className="lg:flex lg:gap-4">
-            <div className="flex items-center text-sm text-gray-500 mt-1 text-xs sm:text-sm">
-              <ClockArrowDown className="w-4 h-4 mr-1 text-indigo-500" />
-              <span>{order.created}</span>
-            </div>
-            <div className="flex items-center text-xs sm:text-sm text-gray-500 mt-1">
-              <MapPin className="w-4 h-4 mr-1 text-indigo-500" />
-              <span className="max-w-xs">{order.location}</span>
-            </div>
-            </div>
-          </div>
+  <h3 className="font-medium text-lg md:text-xl">
+    {order?.Service?.name}
+  </h3>
+
+  <p className="text-xs text-gray-600 mt-0.5 line-clamp-2">
+    {order?.issue}
+  </p>
+
+  <p className="text-indigo-500 font-bold mt-1">
+    ₹{parseFloat(order?.Service?.visiting_charge).toFixed(2)}
+  </p>
+
+  <div className="lg:flex lg:gap-4">
+    <div className="flex items-center text-sm text-gray-500 mt-1 text-xs sm:text-sm">
+      <ClockArrowDown className="w-4 h-4 mr-1 text-indigo-500" />
+      <span>{order.created}</span>
+    </div>
+
+    <div className="flex items-center text-xs sm:text-sm text-gray-500 mt-1">
+      <MapPin className="w-4 h-4 mr-1 text-indigo-500" />
+      <span className="">{order.location}</span>
+    </div>
+  </div>
+</div>
+
         </div>
         <button
           className="flex items-center text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors mx-auto sm:mx-0 mt-3"
