@@ -4,6 +4,11 @@ import { useNavigate } from 'react-router-dom'
 const ServiceCard = ({services})=>{
     const navigate = useNavigate()
 
+    const handleBookNow = (e, serviceId) => {
+        e.stopPropagation(); // Prevent card click event
+        navigate(`/book?serviceId=${serviceId}`);
+    }
+
     return (
         <>
         {
@@ -41,12 +46,19 @@ const ServiceCard = ({services})=>{
                             {service.city}, {service.state}, {service.country}
                           </span>
                         </div>
-                        <div className="flex items-center text-indigo-500 gap-0.5 mt-1">
-                          {[...Array(Math.floor(service?.average_rating))]?.map((rate)=> <Star className="h-3 w-3 fill-indigo-500 inline-block" />)}
-                          {[...Array(5-Math.floor(service?.average_rating))]?.map((rate)=>
-                          <Star className="h-3 w-3 inline-block" />
-                        )}
-                        {/* <Star className="h-3 w-3 fill-indigo-500 inline-block" /> */}
+                        <div className="flex justify-between items-center mt-2">
+                          <div className="flex items-center text-indigo-500 gap-0.5">
+                            {[...Array(Math.floor(service?.average_rating))]?.map((rate, i)=> <Star key={i} className="h-3 w-3 fill-indigo-500 inline-block" />)}
+                            {[...Array(5-Math.floor(service?.average_rating))]?.map((rate, i)=>
+                            <Star key={i} className="h-3 w-3 inline-block" />
+                          )}
+                          </div>
+                          <button 
+                            onClick={(e) => handleBookNow(e, service.id)}
+                            className="text-xs bg-indigo-500 text-white px-2 py-1 rounded hover:bg-indigo-600"
+                          >
+                            Book Now
+                          </button>
                         </div>
                       </div>
                     </div>
