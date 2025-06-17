@@ -45,12 +45,18 @@ function MobileVarification() {
       mobile: updatedMobile,
     }));
   };
+      console.log(formDataState);
 
   const sendOTP = async () => {
     try {
+      console.log(formDataState.mobile);
+      const existanceCheck = await api.post('customer/existancecheck', {mobile:  formDataState.mobile });
+
+      if(existanceCheck) {
       await api.post(`/otp/send-otp`, { phone: `+91${formDataState.mobile}` });
       setOTPTimer(30);
       setIsCounting(true);
+      }
       setErrorMessage("");
     } catch (error) {
       setErrorMessage(error.response?.data?.errorMessage || "Failed to send OTP.");
@@ -78,11 +84,15 @@ function MobileVarification() {
         confirmpassword: data.confirmpassword
       };
 
+      console.log(registrationData);
+      console.log(formDataState.mobile + data.password);
       await api.post(`/customer/register`, registrationData);
       const loginResponse = await api.post('/customer/login', {
         mobile: formDataState.mobile,
         password: data.password
       });
+
+      console.log(loginResponse);
 
       localStorage.setItem('token', loginResponse.data.token);
       const location = loginResponse.data.data.city + ", " + loginResponse.data.data.state + ", " + loginResponse.data.data.country + ", " + loginResponse.data.data.pincode;

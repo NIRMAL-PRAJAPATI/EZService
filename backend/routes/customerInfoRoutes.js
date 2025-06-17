@@ -8,9 +8,11 @@ const querystring = require("querystring");
 // Route to get customer information
 router.get('/profile', verifyToken, Controller.getCustomerInfo);
 router.post('/login', Controller.loginCustomer);
+router.post('/existancecheck', Controller.existanceCheck);
 router.post('/register', Controller.registerCustomer);
 router.post('/varifyemailmobile', Controller.varifyEmailMobile);
 router.put('/profile/update', verifyToken, Controller.updateCustomer);
+router.delete('/delete', Controller.deleteCustomer);
 router.put('/password', verifyToken, Controller.updatePassword);
 
 // 1. Trigger Google OAuth
