@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import {
   Plug,
   LibraryBig,
@@ -379,6 +380,14 @@ function RegistrationForm() {
               )}
             </div>
           </form>
+                      {currentStep < totalSteps && (
+  <div className="text-center mt-4 text-sm text-gray-600">
+    Already have an account?{' '}
+    <Link to="/provider/login" className="text-indigo-500 hover:underline">
+      Login here
+    </Link>
+  </div>
+)}
         </div>
       </div>
     </div>

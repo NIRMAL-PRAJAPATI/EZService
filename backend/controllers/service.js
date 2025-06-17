@@ -135,16 +135,18 @@ const getServiceById = async (req, res) => {
 const updateService = async (req, res)=>{
     try{
         const {userId, role} = req;
-        const {id} = req.body;
+        const {id} = req.params;
+        console.log("UserId: ", userId, "Role: ", role, "Service Id: ", id)
 
         if(role !== "provider")
             return res.status(403).json({message: "Unauthorized Action"})
-        const provider = await providerInfo.findByPk(id)
+        const provider = await providerInfo.findByPk(userId)
 
         if(!provider)
             return res.status(404).json({message: "Provider Doesn't Exists"})
 
-        const service_ = await service.findOne({ id, provider_id: userId})
+        const service_ = await service.findOne({ where: {id, provider_id: userId}})
+        
         const data = req.body;
         const payload = {
               name : data.name,
@@ -163,6 +165,8 @@ const updateService = async (req, res)=>{
               category_id: data.category_id,
               service_type: data.service_type
         } = req.body;
+
+        console.log(payload)
         
         await service_.update({
           ...payload  

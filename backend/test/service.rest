@@ -23,3 +23,6 @@ Authorization: Bearer {{token}}
     }
   ]
 }
+
+###
+GET {{baseUrl}}/category/names

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, use } from 'react';
 import {
   List,
   CircleFadingPlus,
@@ -12,6 +12,7 @@ import {
 import DashboardHeader from '../components/provider/Header';
 
 import authApi from '../config/auth-config';
+import api from "../config/axios-config"
 
 function ServiceRow({ service, onEdit, onDelete }) {
   return (
@@ -25,10 +26,10 @@ function ServiceRow({ service, onEdit, onDelete }) {
         </span>
       </td>
       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-        ₹{service.visitingCharge.toFixed(2)}
+        ₹{service.visitingCharge?.toFixed(2)}
       </td>
       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-        ₹{service.instantServiceCharge.toFixed(2)}
+        ₹{service.instantServiceCharge?.toFixed(2)}
       </td>
       <td className="px-6 py-4 text-sm text-gray-500">
         <div className="w-[300px]">{service.description}</div>
@@ -78,52 +79,33 @@ function ServiceRow({ service, onEdit, onDelete }) {
   );
 }
 
-function EditServiceModal({ isOpen, onClose, service, onSave }) {
-  const [editServiceName, setEditServiceName] = useState(service?.name || '');
-  const [editServiceCategory, setEditServiceCategory] = useState(
-    service?.category || ''
-  );
-  const [editServiceVisitingCharge, setEditServiceVisitingCharge] = useState(
-    service?.visitingCharge || 0
-  );
-  const [editServiceInstantCharge, setEditServiceInstantCharge] = useState(
-    service?.instantServiceCharge || 0
-  );
-  const [editServiceLocations, setEditServiceLocations] = useState(
-    service?.serviceLocations?.join(', ') || ''
-  );
-  const [editServiceExperience, setEditServiceExperience] = useState(
-    service?.experience || ''
-  );
-  const [editProvidedServices, setEditProvidedServices] = useState(
-    service?.providedServices?.join(', ') || ''
-  );
-  const [editWorkingImages, setEditWorkingImages] = useState([]);
-  const [editServiceDescription, setEditServiceDescription] = useState(
-    service?.description || ''
-  );
+function EditServiceModal({ isOpen, onClose, service, onSave, categories }) {
+  const [name, setName] = useState('');
+  const [categoryId, setCategoryId] = useState('');
+  const [visitingCharge, setVisitingCharge] = useState(0);
+  const [instantVisitingCharge, setInstantVisitingCharge] = useState(0);
+  const [locations, setLocations] = useState('');
+  const [experience, setExperience] = useState('');
+  const [specifications, setSpecifications] = useState('');
+  const [workingImages, setWorkingImages] = useState([]);
+  const [description, setDescription] = useState('');
+  const [coverImage, setCoverImage] = useState(null);
+  const [serviceType, setServiceType] = useState('HOME');
 
   useEffect(() => {
     if (service) {
-      setEditServiceName(service.name || '');
-      setEditServiceCategory(service.category || '');
-      setEditServiceVisitingCharge(service.visitingCharge || 0);
-      setEditServiceInstantCharge(service.instantServiceCharge || 0);
-      setEditServiceLocations(service.serviceLocations?.join(', ') || '');
-      setEditServiceExperience(service.experience || '');
-      setEditProvidedServices(service.providedServices?.join(', ') || '');
-      setEditServiceDescription(service.description || '');
-      setEditWorkingImages([]); // Reset images on open
-    } else {
-      setEditServiceName('');
-      setEditServiceCategory('');
-      setEditServiceVisitingCharge(0);
-      setEditServiceInstantCharge(0);
-      setEditServiceLocations('');
-      setEditServiceExperience('');
-      setEditProvidedServices('');
-      setEditServiceDescription('');
-      setEditWorkingImages([]);
+      console.log(service)
+      setName(service.name || '');
+      setCategoryId(service.category_id || '');
+      setVisitingCharge(service.visiting_charge || 0);
+      setInstantVisitingCharge(service.instant_visiting_charge || 0);
+      setLocations(service.serviceLocations?.join(', ') || '');
+      setExperience(service.experience || '');
+      setSpecifications(service.providedServices?.join(', ') || '');
+      setDescription(service.description || '');
+      setServiceType(service.service_type || 'HOME');
+      setWorkingImages([]);
+      setCoverImage(null);
     }
   }, [service, isOpen]);
 
@@ -131,25 +113,27 @@ function EditServiceModal({ isOpen, onClose, service, onSave }) {
     e.preventDefault();
     onSave({
       id: service?.id,
-      name: editServiceName,
-      category: editServiceCategory,
-      visitingCharge: parseFloat(editServiceVisitingCharge),
-      instantServiceCharge: parseFloat(editServiceInstantCharge),
-      serviceLocations: editServiceLocations
-        .split(',')
-        .map((loc) => loc.trim()),
-      experience: editServiceExperience,
-      providedServices: editProvidedServices
-        .split(',')
-        .map((ps) => ps.trim()),
-      workingImages: editWorkingImages,
-      description: editServiceDescription,
+      name,
+      category_id: categoryId,
+      visiting_charge: parseFloat(visitingCharge),
+      instant_visiting_charge: parseFloat(instantVisitingCharge),
+      locations: locations.split(',').map((loc) => loc.trim()),
+      experience,
+      specifications: specifications.split(',').map((s) => s.trim()),
+      working_images: workingImages,
+      cover_image: coverImage,
+      description,
+      service_type: serviceType,
     });
     onClose();
   };
 
   const handleImageChange = (e) => {
-    setEditWorkingImages([...e.target.files]);
+    setWorkingImages([...e.target.files]);
+  };
+
+  const handleCoverImageChange = (e) => {
+    setCoverImage(e.target.files[0]);
   };
 
   if (!isOpen) return null;
@@ -168,219 +152,84 @@ function EditServiceModal({ isOpen, onClose, service, onSave }) {
             <X className="w-6 h-6" />
           </button>
         </div>
-        <form id="editServiceForm" onSubmit={handleSave}>
-          <input type="hidden" id="editServiceId" value={service?.id || ''} />
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+        <form onSubmit={handleSave}>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label
-                htmlFor="editServiceName"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Service Name
-              </label>
-              <input
-                type="text"
-                id="editServiceName"
-                name="editServiceName"
-                value={editServiceName}
-                onChange={(e) => setEditServiceName(e.target.value)}
-                required
-                className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-primary"
-              />
+              <label className="block text-sm font-medium mb-1">Service Name</label>
+              <input type="text" value={name} onChange={(e) => setName(e.target.value)} required className="w-full border px-3 py-2 rounded" />
             </div>
             <div>
-              <label
-                htmlFor="editServiceCategory"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Category
-              </label>
-              <select
-                id="editServiceCategory"
-                name="editServiceCategory"
-                value={editServiceCategory}
-                onChange={(e) => setEditServiceCategory(e.target.value)}
-                required
-                className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-primary"
-              >
-                <option value="">Select a category</option>
-                <option value="Cleaning">Cleaning</option>
-                <option value="Repair">Repair</option>
-                <option value="Installation">Installation</option>
-                <option value="Maintenance">Maintenance</option>
-                <option value="Consultation">Consultation</option>
-                <option value="Other">Other</option>
+              <label className="block text-sm font-medium mb-1">Category</label>
+              <select value={categoryId} onChange={(e) => setCategoryId(e.target.value)} required className="w-full border px-3 py-2 rounded">
+                <option value="">Select Category</option>
+                {categories?.map((cat) => {
+                  if(categoryId == cat.id)
+                    return <option key={cat.id} value={cat.id} selected={true}>{cat.name}</option>  
+                  else
+                    return <option key={cat.id} value={cat.id}>{cat.name}</option>
+                })}
               </select>
             </div>
             <div>
-              <label
-                htmlFor="editServiceVisitingCharge"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Visiting Charge (₹)
-              </label>
-              <input
-                type="number"
-                id="editServiceVisitingCharge"
-                name="editServiceVisitingCharge"
-                value={editServiceVisitingCharge}
-                onChange={(e) => setEditServiceVisitingCharge(e.target.value)}
-                min="0"
-                step="0.01"
-                required
-                className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-primary"
-              />
+              <label className="block text-sm font-medium mb-1">Visiting Charge (₹)</label>
+              <input type="number" value={visitingCharge} onChange={(e) => setVisitingCharge(e.target.value)} min="0" required className="w-full border px-3 py-2 rounded" />
             </div>
             <div>
-              <label
-                htmlFor="editServiceInstantCharge"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Instant Service Charge (₹)
-              </label>
-              <input
-                type="number"
-                id="editServiceInstantCharge"
-                name="editServiceInstantCharge"
-                value={editServiceInstantCharge}
-                onChange={(e) => setEditServiceInstantCharge(e.target.value)}
-                min="0"
-                step="0.01"
-                required
-                className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-primary"
-              />
+              <label className="block text-sm font-medium mb-1">Instant Visiting Charge (₹)</label>
+              <input type="number" value={instantVisitingCharge} onChange={(e) => setInstantVisitingCharge(e.target.value)} min="0" required className="w-full border px-3 py-2 rounded" />
             </div>
             <div>
-              <label
-                htmlFor="editServiceLocations"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Service Locations
-              </label>
-              <input
-                type="text"
-                id="editServiceLocations"
-                name="editServiceLocations"
-                value={editServiceLocations}
-                onChange={(e) => setEditServiceLocations(e.target.value)}
-                required
-
-                className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-primary"
-              />
+              <label className="block text-sm font-medium mb-1">Locations (comma-separated)</label>
+              <input type="text" value={locations} onChange={(e) => setLocations(e.target.value)} required className="w-full border px-3 py-2 rounded" />
             </div>
             <div>
-              <label
-                htmlFor="experiance"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Experience Years
-              </label>
-              <select
-                id="experiance"
-                name="experiance"
-                value={editServiceExperience}
-                onChange={(e) => setEditServiceExperience(e.target.value)}
-                required
-                className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-primary"
-              >
-                <option value="">Select Year</option>
-                <option value="1+ Year Experiance">1+ Year Experiance</option>
-                <option value="3+ Year Experiance">3+ Year Experiance</option>
-                <option value="5+ Year Experiance">5+ Year Experiance</option>
-                <option value="10+ Year Experiance">10+ Year Experiance</option>
+              <label className="block text-sm font-medium mb-1">Experience (Years)</label>
+              <select value={experience} onChange={(e) => setExperience(e.target.value)} required className="w-full border px-3 py-2 rounded">
+                <option value="">Select</option>
+                <option value="1">1</option>
+                <option value="3">3</option>
+                <option value="5">5</option>
+                <option value="10">10</option>
               </select>
             </div>
             <div>
-              <label
-                htmlFor="editProvidedServices"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Provided Services
-              </label>
-              <input
-                type="text"
-                id="editProvidedServices"
-                name="editProvidedServices"
-                value={editProvidedServices}
-                onChange={(e) => setEditProvidedServices(e.target.value)}
-                required
-                className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-primary"
-              />
+              <label className="block text-sm font-medium mb-1">Specifications (comma-separated)</label>
+              <input type="text" value={specifications} onChange={(e) => setSpecifications(e.target.value)} required className="w-full border px-3 py-2 rounded" />
             </div>
             <div>
-              <label
-                htmlFor="editWorkingImages"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Working Images
-              </label>
-              <input
-                type="file"
-                id="editWorkingImages"
-                name="editWorkingImages"
-                onChange={handleImageChange}
-                accept="image/*"
-                multiple
-                className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-primary"
-              />
-              {editWorkingImages.length > 0 && (
-                <div className="mt-2">
-                  {Array.from(editWorkingImages).map((file, index) => (
-                    <span
-                      key={index}
-                      className="inline-block bg-gray-200 rounded-full px-2 py-1 text-xs font-semibold text-gray-700 mr-2"
-                    >
-                      {file.name}
-                    </span>
-                  ))}
-                </div>
-              )}
-              {service?.workingImages && service.workingImages.length > 0 && (
-                <div className="mt-2">
-                  {service.workingImages.map((url, index) => (
-                    <span
-                      key={index}
-                      className="inline-block bg-gray-200 rounded-full px-2 py-1 text-xs font-semibold text-gray-700 mr-2"
-                    >
-                      {url.split('/').pop()}
-                    </span>
-                  ))}
-                </div>
+              <label className="block text-sm font-medium mb-1">Service Type</label>
+              <select value={serviceType} onChange={(e) => setServiceType(e.target.value)} required className="w-full border px-3 py-2 rounded">
+                <option value="HOME">HOME</option>
+                <option value="INSTANT">INSTANT</option>
+              </select>
+            </div>
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium mb-1">Cover Image</label>
+              <input type="file" accept="image/*" onChange={handleCoverImageChange} className="w-full border px-3 py-2 rounded" />
+              {coverImage && (
+                <div className="mt-2 text-sm text-gray-700">{coverImage.name}</div>
               )}
             </div>
             <div className="md:col-span-2">
-              <label
-                htmlFor="editServiceDescription"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Description
-              </label>
-              <textarea
-                id="editServiceDescription"
-                name="editServiceDescription"
-                rows="3"
-                value={editServiceDescription}
-                onChange={(e) => setEditServiceDescription(e.target.value)}
-                required
-                className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-primary"
-              ></textarea>
+              <label className="block text-sm font-medium mb-1">Working Images</label>
+              <input type="file" multiple accept="image/*" onChange={handleImageChange} className="w-full border px-3 py-2 rounded" />
+              <div className="mt-2">
+                {workingImages.length > 0 && Array.from(workingImages).map((file, idx) => (
+                  <span key={idx} className="inline-block bg-gray-200 text-xs px-2 py-1 rounded mr-2">{file.name}</span>
+                ))}
+              </div>
+            </div>
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium mb-1">Description</label>
+              <textarea value={description} onChange={(e) => setDescription(e.target.value)} rows="4" required className="w-full border px-3 py-2 rounded"></textarea>
             </div>
           </div>
           <div className="mt-6 flex justify-end space-x-3">
-            <button
-              type="button"
-              onClick={onClose}
-              className="flex items-center px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
-            >
-              <X className="w-4 h-4 mr-2" />
-              Cancel
+            <button type="button" onClick={onClose} className="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300">
+              <X className="w-4 h-4 mr-1 inline" /> Cancel
             </button>
-            <button
-              type="submit"
-              className="flex items-center px-4 py-2 bg-primary text-white rounded hover:bg-primary focus:outline-none focus:ring-1 focus:ring-primary focus:ring-offset-2"
-            >
-              <Check className="w-4 h-4 mr-2" />
-              Save Changes
+            <button type="submit" className="px-4 py-2 bg-indigo-500 text-white rounded hover:bg-indigo-600">
+              <Check className="w-4 h-4 mr-1 inline" /> Save Changes
             </button>
           </div>
         </form>
@@ -439,10 +288,10 @@ function ServiceList() {
   useEffect(() => {
     authApi.get('/provider/services').then((response) => {
       const servicesData = response.data.map((service) => ({
-        id: service._id,
+        id: service.id,
         name: service.name,
         category: service.category.name,
-        categoryId: service.category._id,
+        categoryId: service.category_id,
         visitingCharge: parseFloat(service.visiting_charge || 0),
         instantServiceCharge: parseFloat(service.instant_visiting_charge || 0),
         description: service.description,
@@ -457,6 +306,16 @@ function ServiceList() {
       console.error('Error fetching services:', error);
     });
   }, []);
+
+  const [categories, setCategoies] = new useState([])
+
+  useEffect(()=>{
+    api.get("/category/names").then((res)=>{
+      setCategoies(res.data)
+    }).catch((err)=>{
+      console.error(err);
+    })
+  },[])
 
   const filteredServices = services.filter((service) =>
     filterCategory === '' || service.category === filterCategory
@@ -481,22 +340,26 @@ function ServiceList() {
   };
 
   const saveEditedService = (editedService) => {
-
-    authApi.put(`/provider/services/${editedService.id}`, {
+    console.log(editedService)
+    authApi.put(`/services/${editedService.id}`, {
       name: editedService.name,
-      category: editedService.category,
+      category_id: editedService.category,
       visiting_charge: editedService.visitingCharge,
       instant_visiting_charge: editedService.instantServiceCharge,
       description: editedService.description,
       cover_image: editedService.coverImage,
       locations: editedService.serviceLocations,
-      experience: editedService.experience,
+      experience: parseInt(editedService.experience || 0),
       providedServices: editedService.providedServices,
       working_images: editedService.workingImages,
+      locations: editedService.locations || [],
+      specifications: editedService.specifications || [],
+      badge_status: editedService.badgeStatus || [],
+      state: editedService.state || "",
+      country: editedService.country || ""
     }, {
       headers: {
         'Content-Type': 'multipart/form-data',
-        'Authorization': `Bearer ${localStorage.getItem('token')}`,
       },
     }).then((response) => {
       console.log('Service updated successfully:', response.data);
@@ -537,12 +400,9 @@ function ServiceList() {
               onChange={(e) => setFilterCategory(e.target.value)}
             >
               <option value="">All Categories</option>
-              <option value="Cleaning">Cleaning</option>
-              <option value="Repair">Repair</option>
-              <option value="Installation">Installation</option>
-              <option value="Maintenance">Maintenance</option>
-              <option value="Consultation">Consultation</option>
-              <option value="Other">Other</option>
+              {categories?.map((category)=>{
+                return <option value={category.id}>{category.name}</option>
+              })}
             </select>
           </div>
         </div>
@@ -610,6 +470,7 @@ function ServiceList() {
         onClose={() => setEditModalOpen(false)}
         service={serviceToEdit}
         onSave={saveEditedService}
+        categories={categories}
       />
 
       <DeleteConfirmationModal
