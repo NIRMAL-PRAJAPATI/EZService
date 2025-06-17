@@ -35,13 +35,13 @@ function Updateinfo() {
         description: "Your profile password changed successfully.",
         status: true,
         buttonText: "Ok",
-        onClose: handleClose
+        onClose: handleClose,
+        cancel: handleClose
       })
       setErrorMessage('');
       setPassword({ currentPassword: '', newPassword: '' });
       setConfirmPassword('');
     } catch (error) {
-      console.log(error);
       setErrorMessage(error.response?.data?.message || 'Something went wrong');
     }
   };
