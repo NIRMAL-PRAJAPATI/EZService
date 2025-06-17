@@ -11,6 +11,7 @@ app.use(cors({
     origin: "*"
 }))
 app.use(require("./middlewares/pagination"))
+app.use("/uploads/",express.static("uploads"))
 
 // Routes
 app.use("/customer",require("./routes/customerInfoRoutes"));
