@@ -61,7 +61,7 @@ const Service = sequelize4.define('Service', {
     type: DataTypes.INTEGER,
     references: { model: 'service_category', key: 'id' } // ✅ correct (table name string)
   },
-  service_type: DataTypes.ENUM('HOME', 'INSTANT')
+  service_type: DataTypes.STRING
 }, {
   tableName: 'service',
   timestamps: false

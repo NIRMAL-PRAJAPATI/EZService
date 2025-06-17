@@ -11,6 +11,7 @@ const DashboardHeader = () => {
     { id: "Profile", to: "/provider/profile" },
     { id: "Orders", to: "/provider/orders" },
     { id: "Services", to: "/provider/services" },
+    { id: "Instant Requests", to: "/provider/instant-requests" },
     { id: "Complaints", to: "/provider/complaints" }
   ];
 

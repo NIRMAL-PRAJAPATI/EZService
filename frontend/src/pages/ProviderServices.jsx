@@ -110,7 +110,7 @@ function EditServiceModal({ isOpen, onClose, service, onSave, categories }) {
         setExperience(service.experience || '');
         setSpecifications(Array.isArray(service.providedServices) ? service.providedServices.join(', ') : '');
         setDescription(service.description || '');
-        setServiceType(service.service_type || 'regular');
+        setServiceType(service.service_type || 'HOME');
         setWorkingImages([]);
         setCoverImage(null);
       } else {
@@ -227,8 +227,8 @@ function EditServiceModal({ isOpen, onClose, service, onSave, categories }) {
             <div>
               <label className="block text-sm font-medium mb-1">Service Type</label>
               <select value={serviceType} onChange={(e) => setServiceType(e.target.value)} required className="w-full border px-3 py-2 rounded">
-                <option value="regular">Regular</option>
-                <option value="instant">Instant</option>
+                <option value="HOME">Regular</option>
+                <option value="INSTANT">Instant</option>
               </select>
             </div>
             <div className="md:col-span-2">
@@ -341,7 +341,7 @@ function ServiceList() {
         providedServices: service.specifications || [],
         workingImages: service.working_images || [],
         badgeStatus: service.badge_status || false,
-        service_type: service.service_type || 'regular',
+        service_type: service.service_type || 'HOME',
         city: service.city || '',
         state: service.state || '',
         country: service.country || '',
