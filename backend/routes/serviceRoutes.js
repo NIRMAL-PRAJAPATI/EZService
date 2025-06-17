@@ -10,20 +10,18 @@ const ul = path.join(__dirname, '../uploads/services')
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    // Create service-specific folder using provider ID and timestamp
-    const serviceFolder = path.join(ul, `${req.userId}_${Date.now()}`)
-    
-    // Create directory if it doesn't exist
-    if (!fs.existsSync(serviceFolder)) {
-      fs.mkdirSync(serviceFolder, { recursive: true })
+    // Use a flat structure without nested folders to avoid path issues
+    if (!fs.existsSync(ul)) {
+      fs.mkdirSync(ul, { recursive: true })
     }
     
-    cb(null, serviceFolder)
+    cb(null, ul)
   },
   filename: function (req, file, cb) {
     // Get file extension
     const ext = path.extname(file.originalname)
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9)
+    // Include userId in filename for organization without using folders
+    const uniqueSuffix = `${req.userId}_${Date.now()}-${Math.round(Math.random() * 1E9)}`
     cb(null, file.fieldname + '-' + uniqueSuffix + ext)
   }
 })

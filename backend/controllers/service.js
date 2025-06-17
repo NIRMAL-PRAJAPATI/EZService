@@ -231,9 +231,8 @@ const createService = async (req, res) => {
       // Process cover image
       if (req.files['cover_image'] && req.files['cover_image'][0]) {
         const file = req.files['cover_image'][0];
-        // Extract the path relative to uploads/services
-        const relativePath = file.path.split('uploads/services/')[1] || file.path.split('uploads\\services\\')[1];
-        coverImagePath = `/uploads/services/${relativePath || file.filename}`;
+        // Use just the filename for consistent paths
+        coverImagePath = `/uploads/services/${file.filename}`;
       }
       
       // Process working images
@@ -241,9 +240,8 @@ const createService = async (req, res) => {
         console.log("Working images received:", req.files['working_images']);
         
         workingImagePaths = req.files['working_images'].map(file => {
-          // Extract the path relative to uploads/services
-          const relativePath = file.path.split('uploads/services/')[1] || file.path.split('uploads\\services\\')[1];
-          return `/uploads/services/${relativePath || file.filename}`;
+          // Just use the filename directly for consistent paths
+          return `/uploads/services/${file.filename}`;
         });
         
         console.log("Working image paths:", workingImagePaths);
