@@ -44,6 +44,7 @@ function Registration () {
         <h1 className="text-3xl font-extrabold text-center mb-8">Create an account</h1>
 
         <form onSubmit={handleSubmit(onVarifyData)}>
+          <p className="text-red-600 mb-3">{errorMessage}</p>
           <div className="mb-4 relative">
             <label className="absolute left-3 -top-3 bg-white px-1 text-sm font-medium text-indigo-500">Your Name</label>
             <input
