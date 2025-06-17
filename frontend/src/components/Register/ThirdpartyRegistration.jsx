@@ -15,9 +15,9 @@ export default function ThirdPartyRegistration () {
         </div>
 
         <div className="mt-6 space-y-3">
-          <button
+          <a href='http://localhost:3000/auth/google'
             type="button"
-            className="w-full flex py-3 px-4 border border-gray-300 rounded-sm bg-white hover:bg-gray-50"
+            className="w-full flex py-3 px-4 border border-gray-300 rounded-sm bg-white hover:bg-gray-50" 
           >
             <svg className="h-5 w-5 mr-2 mt-0.5" viewBox="0 0 24 24">
               <path
@@ -39,7 +39,7 @@ export default function ThirdPartyRegistration () {
               <path d="M1 1h22v22H1z" fill="none" />
             </svg>
             <span>Continue with Google</span>
-          </button>
+          </a>
 
           <button
             type="button"

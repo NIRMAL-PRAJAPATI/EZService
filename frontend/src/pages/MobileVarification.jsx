@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form';
 import api from '../config/axios-config'
 
 function MobileVarification() {
-  const { handleSubmit, register } = useForm();
+  const { handleSubmit, register, setValue } = useForm();
 
   const location = useLocation();
   const [errorMessage, setErrorMessage] = useState("");
@@ -15,6 +15,13 @@ function MobileVarification() {
 const [formDataState, setFormDataState] = useState(formData || {});
   const navigate = useNavigate();
 
+  // fetch("https://ipapi.co/json/")
+  //     .then((res) => res.json())
+  //     .then((data) => {
+  //       console.log(data.city)
+  //     })
+  //     .catch((err) => console.error("IP fetch error:", err));
+
   const handleChange = (e) => {
   const updatedMobile = e.target.value;
 
@@ -23,8 +30,6 @@ const [formDataState, setFormDataState] = useState(formData || {});
     mobile: updatedMobile,
   }));
 };
-
-console.log(formDataState)
 
   const [OTPTimer, setOTPTimer] = useState(30);
   const [isCounting, setIsCounting] = useState(false);

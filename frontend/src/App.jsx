@@ -29,6 +29,7 @@ import ProviderProfile from './pages/ProviderProfile';
 import ProviderReview from './pages/ProviderReview';
 import ProviderOrder from './pages/ProviderOrder';
 import ProviderServices from './pages/ProviderServices';
+import OAuthTransfer from './config/authTransfer';
 
 function App() {
   const location = useLocation();
@@ -53,6 +54,7 @@ function App() {
           <Route path="/home-renovation" element={<HomeRenovation />} />
           <Route path="/wedding-requisites" element={<WeddingRequisites />} />
           <Route path="/order" element={<Order />} />
+          <Route path='/authtransfer' element={<OAuthTransfer/>} />
           <Route path="/errorpage" element={<ErrorPage />} />
           <Route path="/orders/" element={<OrderDetails />} >
             <Route path=":id/view" element={<OrderDetails />} />

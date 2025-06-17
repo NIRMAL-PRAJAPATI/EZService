@@ -2,6 +2,8 @@ require('dotenv').config();
 express = require('express');
 app = express();
 cors = require("cors")
+const passport = require("passport");
+require('./utilities/passport');
 
 // middlewares
 app.use(express.json());
@@ -22,6 +24,10 @@ app.use("/provider",require("./routes/providerInfoRoutes"))
 // Utility
 app.get("/user/city/get", require("./utilities/userLocation"))
 app.use('/otp', require("./routes/otpRoutes"));
+
+// Oauth
+app.use(passport.initialize());
+app.use("/auth", require("./routes/customerInfoRoutes"));
 
 app.listen(3000, () => {
     console.log("Server is running on port http://localhost:3000/");
