@@ -1,7 +1,10 @@
 "use client"
 
 import { useState, useRef, useEffect } from "react"
+import { useSearchParams } from "react-router-dom"
 import { ChevronLeft, ChevronRight, Plus, Check, CalendarIcon, ChevronDown, Info, Plug, PartyPopper, Wrench, Cake, Dumbbell, ScanFaceIcon, CircleCheckBigIcon } from "lucide-react"
+import api from "../config/axios-config"
+import { format } from "date-fns"
 
 
 const BookOrderPage = () => {
@@ -16,10 +19,24 @@ const BookOrderPage = () => {
   const [showTimeDropdown, setShowTimeDropdown] = useState(false)
   const calendarRef = useRef(null)
   const timeDropdownRef = useRef(null)
-  const [paymentOnCash, setPaymentOnCash] = useState(true);
-  const [orderSuccessCount, setOrderSucccessCount] = useState(true);
+  const [paymentOnCash, setPaymentOnCash] = useState(true)
+  const [orderSuccessCount, setOrderSucccessCount] = useState(true)
+  const [serviceData, setServiceData] = useState(null)
+  const [searchParams] = useSearchParams()
+  const serviceId = searchParams.get("serviceId")
+  
   useEffect(() => {
-  })
+    // Fetch service data if serviceId is available
+    if (serviceId) {
+      api.get(`/services/${serviceId}`)
+        .then(response => {
+          setServiceData(response.data)
+        })
+        .catch(err => {
+          console.error("Error fetching service data:", err)
+        })
+    }
+  }, [serviceId])
 
   // Close dropdowns when clicking outside
   useEffect(() => {
@@ -61,9 +78,17 @@ const BookOrderPage = () => {
     },
   ]
 
-  const bookDetails = {
-    title: "Ananta Plumbing Service",
-    author: "Ananta Services",
+  // Use fetched service data if available, otherwise use default
+  const bookDetails = serviceData ? {
+    title: serviceData.name,
+    author: serviceData.ProviderInfo?.name || "Service Provider",
+    cover: serviceData.cover_image || "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQsptzDjvtAQGO2VhhxrjCeh8hAZ-Q2182Lqw&s",
+    price: serviceData.visiting_charge || 500,
+    quantity: 1,
+    id: serviceData.id
+  } : {
+    title: "Service",
+    author: "Service Provider",
     cover: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQsptzDjvtAQGO2VhhxrjCeh8hAZ-Q2182Lqw&s",
     price: 500,
     quantity: 1,
@@ -73,6 +98,8 @@ const BookOrderPage = () => {
     if (step < 4) {
       setStep(step + 1)
     } else {
+      // Here you could submit the order with the service ID
+      console.log("Submitting order for service ID:", serviceId)
       setIsOrderConfirmed(true)
     }
   }
@@ -177,7 +204,7 @@ const BookOrderPage = () => {
                 <div className="w-full">
                   <h3 className="font-bold text-lg">{bookDetails.title}</h3>
                   <p className="text-gray-600 text-sm -mt-1 mb-2">by {bookDetails.author}</p>
-                      <span className="font-bold text-indigo-500 text-xl">₹{(bookDetails.price * bookDetails.quantity).toFixed(2)}</span>
+                      <span className="font-bold text-indigo-500 text-xl">₹{((parseFloat(bookDetails.price || 500)) * bookDetails.quantity).toFixed(2)}</span>
                 </div>
               </div>
             </div>
@@ -666,7 +693,7 @@ const BookOrderPage = () => {
                   <div className="bg-gray-100 p-3 md:p-5 rounded-sm">
                     <div className="flex justify-between">
                       <span>Provider Service Charge</span>
-                      <span>₹{(bookDetails.price).toFixed(2)}</span>
+                      <span>₹{(parseFloat(bookDetails.price || 500)).toFixed(2)}</span>
                     </div>
                     <div className="flex justify-between">
                       <span>Platform Charge</span>
@@ -678,7 +705,7 @@ const BookOrderPage = () => {
                     </div>
                     <div className="flex justify-between font-bold mt-2 pt-2 border-t">
                       <span>Total</span>
-                      <span>₹{(bookDetails.price + 4.99 + 8.64).toFixed(2)}</span>
+                      <span>₹{((parseFloat(bookDetails.price || 500)) + 4.99 + 8.64).toFixed(2)}</span>
                     </div>
                   </div>
                 </div>

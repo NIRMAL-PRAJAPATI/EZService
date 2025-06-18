@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { useParams } from "react-router-dom"
+import { useParams, useNavigate } from "react-router-dom"
 import {
   BadgeCheck,
   Briefcase,
@@ -22,6 +22,7 @@ const ServiceProfilePage = () => {
   const [isLoading, setIsLoading] = useState(true)
   const { id } = useParams()
   const [reviews, setReviews] = useState([])
+  const navigate = useNavigate()
 
   useEffect(() => {
     console.log(id)
@@ -48,8 +49,8 @@ const ServiceProfilePage = () => {
   }, [])
 
   const handleGetService = () => {
-    // Handle service request logic
-    console.log("Service requested")
+    // Navigate to book order page with service ID
+    navigate(`/book?serviceId=${id}`)
   }
 
   const handleChat = () => {

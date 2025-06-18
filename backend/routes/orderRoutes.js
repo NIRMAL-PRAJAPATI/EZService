@@ -1,9 +1,12 @@
 const Controller = require('../controllers/order');
 const express = require('express');
+const verifyToken = require('../middlewares/auth');
 const router = express.Router();
 
-router.get('/', Controller.getAllOrders)
-router.get('/:id', Controller.getOrderById)
-router.get('/customer/:id', Controller.getOrdersByUserId)
+router.get('/', Controller.getAllOrders);
+router.get('/provider', verifyToken, Controller.getProviderOrders);
+router.get('/customer/:id', Controller.getOrdersByUserId);
+router.get('/:id', Controller.getOrderById);
+router.put('/:orderId/status', verifyToken, Controller.updateOrderStatus);
 
 module.exports = router;

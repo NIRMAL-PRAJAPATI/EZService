@@ -55,7 +55,6 @@ function Dashboard() {
     authApi.get("provider/stats")
       .then((response) => {setStats(response.data)
         setLoading(false);
-        console.log(response.data)
       })
       .catch((error) => {console.error("Error fetching stats:", error)
         setLoading(false);

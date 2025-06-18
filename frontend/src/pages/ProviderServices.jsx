@@ -35,29 +35,35 @@ function ServiceRow({ service, onEdit, onDelete }) {
         <div className="w-[300px]">{service.description}</div>
       </td>
       <td className="px-6 py-4 text-sm text-gray-500">
-        <div className="min-w-[300px]">{service.coverImage}</div>
+        <div className="min-w-[300px]">
+          {service.coverImage && (
+            <img src={service.coverImage} alt="Cover" className="h-10 w-10 object-cover rounded" />
+          )}
+        </div>
       </td>
       <td className="px-6 py-4 text-sm text-gray-500">
         <ul className="w-[200px]">
-          {service.serviceLocations.map((location, index) => (
+          {Array.isArray(service.serviceLocations) && service.serviceLocations.map((location, index) => (
             <li key={index}>{location}</li>
           ))}
         </ul>
       </td>
       <td className="px-6 py-4 text-sm text-gray-500">
-        <div>{service.experience}</div>
+        <div>{service.experience} {service.experience > 1 ? 'years' : 'year'}</div>
       </td>
       <td className="px-6 py-4 text-sm text-gray-500">
         <ul className="w-[300px]">
-          {service.providedServices.map((providedService, index) => (
+          {Array.isArray(service.providedServices) && service.providedServices.map((providedService, index) => (
             <li key={index}>{providedService}</li>
           ))}
         </ul>
       </td>
       <td className="px-6 py-4 text-sm text-gray-500">
         <ul className="min-w-[300px]">
-          {service.workingImages.map((image, index) => (
-            <li key={index}>{image}</li>
+          {Array.isArray(service.workingImages) && service.workingImages.map((image, index) => (
+            <li key={index}>
+              <img src={image} alt={`Work ${index + 1}`} className="h-10 w-10 object-cover rounded mb-1" />
+            </li>
           ))}
         </ul>
       </td>
@@ -93,26 +99,41 @@ function EditServiceModal({ isOpen, onClose, service, onSave, categories }) {
   const [serviceType, setServiceType] = useState('HOME');
 
   useEffect(() => {
-    if (service) {
-      console.log(service)
-      setName(service.name || '');
-      setCategoryId(service.category_id || '');
-      setVisitingCharge(service.visiting_charge || 0);
-      setInstantVisitingCharge(service.instant_visiting_charge || 0);
-      setLocations(service.serviceLocations?.join(', ') || '');
-      setExperience(service.experience || '');
-      setSpecifications(service.providedServices?.join(', ') || '');
-      setDescription(service.description || '');
-      setServiceType(service.service_type || 'HOME');
-      setWorkingImages([]);
-      setCoverImage(null);
+    if (isOpen) {
+      if (service) {
+        console.log(service);
+        setName(service.name || '');
+        setCategoryId(service.category_id || '');
+        setVisitingCharge(service.visitingCharge || 0);
+        setInstantVisitingCharge(service.instantServiceCharge || 0);
+        setLocations(Array.isArray(service.serviceLocations) ? service.serviceLocations.join(', ') : '');
+        setExperience(service.experience || '');
+        setSpecifications(Array.isArray(service.providedServices) ? service.providedServices.join(', ') : '');
+        setDescription(service.description || '');
+        setServiceType(service.service_type || 'HOME');
+        setWorkingImages([]);
+        setCoverImage(null);
+      } else {
+        // Reset form for new service
+        setName('');
+        setCategoryId('');
+        setVisitingCharge(0);
+        setInstantVisitingCharge(0);
+        setLocations('');
+        setExperience('');
+        setSpecifications('');
+        setDescription('');
+        setServiceType('regular');
+        setWorkingImages([]);
+        setCoverImage(null);
+      }
     }
   }, [service, isOpen]);
 
   const handleSave = (e) => {
     e.preventDefault();
     onSave({
-      id: service?.id,
+      id: service?.id, // Will be undefined for new services
       name,
       category_id: categoryId,
       visiting_charge: parseFloat(visitingCharge),
@@ -124,12 +145,18 @@ function EditServiceModal({ isOpen, onClose, service, onSave, categories }) {
       cover_image: coverImage,
       description,
       service_type: serviceType,
+      badge_status: service?.badgeStatus || false,
+      city: service?.city || '',
+      state: service?.state || '',
+      country: service?.country || '',
     });
     onClose();
   };
 
   const handleImageChange = (e) => {
-    setWorkingImages([...e.target.files]);
+    const files = Array.from(e.target.files);
+    console.log("Selected working images:", files);
+    setWorkingImages(files);
   };
 
   const handleCoverImageChange = (e) => {
@@ -145,7 +172,7 @@ function EditServiceModal({ isOpen, onClose, service, onSave, categories }) {
           <div className="flex items-center">
             <Edit2 className="w-5 h-5 mr-2 text-primary" />
             <h3 className="text-xl font-semibold">
-              {service ? 'Edit Service' : 'Add New Service'}
+              {service?.id ? 'Edit Service' : 'Add New Service'}
             </h3>
           </div>
           <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
@@ -163,6 +190,7 @@ function EditServiceModal({ isOpen, onClose, service, onSave, categories }) {
               <select value={categoryId} onChange={(e) => setCategoryId(e.target.value)} required className="w-full border px-3 py-2 rounded">
                 <option value="">Select Category</option>
                 {categories?.map((cat) => {
+                  console.log(cat, categoryId)
                   if(categoryId == cat.id)
                     return <option key={cat.id} value={cat.id} selected={true}>{cat.name}</option>  
                   else
@@ -199,8 +227,8 @@ function EditServiceModal({ isOpen, onClose, service, onSave, categories }) {
             <div>
               <label className="block text-sm font-medium mb-1">Service Type</label>
               <select value={serviceType} onChange={(e) => setServiceType(e.target.value)} required className="w-full border px-3 py-2 rounded">
-                <option value="HOME">HOME</option>
-                <option value="INSTANT">INSTANT</option>
+                <option value="HOME">Regular</option>
+                <option value="INSTANT">Instant</option>
               </select>
             </div>
             <div className="md:col-span-2">
@@ -208,6 +236,11 @@ function EditServiceModal({ isOpen, onClose, service, onSave, categories }) {
               <input type="file" accept="image/*" onChange={handleCoverImageChange} className="w-full border px-3 py-2 rounded" />
               {coverImage && (
                 <div className="mt-2 text-sm text-gray-700">{coverImage.name}</div>
+              )}
+              {service && service.coverImage && !coverImage && (
+                <div className="mt-2">
+                  <img src={service.coverImage} alt="Cover" className="h-24 w-auto object-cover rounded mt-2" />
+                </div>
               )}
             </div>
             <div className="md:col-span-2">
@@ -218,6 +251,13 @@ function EditServiceModal({ isOpen, onClose, service, onSave, categories }) {
                   <span key={idx} className="inline-block bg-gray-200 text-xs px-2 py-1 rounded mr-2">{file.name}</span>
                 ))}
               </div>
+              {service && Array.isArray(service.workingImages) && service.workingImages.length > 0 && (
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {service.workingImages.map((img, idx) => (
+                    <img key={idx} src={img} alt={`Work ${idx + 1}`} className="h-20 w-20 object-cover rounded" />
+                  ))}
+                </div>
+              )}
             </div>
             <div className="md:col-span-2">
               <label className="block text-sm font-medium mb-1">Description</label>
@@ -290,16 +330,22 @@ function ServiceList() {
       const servicesData = response.data.map((service) => ({
         id: service.id,
         name: service.name,
-        category: service.category.name,
-        categoryId: service.category_id,
+        category: service.category?.name || '',
+        category_id: service.category_id,
         visitingCharge: parseFloat(service.visiting_charge || 0),
         instantServiceCharge: parseFloat(service.instant_visiting_charge || 0),
         description: service.description,
         coverImage: service.cover_image,
-        serviceLocations: service.locations,
+        serviceLocations: service.locations || [],
         experience: service.experience,
-        providedServices: service.providedServices || [],
-        workingImages: service.working_images,
+        providedServices: service.specifications || [],
+        workingImages: service.working_images || [],
+        badgeStatus: service.badge_status || false,
+        service_type: service.service_type || 'HOME',
+        city: service.city || '',
+        state: service.state || '',
+        country: service.country || '',
+        created: service.created
       }));
       setServices(servicesData);
     }).catch((error) => {
@@ -318,7 +364,7 @@ function ServiceList() {
   },[])
 
   const filteredServices = services.filter((service) =>
-    filterCategory === '' || service.category === filterCategory
+    filterCategory === '' || service.category_id == filterCategory
   );
 
   const handleEdit = (id) => {
@@ -333,45 +379,135 @@ function ServiceList() {
   };
 
   const confirmDelete = () => {
-    const updatedServices = services.filter((s) => s.id !== serviceToDeleteId);
-    setServices(updatedServices);
-    setDeleteModalOpen(false);
-    setServiceToDeleteId(null);
+    authApi.delete(`/services/${serviceToDeleteId}`)
+      .then((response) => {
+        console.log('Service deleted successfully:', response.data);
+        const updatedServices = services.filter((s) => s.id !== serviceToDeleteId);
+        setServices(updatedServices);
+      })
+      .catch((error) => {
+        console.error('Error deleting service:', error);
+        
+        // Check if the error is due to existing orders
+        if (error.response && error.response.status === 409) {
+          alert(`Cannot delete this service because it has ${error.response.data.ordersCount} associated orders. Complete or cancel these orders first.`);
+        } else {
+          alert('Failed to delete service. Please try again.');
+        }
+      })
+      .finally(() => {
+        setDeleteModalOpen(false);
+        setServiceToDeleteId(null);
+      });
   };
 
   const saveEditedService = (editedService) => {
     console.log(editedService)
-    authApi.put(`/services/${editedService.id}`, {
-      name: editedService.name,
-      category_id: editedService.category,
-      visiting_charge: editedService.visitingCharge,
-      instant_visiting_charge: editedService.instantServiceCharge,
-      description: editedService.description,
-      cover_image: editedService.coverImage,
-      locations: editedService.serviceLocations,
-      experience: parseInt(editedService.experience || 0),
-      providedServices: editedService.providedServices,
-      working_images: editedService.workingImages,
-      locations: editedService.locations || [],
-      specifications: editedService.specifications || [],
-      badge_status: editedService.badgeStatus || [],
-      state: editedService.state || "",
-      country: editedService.country || ""
-    }, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    }).then((response) => {
-      console.log('Service updated successfully:', response.data);
+    
+    // Create FormData object for file uploads
+    const formData = new FormData();
+    formData.append('name', editedService.name);
+    formData.append('category_id', editedService.category_id);
+    formData.append('visiting_charge', editedService.visiting_charge);
+    formData.append('instant_visiting_charge', editedService.instant_visiting_charge);
+    formData.append('description', editedService.description);
+    formData.append('experience', parseInt(editedService.experience || 0));
+    formData.append('service_type', editedService.service_type);
+    
+    // Handle arrays
+    if (Array.isArray(editedService.locations)) {
+      editedService.locations.forEach(location => {
+        formData.append('locations[]', location);
+      });
+    }
+    
+    if (Array.isArray(editedService.specifications)) {
+      editedService.specifications.forEach(spec => {
+        formData.append('specifications[]', spec);
+      });
+    }
+    
+    // Handle files
+    if (editedService.cover_image) {
+      formData.append('cover_image', editedService.cover_image);
+    }
+    
+    // Handle working images
+    if (editedService.working_images && editedService.working_images.length > 0) {
+      console.log("Appending working images:", editedService.working_images);
+      
+      // Append each file individually
+      for (let i = 0; i < editedService.working_images.length; i++) {
+        formData.append('working_images', editedService.working_images[i]);
+      }
+    }
+    
+    // Add other fields
+    formData.append('badge_status', editedService.badge_status || false);
+    formData.append('city', editedService.city || '');
+    formData.append('state', editedService.state || '');
+    formData.append('country', editedService.country || '');
+    
+    // Determine if this is a create or update operation
+    const isNewService = !editedService.id;
+    
+    const apiCall = isNewService 
+      ? authApi.post('/services', formData, { headers: { 'Content-Type': 'multipart/form-data' } })
+      : authApi.put(`/services/${editedService.id}`, formData, { headers: { 'Content-Type': 'multipart/form-data' } });
+    
+    apiCall.then((response) => {
+      console.log(`Service ${isNewService ? 'created' : 'updated'} successfully:`, response.data);
+      
+      if (isNewService) {
+        // Add the new service to the list
+        const newService = {
+          id: response.data.service.id,
+          name: editedService.name,
+          category: categories.find(c => c.id == editedService.category_id)?.name || '',
+          category_id: editedService.category_id,
+          visitingCharge: parseFloat(editedService.visiting_charge),
+          instantServiceCharge: parseFloat(editedService.instant_visiting_charge),
+          description: editedService.description,
+          coverImage: response.data.service.cover_image || '',
+          serviceLocations: editedService.locations,
+          experience: parseInt(editedService.experience || 0),
+          providedServices: editedService.specifications,
+          workingImages: response.data.service.working_images || [],
+          service_type: editedService.service_type,
+          city: editedService.city || '',
+          state: editedService.state || '',
+          country: editedService.country || '',
+          badge_status: false
+        };
+        setServices([newService, ...services]);
+      } else {
+        // Update existing service
+        const updatedServices = services.map((s) =>
+          s.id === editedService.id ? {
+            ...s,
+            name: editedService.name,
+            category: categories.find(c => c.id == editedService.category_id)?.name || '',
+            category_id: editedService.category_id,
+            visitingCharge: parseFloat(editedService.visiting_charge),
+            instantServiceCharge: parseFloat(editedService.instant_visiting_charge),
+            description: editedService.description,
+            serviceLocations: editedService.locations,
+            experience: parseInt(editedService.experience || 0),
+            providedServices: editedService.specifications,
+            service_type: editedService.service_type,
+            city: editedService.city || '',
+            state: editedService.state || '',
+            country: editedService.country || '',
+            badge_status: editedService.badge_status || false
+          } : s
+        );
+        setServices(updatedServices);
+      }
     }).catch((error) => {
-      console.error('Error updating service:', error);
+      console.error(`Error ${isNewService ? 'creating' : 'updating'} service:`, error);
     });
+    
     setEditModalOpen(false);
-
-    const updatedServices = services.map((s) =>
-      s.id === editedService.id ? editedService : s
-    );
-    setServices(updatedServices);
   };
 
   return (
@@ -384,13 +520,16 @@ function ServiceList() {
           </h2>
         </div>
         <div className="flex space-x-2">
-          <a
-            href="/add_service" // Replace with your actual add service route
-            className="flex bg-primary text-white px-3 py-2 rounded whitespace-nowrap"
+          <button
+            onClick={() => {
+              setServiceToEdit(null);
+              setEditModalOpen(true);
+            }}
+            className="flex bg-indigo-500 text-white px-3 py-2 rounded whitespace-nowrap"
           >
             <CircleFadingPlus className="h-4 w-4 mt-1 mr-1" />
             Add Service
-          </a>
+          </button>
           <div className="relative">
             <Filter className="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
             <select
@@ -400,9 +539,9 @@ function ServiceList() {
               onChange={(e) => setFilterCategory(e.target.value)}
             >
               <option value="">All Categories</option>
-              {categories?.map((category)=>{
-                return <option value={category.id}>{category.name}</option>
-              })}
+              {categories?.map((category) => (
+                <option key={category.id} value={category.id}>{category.name}</option>
+              ))}
             </select>
           </div>
         </div>

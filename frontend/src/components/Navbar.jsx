@@ -128,11 +128,11 @@ const Navbar = () => {
 
             {/* Account Button */}
             {tokenCheck ? (<div className="flex md:space-x-1 mt-4 md:mt-0">
-              <Link onClick={toggleSearchBox}
-                className="py-2 px-4 text-gray-700 border border-gray-300 rounded flex"
+              <Link to="/instant-service"
+                className="py-2 px-4 text-white bg-indigo-600 hover:bg-indigo-700 border border-indigo-600 rounded flex"
               >
                 <Search className="h-5 w-5 transition duration-150" />
-                <span className="-mt-0.5 ml-1">Search</span>
+                <span className="-mt-0.5 ml-1">Book Instant</span>
               </Link>
             <Link onClick={toggleMenu}
                 to="/order"

@@ -15,9 +15,6 @@ const ServiceProfilePage = lazy(() => import('./pages/ServiceProfilePage'));
 const Templates = lazy(() => import('./pages/Templates/Templates'));
 const HomeRenovation = lazy(() => import('./components/Templates/home-renovation'));
 const WeddingRequisites = lazy(() => import('./components/Templates/wedding-requisites'));
-const HomeAppliance = lazy(() => import('./components/Templates/HomeAppliance'));
-const BeautySpa = lazy(() => import('./components/Templates/BeautySpa'));
-const Party = lazy(() => import('./components/Templates/Party'));
 import Loading from './components/Loading'
 import OrderDetails from './pages/OrderDetails';
 import BookOrderPage from './pages/BookOrder';
@@ -74,8 +71,11 @@ function App() {
             <Route path='orders' element={<ProviderOrder />} />
             {/* <Route path='complaints' element={<Complaint />} /> */}
             <Route path='services' element={<ProviderServices />} />
+            <Route path='instant-requests' element={<ProviderInstantRequests />} />
           </Route>
           <Route path='/book' element={<BookOrderPage />} />
+          <Route path='/instant-service' element={<InstantService />} />
+          <Route path='/book-instant-order' element={<BookInstantOrder />} />
           <Route path='/login' element={<Login />}/>
           <Route path='/register' element={<Register />} />
           <Route path='/register/mobilevarification' element={<MobileVarification />} />

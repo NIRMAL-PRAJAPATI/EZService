@@ -29,11 +29,11 @@ const getCustomerInfo = async (req, res) => {
 }
 
 const loginCustomer = async (req, res) => {
-    let { mobile, password } = req.body;
+    let { emailmobile, password } = req.body;
 
     try {
         const existanceCheck = await User.findOne({
-            where: { [Op.or]: [{ mobile: mobile }, { email: mobile }] }
+            where: { [Op.or]: [{ mobile: emailmobile }, { email: emailmobile }] }
         })
 
         if (!existanceCheck) {
@@ -65,19 +65,43 @@ const loginCustomer = async (req, res) => {
     }
 }
 
+async function existanceCheck(req, res) {
+    let { email, mobile } = req.body;
+    console.log("mobile : " + mobile + " email : " + email);
+
+    try {
+        // if(email == undefined){
+        const mobileCheck = await User.findOne({
+            where: { mobile: mobile }
+        });
+
+        if (mobileCheck) {
+            return res.status(409).json({
+                errorMessage: "Entered mobile is already registered",
+            });
+        }
+    // }else {
+    //     const emailCheck = await User.findOne({
+    //         where: { email: email }
+    //     });
+
+    //     if (emailCheck) {
+    //         return res.status(409).json({
+    //             errorMessage: "Entered email is already registered",
+    //         });
+    //     }
+    // }
+
+        res.status(201).json({message: "Mobile number is ready to send OTP"})
+    }catch(error) {
+        res.status(500).json({errorMessage: "Internal Server Error"})
+    }
+}
+
 async function registerCustomer(req, res) {
     let { name, email, mobile, pincode, city, state, country, password } = await req.body;
 
     try {
-        const existanceCheck = await User.findOne({
-            where: { mobile }
-        });
-
-        if (existanceCheck) {
-            return res.status(409).json({
-                errorMessage: "Mobile number already registered",
-            });
-        }
         await User.create({
             name, email, mobile, password, pincode, city, state, country
         });
@@ -88,14 +112,14 @@ async function registerCustomer(req, res) {
         });
     } catch (error) {
         console.error("Registration error:", error);
-        res.status(500).json({ errorMessage: "Internal Server Error" });
+        res.status(500).json({ errorMessage: "register Internal Server Error" });
     }
 }
-
 
 const varifyEmailMobile = async (req, res) => {
     let { name, email, mobile, pincode, city, state, country, password } = req.body;
 
+    console.log(mobile, email, password, );
     try {
         const existanceCheck = await User.findOne({
             where: { [Op.or]: [{ email }, { mobile }] }
@@ -173,5 +197,5 @@ const deleteCustomer = async (req, res) => {
 };
 
 module.exports = {
-    getCustomerInfo, registerCustomer, varifyEmailMobile, loginCustomer, updateCustomer, updatePassword, deleteCustomer
+    getCustomerInfo, existanceCheck, registerCustomer, varifyEmailMobile, loginCustomer, updateCustomer, updatePassword, deleteCustomer
 };
