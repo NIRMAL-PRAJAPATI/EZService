@@ -15,6 +15,9 @@ const ServiceProfilePage = lazy(() => import('./pages/ServiceProfilePage'));
 const Templates = lazy(() => import('./pages/Templates/Templates'));
 const HomeRenovation = lazy(() => import('./components/Templates/home-renovation'));
 const WeddingRequisites = lazy(() => import('./components/Templates/wedding-requisites'));
+const HomeAppliance = lazy(() => import('./components/Templates/HomeAppliance'));
+const BeautySpa = lazy(() => import('./components/Templates/BeautySpa'));
+const Party = lazy(() => import('./components/Templates/Party'));
 import Loading from './components/Loading'
 import OrderDetails from './pages/OrderDetails';
 import BookOrderPage from './pages/BookOrder';
@@ -53,6 +56,9 @@ function App() {
           <Route path="/templates" element={<Templates />} />
           <Route path="/home-renovation" element={<HomeRenovation />} />
           <Route path="/wedding-requisites" element={<WeddingRequisites />} />
+          <Route path="/HomeAppliance" element={<HomeAppliance />} />
+          <Route path="/BeautySpa" element={<BeautySpa />} />
+          <Route path="/Party" element={<Party/>} />
           <Route path="/order" element={<Order />} />
           <Route path='/authtransfer' element={<OAuthTransfer/>} />
           <Route path="/errorpage" element={<ErrorPage />} />
