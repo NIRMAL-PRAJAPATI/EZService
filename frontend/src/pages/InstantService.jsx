@@ -64,19 +64,27 @@ const InstantService = () => {
     socket.on('serviceOffer', (offer) => {
       console.log('Received service offer:', offer);
       
-      // Check if this provider has reached max attempts for this request
-      if (currentRequestId && offer.provider && offer.provider.id) {
+      // Check if this provider has reached max attempts for this service on this request
+      if (currentRequestId && offer.provider?.id && offer.service?.id) {
         const providerId = offer.provider.id;
+        const serviceId = offer.service.id;
+        const attemptKey = `${providerId}_${serviceId}`;
         const requestAttempts = offerAttempts[currentRequestId] || {};
-        const providerAttempts = requestAttempts[providerId] || 0;
+        const providerServiceAttempts = requestAttempts[attemptKey] || 0;
+
+        console.log(attemptKey)
+        console.log(providerServiceAttempts)
+        console.log(requestAttempts)
+
         
-        if (providerAttempts >= 3) {
-          // Provider has reached max attempts, ignore this offer
-          console.log(`Provider ${providerId} has reached max attempts for request ${currentRequestId}`);
+        if (providerServiceAttempts >= 3) {
+          // Provider has reached max attempts for this service, ignore this offer
+          console.log(`Provider ${providerId} has reached max attempts for service ${serviceId} on request ${currentRequestId}`);
           
           // Notify provider they've reached max attempts
           socket.emit('offerRejected', {
             providerId,
+            serviceId,
             requestId: currentRequestId,
             reason: 'MAX_ATTEMPTS_REACHED'
           });
@@ -139,27 +147,6 @@ const InstantService = () => {
           ...formData
         });
         
-        // For testing: simulate an offer after 5 seconds
-        setTimeout(() => {
-          const testOffer = {
-            id: 'test-' + Date.now(),
-            provider: {
-              id: 999,
-              name: 'Test Provider',
-              avatar: null,
-              rating: 4.8
-            },
-            service: {
-              id: formData.serviceType,
-              name: 'Emergency Service'
-            },
-            price: 1500,
-            estimatedArrival: '10-15 minutes'
-          };
-          
-          console.log('Adding test offer:', testOffer);
-          setOffers(prev => [...prev, testOffer]);
-        }, 5000);
       })
       .catch(error => {
         console.error('Error creating service request:', error);
@@ -184,7 +171,8 @@ const InstantService = () => {
       issue: formData.description,
       date: new Date().toISOString(),
       estimated_charge: selectedOffer.price,
-      status: 'PENDING'
+      status: 'CONFIRMED',
+      request_id: currentRequestId
     };
     
     // Create order via API
@@ -209,30 +197,33 @@ const InstantService = () => {
       });
   };
 
-  const handleDeclineOffer = (offerId, providerId) => {
+  const handleDeclineOffer = (offerId, providerId, serviceId) => {
     // Remove the offer from the list
     setOffers(prev => prev.filter(offer => offer.id !== offerId));
     
-    // Track offer attempts for the current request
-    if (currentRequestId) {
+    // Track offer attempts for the current request and service
+    if (currentRequestId && serviceId) {
+      // Create a unique key for this provider+service combination
+      const attemptKey = `${providerId}_${serviceId}`;
       const requestAttempts = offerAttempts[currentRequestId] || {};
-      const providerAttempts = requestAttempts[providerId] || 0;
+      const providerServiceAttempts = requestAttempts[attemptKey] || 0;
       
-      if (providerAttempts >= 2) {
-        // This is the 3rd attempt, notify provider they've reached the limit
+      if (providerServiceAttempts >= 2) {
+        // This is the 3rd attempt for this service, notify provider they've reached the limit
         socket.emit('offerDeclined', { 
           offerId, 
           providerId,
+          serviceId,
           requestId: currentRequestId,
           maxAttemptsReached: true 
         });
       } else {
-        // Update attempts count
+        // Update attempts count for this provider+service combination
         setOfferAttempts(prev => ({
           ...prev,
           [currentRequestId]: {
             ...prev[currentRequestId],
-            [providerId]: providerAttempts + 1
+            [attemptKey]: providerServiceAttempts + 1
           }
         }));
         
@@ -240,12 +231,13 @@ const InstantService = () => {
         socket.emit('offerDeclined', { 
           offerId, 
           providerId,
+          serviceId,
           requestId: currentRequestId,
-          attemptsRemaining: 2 - providerAttempts 
+          attemptsRemaining: 2 - providerServiceAttempts 
         });
       }
     } else {
-      // Fallback if no current request ID
+      // Fallback if no current request ID or service ID
       socket.emit('offerDeclined', { offerId, providerId });
     }
   };
@@ -350,17 +342,10 @@ const InstantService = () => {
               This usually takes 1-3 minutes.
             </p>
             
-            <div className="flex items-center justify-center mb-6">
+            <div className="flex items-center justify-center">
               <Clock className="h-5 w-5 text-indigo-600 mr-2" />
               <span className="text-sm text-gray-500">Request sent at {new Date().toLocaleTimeString()}</span>
             </div>
-            
-            <button
-              onClick={() => setSearching(false)}
-              className="text-indigo-600 hover:text-indigo-800 font-medium"
-            >
-              Cancel Request
-            </button>
           </div>
         )}
         
@@ -396,16 +381,16 @@ const InstantService = () => {
                   <span className="font-medium">Estimated Arrival:</span> {offers[0].estimatedArrival || "Unknown"}
                 </p>
                 
-                {currentRequestId && offers[0].provider?.id && (
+                {currentRequestId && offers[0].provider?.id && offers[0].service?.id && (
                   <p className="text-xs text-gray-500 mt-2">
-                    Offer {(offerAttempts[currentRequestId]?.[offers[0].provider.id] || 0) + 1}/3
+                    Offer {(offerAttempts[currentRequestId]?.[`${offers[0].provider.id}_${offers[0].service.id}`] || 0) + 1}/3
                   </p>
                 )}
               </div>
               
               <div className="flex space-x-3">
                 <button
-                  onClick={() => handleDeclineOffer(offers[0].id, offers[0].provider?.id)}
+                  onClick={() => handleDeclineOffer(offers[0].id, offers[0].provider?.id, offers[0].service?.id)}
                   className="flex-1 py-2 px-4 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
                 >
                   Decline

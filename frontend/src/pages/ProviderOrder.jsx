@@ -30,10 +30,10 @@ function OrderItem({ order, onStatusUpdate }) {
   const renderStatusBadge = () => {
     const status = order.status || "PENDING";
     
-    switch(status.toUpperCase()) {
+    switch(status.toLowerCase()) {
       case 'pending':
         return <span className="px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">Pending</span>;
-      case 'accepted':
+      case 'confirmed':
         return <span className="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">Accepted</span>;
       case 'rejected':
         return <span className="px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">Declined</span>;
@@ -139,7 +139,7 @@ function ProviderOrder() {
           return orderStatus === filter;
         });
 
-  const statusFilters = ["All", "PENDING", "ACCEPTED", "REJECTED", "FULFILLED"];
+  const statusFilters = ["All", "PENDING", "CONFIRMED", "REJECTED", "FULFILLED"];
   const [loading, setLoading] = useState(true);
 
   const fetchOrders = () => {

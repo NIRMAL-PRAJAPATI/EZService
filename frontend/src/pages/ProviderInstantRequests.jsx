@@ -20,6 +20,7 @@ const ProviderInstantRequests = () => {
   const [loading, setLoading] = useState(false);
   const [providerInfo, setProviderInfo] = useState(null);
   const [error, setError] = useState('');
+  const [showNotifications, setShowNotifications] = useState(false);
 
   // Fetch provider info on component mount
   useEffect(() => {
@@ -65,24 +66,34 @@ const ProviderInstantRequests = () => {
     
     socket.on('offerAccepted', (data) => {
       console.log('Offer accepted:', data);
+      setActiveRequests(prev => prev.filter(request => request.id !== data.requestId))
       addNotification('Your offer was accepted! Check your orders.');
+      
     });
     
     socket.on('offerDeclined', (data) => {
       console.log('Offer declined:', data);
       
-      // Track offer attempts
+      // Track offer attempts per service
       setOfferAttempts(prev => {
         const requestId = data.requestId;
-        const attempts = prev[requestId] ? prev[requestId] + 1 : 1;
+        const serviceId = data.serviceId;
         
-        if (attempts < 3) {
-          addNotification(`Your offer was declined. You can make ${3 - attempts} more offers.`);
-        } else {
-          addNotification('Your offer was declined. Maximum offer attempts reached.');
+        if (!requestId || !serviceId) {
+          return prev;
         }
         
-        return { ...prev, [requestId]: attempts };
+        // Create a unique key for this request+service combination
+        const attemptKey = `${requestId}_${serviceId}`;
+        const attempts = prev[attemptKey] ? prev[attemptKey] + 1 : 1;
+        
+        if (attempts < 3) {
+          addNotification(`Your offer was declined. You can make ${3 - attempts} more offers for this service.`);
+        } else {
+          addNotification('Your offer was declined. Maximum offer attempts reached for this service.');
+        }
+        
+        return { ...prev, [attemptKey]: attempts };
       });
     });
     
@@ -109,21 +120,20 @@ const ProviderInstantRequests = () => {
     audio.play().catch(e => console.log('Audio play failed:', e));
   };
   
-  const markNotificationAsRead = (id) => {
-    setNotifications(prev => 
-      prev.map(notification => 
-        notification.id === id ? { ...notification, read: true } : notification
-      )
-    );
+  const markAllNotificationsAsRead = () => {
+    setNotifications(prev => prev.map(n => ({ ...n, read: true })));
   };
   
   const handleRequestSelect = (request) => {
     setSelectedRequest(request);
     
-    // Check if maximum offer attempts reached
-    const attempts = offerAttempts[request.id] || 0;
+    // Check if maximum offer attempts reached for this service
+    const serviceId = request.serviceType;
+    const attemptKey = `${request.id}_${serviceId}`;
+    const attempts = offerAttempts[attemptKey] || 0;
+    
     if (attempts >= 3) {
-      addNotification('Maximum offer attempts reached for this request.');
+      addNotification('Maximum offer attempts reached for this service request.');
       return;
     }
     
@@ -185,11 +195,13 @@ const ProviderInstantRequests = () => {
       estimatedArrival: offerData.estimatedArrival
     };
     
-    // Track offer attempt
+    // Track offer attempt per service
     setOfferAttempts(prev => {
       const requestId = selectedRequest.id;
-      const attempts = prev[requestId] ? prev[requestId] + 1 : 1;
-      return { ...prev, [requestId]: attempts };
+      const serviceId = selectedRequest.serviceType;
+      const attemptKey = `${requestId}_${serviceId}`;
+      const attempts = prev[attemptKey] ? prev[attemptKey] + 1 : 1;
+      return { ...prev, [attemptKey]: attempts };
     });
     
     // Emit offer to customer
@@ -224,7 +236,15 @@ const ProviderInstantRequests = () => {
           <h1 className="text-2xl font-bold">Instant Service Requests</h1>
           
           <div className="relative">
-            <button className="p-2 bg-gray-100 rounded-full relative">
+            <button 
+              className="p-2 bg-gray-100 rounded-full relative"
+              onClick={() => {
+                setShowNotifications(!showNotifications);
+                if (!showNotifications) {
+                  markAllNotificationsAsRead();
+                }
+              }}
+            >
               <Bell className="h-6 w-6 text-gray-700" />
               {unreadNotificationsCount > 0 && (
                 <span className="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
@@ -233,17 +253,22 @@ const ProviderInstantRequests = () => {
               )}
             </button>
             
-            {notifications.length > 0 && (
+            {showNotifications && notifications.length > 0 && (
               <div className="absolute right-0 mt-2 w-80 bg-white rounded-md shadow-lg z-10 max-h-96 overflow-y-auto">
-                <div className="p-3 border-b border-gray-200">
+                <div className="p-3 border-b border-gray-200 flex justify-between items-center">
                   <h3 className="font-medium">Notifications</h3>
+                  <button 
+                    onClick={() => setNotifications([])}
+                    className="text-xs text-indigo-600 hover:text-indigo-800"
+                  >
+                    Clear All
+                  </button>
                 </div>
                 <div>
                   {notifications.map(notification => (
                     <div 
                       key={notification.id} 
-                      className={`p-3 border-b border-gray-100 cursor-pointer ${notification.read ? 'bg-white' : 'bg-blue-50'}`}
-                      onClick={() => markNotificationAsRead(notification.id)}
+                      className={`p-3 border-b border-gray-100 ${notification.read ? 'bg-white' : 'bg-blue-50'}`}
                     >
                       <p className="text-sm">{notification.message}</p>
                       <p className="text-xs text-gray-500 mt-1">
@@ -269,9 +294,9 @@ const ProviderInstantRequests = () => {
                 <div className="flex justify-between items-start mb-3">
                   <h3 className="font-medium">Service Request</h3>
                   <div className="flex items-center space-x-2">
-                    {offerAttempts[request.id] && (
+                    {request.id && request.serviceType && offerAttempts[`${request.id}_${request.serviceType}`] && (
                       <span className="bg-gray-100 text-gray-700 text-xs px-2 py-1 rounded-full">
-                        {offerAttempts[request.id]}/3 offers
+                        {offerAttempts[`${request.id}_${request.serviceType}`]}/3 offers
                       </span>
                     )}
                     <span className="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full">
@@ -301,14 +326,14 @@ const ProviderInstantRequests = () => {
                 
                 <button
                   onClick={() => handleRequestSelect(request)}
-                  disabled={(offerAttempts[request.id] || 0) >= 3}
+                  disabled={(offerAttempts[`${request.id}_${request.serviceType}`] || 0) >= 3}
                   className={`w-full py-2 rounded-md transition-colors ${
-                    (offerAttempts[request.id] || 0) >= 3
+                    (offerAttempts[`${request.id}_${request.serviceType}`] || 0) >= 3
                       ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                       : 'bg-indigo-600 text-white hover:bg-indigo-700'
                   }`}
                 >
-                  {(offerAttempts[request.id] || 0) >= 3 ? 'Max Offers Reached' : 'Send Offer'}
+                  {(offerAttempts[`${request.id}_${request.serviceType}`] || 0) >= 3 ? 'Max Offers Reached' : 'Send Offer'}
                 </button>
               </div>
             ))

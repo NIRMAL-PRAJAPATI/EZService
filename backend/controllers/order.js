@@ -2,6 +2,7 @@ const CustomerInfo = require("../models/customerInfo");
 const Order = require("../models/order");
 const ProviderInfo = require("../models/providerInfo");
 const Service = require("../models/service");
+const ServiceRequest = require("../models/serviceRequest");
 
 const getOrderById = async (req, res) => {
     try {
@@ -75,7 +76,7 @@ const getAllOrders = async (req, res) => {
 
 const getOrdersByUserId = async (req, res) => {
     try {
-        const { id } = req.params;
+        const id  = req.userId;
         const { limit, page, offset } = req.pagination;
         const orders = await Order.findAll({
             where: { customer_id: id },
@@ -127,7 +128,7 @@ const updateOrderStatus = async (req, res) => {
             where: { 
                 order_id: orderId,
                 provider_id: userId,
-                status: 'pending' // Only pending orders can be updated
+                status: 'PENDING' // Only PENDING orders can be updated
             }
         });
         
@@ -187,18 +188,21 @@ const getProviderOrders = async (req, res) => {
 
 const createInstantOrder = async (req, res) => {
     try {
-        const { service_id, provider_id, date, estimated_charge, status, issue } = req.body;
+        const { service_id, provider_id, date, estimated_charge, status, issue, location, request_id } = req.body;
         const customerId = req.userId;
         const visitingDate = date;
         const visitingCharge = estimated_charge;
-
+        
+        // Handle service_id which might be an object or just an ID
+        const serviceId = typeof service_id === 'object' ? service_id.id : service_id;
+        
         // Validate input data
-        if (!service_id || !provider_id || !customerId || !visitingDate || !visitingCharge || !status || !issue) {
+        if (!serviceId || !provider_id || !customerId || !visitingDate || !visitingCharge || !status || !issue) {
             return res.status(400).json({ message: "All fields are required" });
         }
 
         // Check if the service exists
-        const service = await Service.findByPk(service_id);
+        const service = await Service.findByPk(serviceId);
         if (!service) {
             return res.status(404).json({ message: "Service not found" });
         }
@@ -215,13 +219,30 @@ const createInstantOrder = async (req, res) => {
             return res.status(404).json({ message: "Customer not found" });
         }
 
+        // Check if the provider is available on the given date
+        const existingOrder = await Order.findOne({
+            where: {
+                provider_id: provider_id,
+                date: visitingDate,
+                status: 'PENDING' // Only PENDING orders can be updated
+            }
+        });
+
+
+        const service_request = await ServiceRequest.findByPk(request_id)
+        if (!service_request) {
+            return res.status(404).json({ message: "Service Request not found" });
+        }
+        service_request.destroy();
+
         // Create the order
         const order = await Order.create({
-            service_id: service_id,
+            service_id: serviceId,
             provider_id: provider_id,
             customer_id: customerId,
             date,
             issue,
+            location,
             visiting_charge: visitingCharge,
             status: status
         });

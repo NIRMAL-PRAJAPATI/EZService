@@ -5,7 +5,7 @@ const router = express.Router();
 
 router.get('/', Controller.getAllOrders);
 router.get('/provider', verifyToken, Controller.getProviderOrders);
-router.get('/customer/:id', Controller.getOrdersByUserId);
+router.get('/customer/', verifyToken, Controller.getOrdersByUserId);
 router.get('/:id', Controller.getOrderById);
 router.put('/:orderId/status', verifyToken, Controller.updateOrderStatus);
 router.post('/', verifyToken, Controller.createInstantOrder);
