@@ -185,10 +185,59 @@ const getProviderOrders = async (req, res) => {
     }
 };
 
+const createInstantOrder = async (req, res) => {
+    try {
+        const { service_id, provider_id, date, estimated_charge, status, issue } = req.body;
+        const customerId = req.userId;
+        const visitingDate = date;
+        const visitingCharge = estimated_charge;
+
+        // Validate input data
+        if (!service_id || !provider_id || !customerId || !visitingDate || !visitingCharge || !status || !issue) {
+            return res.status(400).json({ message: "All fields are required" });
+        }
+
+        // Check if the service exists
+        const service = await Service.findByPk(service_id);
+        if (!service) {
+            return res.status(404).json({ message: "Service not found" });
+        }
+
+        // Check if the provider exists
+        const provider = await ProviderInfo.findByPk(provider_id);
+        if (!provider) {
+            return res.status(404).json({ message: "Provider not found" });
+        }
+
+        // Check if the customer exists
+        const customer = await CustomerInfo.findByPk(customerId);
+        if (!customer) {
+            return res.status(404).json({ message: "Customer not found" });
+        }
+
+        // Create the order
+        const order = await Order.create({
+            service_id: service_id,
+            provider_id: provider_id,
+            customer_id: customerId,
+            date,
+            issue,
+            visiting_charge: visitingCharge,
+            status: status
+        });
+
+        res.status(201).json(order);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+};
+
 module.exports = {
     getOrderById,
     getAllOrders,
     getOrdersByUserId,
     updateOrderStatus,
-    getProviderOrders
+    getProviderOrders,
+    createInstantOrder
 }

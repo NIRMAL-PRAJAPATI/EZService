@@ -23,6 +23,8 @@ const InstantService = () => {
   const [serviceTypes, setServiceTypes] = useState([]);
   const [offerAttempts, setOfferAttempts] = useState({});
   const [currentRequestId, setCurrentRequestId] = useState(null);
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [confirmLoading, setConfirmLoading] = useState(false);
 
   // Fetch service types and identify user on component mount
   useEffect(() => {
@@ -168,15 +170,43 @@ const InstantService = () => {
 
   const handleAcceptOffer = (offer) => {
     setSelectedOffer(offer);
+    setShowConfirmation(true);
+  };
+  
+  const handleConfirmOrder = () => {
+    setConfirmLoading(true);
     
-    // Navigate to book order page with offer details
-    navigate('/book-order', { 
-      state: { 
-        provider: offer.provider,
-        service: offer.service,
-        requestDetails: formData
-      } 
-    });
+    // Create order object
+    const orderData = {
+      service_id: selectedOffer.service.id,
+      provider_id: selectedOffer.provider.id,
+      location: formData.address,
+      issue: formData.description,
+      date: new Date().toISOString(),
+      estimated_charge: selectedOffer.price,
+      status: 'PENDING'
+    };
+    
+    // Create order via API
+    authApi.post('/orders', orderData)
+      .then(response => {
+        console.log('Order created successfully:', response.data);
+        
+        // Notify provider that offer was accepted
+        socket.emit('offerAccepted', { 
+          offerId: selectedOffer.id,
+          providerId: selectedOffer.provider.id,
+          requestId: currentRequestId
+        });
+        
+        // Navigate to order details page
+        navigate(`/orders/${response.data.order_id}/view`);
+      })
+      .catch(error => {
+        console.error('Error creating order:', error);
+        setError('Failed to create order. Please try again.');
+        setConfirmLoading(false);
+      });
   };
 
   const handleDeclineOffer = (offerId, providerId) => {
@@ -334,8 +364,8 @@ const InstantService = () => {
           </div>
         )}
         
-        {/* Offer popup - moved outside the searching condition */}
-        {offers.length > 0 && (
+        {/* Offer popup */}
+        {offers.length > 0 && !showConfirmation && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
               <h3 className="text-xl font-semibold mb-4">Service Offer Received!</h3>
@@ -385,6 +415,90 @@ const InstantService = () => {
                   className="flex-1 py-2 px-4 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
                 >
                   Accept
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+        
+        {/* Order confirmation popup */}
+        {showConfirmation && selectedOffer && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
+              <h3 className="text-xl font-semibold mb-4">Confirm Your Order</h3>
+              
+              <div className="mb-4">
+                <h4 className="font-medium text-gray-700 mb-2">Service Details</h4>
+                <div className="p-4 bg-gray-50 rounded-md">
+                  <div className="flex items-center mb-3">
+                    <img 
+                      src={selectedOffer.provider?.avatar || "https://via.placeholder.com/40"} 
+                      alt="Provider" 
+                      className="h-12 w-12 rounded-full mr-3"
+                    />
+                    <div>
+                      <p className="font-medium">{selectedOffer.provider?.name || "Service Provider"}</p>
+                      <div className="flex items-center">
+                        <span className="text-yellow-500">★★★★☆</span>
+                        <span className="text-sm text-gray-500 ml-1">{selectedOffer.provider?.rating || "4.0"}</span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <p className="text-gray-700 mb-2">
+                    <span className="font-medium">Service:</span> {selectedOffer.service?.name || "Instant Service"}
+                  </p>
+                  <p className="text-gray-700 mb-2">
+                    <span className="font-medium">Price:</span> ₹{selectedOffer.price || "0"}
+                  </p>
+                  <p className="text-gray-700 mb-2">
+                    <span className="font-medium">Estimated Arrival:</span> {selectedOffer.estimatedArrival || "Unknown"}
+                  </p>
+                </div>
+              </div>
+              
+              <div className="mb-4">
+                <h4 className="font-medium text-gray-700 mb-2">Order Summary</h4>
+                <div className="p-4 bg-gray-50 rounded-md">
+                  <p className="text-gray-700 mb-2">
+                    <span className="font-medium">Address:</span> {formData.address}
+                  </p>
+                  <p className="text-gray-700">
+                    <span className="font-medium">Issue:</span> {formData.description}
+                  </p>
+                </div>
+              </div>
+              
+              <div className="mb-4">
+                <div className="p-3 border-t border-b border-gray-200">
+                  <div className="flex justify-between font-medium">
+                    <span>Total Amount:</span>
+                    <span>₹{selectedOffer.price || "0"}</span>
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1">Payment will be collected after service completion</p>
+                </div>
+              </div>
+              
+              <div className="flex space-x-3">
+                <button
+                  onClick={() => setShowConfirmation(false)}
+                  className="flex-1 py-2 px-4 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+                >
+                  Back
+                </button>
+                <button
+                  onClick={handleConfirmOrder}
+                  disabled={confirmLoading}
+                  className="flex-1 py-2 px-4 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 disabled:opacity-50"
+                >
+                  {confirmLoading ? (
+                    <>
+                      <Loader2 className="animate-spin h-5 w-5 mr-2 inline" />
+                      Processing...
+                    </>
+                  ) : (
+                    'Confirm Order'
+                  )}
                 </button>
               </div>
             </div>

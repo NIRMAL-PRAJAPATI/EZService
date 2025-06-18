@@ -30,7 +30,13 @@ const Order = sequelize4.define('Order', {
   status: DataTypes.ENUM('PENDING', 'CONFIRMED', 'CANCELLED', 'COMPLETED')
 }, {
   tableName: 'order',
-  timestamps: false
+  timestamps: false,
+  hooks: {
+    beforeCreate: (order, options) => {
+      const time = new Date().getTime();
+      order.order_id = `${time}-${order.customer_id}-${order.service_id}-${order.provider_id}`;
+    },
+  }
 });
 
 // One-to-Many: Customer -> Orders
