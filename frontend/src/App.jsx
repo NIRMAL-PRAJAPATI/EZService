@@ -15,6 +15,9 @@ const ServiceProfilePage = lazy(() => import('./pages/ServiceProfilePage'));
 const Templates = lazy(() => import('./pages/Templates/Templates'));
 const HomeRenovation = lazy(() => import('./components/Templates/home-renovation'));
 const WeddingRequisites = lazy(() => import('./components/Templates/wedding-requisites'));
+const HomeAppliance = lazy(() => import('./components/Templates/HomeAppliance'));
+const BeautySpa = lazy(() => import('./components/Templates/BeautySpa'));
+const Party = lazy(() => import('./components/Templates/Party'));
 import Loading from './components/Loading'
 import OrderDetails from './pages/OrderDetails';
 import BookOrderPage from './pages/BookOrder';
@@ -29,6 +32,9 @@ import ProviderProfile from './pages/ProviderProfile';
 import ProviderReview from './pages/ProviderReview';
 import ProviderOrder from './pages/ProviderOrder';
 import ProviderServices from './pages/ProviderServices';
+import ProviderInstantRequests from './pages/ProviderInstantRequests';
+import InstantService from './pages/InstantService';
+import BookInstantOrder from './pages/BookInstantOrder';
 import OAuthTransfer from './config/authTransfer';
 
 function App() {
