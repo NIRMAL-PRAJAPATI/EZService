@@ -152,11 +152,12 @@ const InstantService = () => {
         }));
         
         // Emit socket event for new service request
-        socket.current.emit('newServiceRequest', {
-          requestId,
-          ...formData,
-        });
-        
+        if (socket.current) {
+          socket.current.emit('newServiceRequest', {
+            requestId,
+            ...formData,
+          });
+        }
       })
       .catch(error => {
         console.error('Error creating service request:', error);
@@ -191,11 +192,13 @@ const InstantService = () => {
         console.log('Order created successfully:', response.data);
         
         // Notify provider that offer was accepted
-        socket.current.emit('offerAccepted', { 
-          offerId: selectedOffer.id,
-          providerId: selectedOffer.provider.id,
-          requestId: currentRequestId
-        });
+        if (socket.current) {
+          socket.current.emit('offerAccepted', { 
+            offerId: selectedOffer.id,
+            providerId: selectedOffer.provider.id,
+            requestId: currentRequestId
+          });
+        }
         
         // Navigate to order details page
         navigate(`/orders/${response.data.order_id}/view`);
@@ -212,7 +215,7 @@ const InstantService = () => {
     setOffers(prev => prev.filter(offer => offer.id !== offerId));
     
     // Track offer attempts for the current request and service
-    if (currentRequestId && serviceId) {
+    if (currentRequestId && serviceId && socket.current) {
       // Create a unique key for this provider+service combination
       const attemptKey = `${providerId}_${serviceId}`;
       const requestAttempts = offerAttempts[currentRequestId] || {};
@@ -246,7 +249,7 @@ const InstantService = () => {
           attemptsRemaining: 2 - providerServiceAttempts 
         });
       }
-    } else {
+    } else if (socket.current) {
       // Fallback if no current request ID or service ID
       socket.current.emit('offerDeclined', { offerId, providerId });
     }
@@ -352,10 +355,25 @@ const InstantService = () => {
               This usually takes 1-3 minutes.
             </p>
             
-            <div className="flex items-center justify-center">
+            <div className="flex items-center justify-center mb-6">
               <Clock className="h-5 w-5 text-indigo-600 mr-2" />
               <span className="text-sm text-gray-500">Request sent at {new Date().toLocaleTimeString()}</span>
             </div>
+            
+            <button
+              onClick={() => {
+                // Disconnect socket
+                if (socket.current) {
+                  socket.current.disconnect();
+                  socket.current = null;
+                }
+                // Redirect to home page
+                navigate('/');
+              }}
+              className="px-4 py-2 bg-red-100 text-red-700 rounded-md hover:bg-red-200 transition-colors"
+            >
+              Cancel Request
+            </button>
           </div>
         )}
         
