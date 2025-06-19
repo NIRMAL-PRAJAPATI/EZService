@@ -6,6 +6,7 @@ const http = require('http');
 const server = http.createServer(app);
 const { Server } = require('socket.io');
 const passport = require("passport");
+const ServiceRequest = require('./models/serviceRequest');
 require('./utilities/passport');
 
 // Initialize Socket.io
@@ -42,6 +43,8 @@ app.use('/otp', require("./routes/otpRoutes"));
 app.use(passport.initialize());
 app.use("/auth", require("./routes/customerInfoRoutes"));
 
+const userSockets = [];
+
 // Socket.io event handlers
 io.on('connection', (socket) => {
     console.log('A user connected:', socket.id);
@@ -55,10 +58,21 @@ io.on('connection', (socket) => {
         userType = data.userType; // 'customer' or 'provider'
         userId = data.userId;
         
+
         // Join room based on user type and ID
         socket.join(`${userType}-${userId}`);
         console.log(`User identified as ${userType} with ID ${userId}`);
     });
+
+    // Handle provider registration
+    socket.on("providerJoin", (services)=>{
+        console.log(services)
+        services.forEach(service => {
+            // Join a room for each service the provider offers
+            console.log(`Provider joining service room: service-${service}`);
+            socket.join(`service-${service}`);
+        })
+    })
     
     // Handle new service requests from customers
     socket.on('newServiceRequest', (requestData) => {
@@ -67,9 +81,12 @@ io.on('connection', (socket) => {
         // Store the socket ID that created this request for direct communication
         const requesterId = socket.id;
         requestData.requesterId = requesterId;
-        
+        userSockets.push({
+            requestId: requestData.requestId,
+            socketId: requesterId
+        });
         // Broadcast to all providers
-        socket.broadcast.emit('newServiceRequest', requestData);
+        io.to(`service-${requestData.serviceType}`).emit('newServiceRequest', requestData);
     });
     
     // Handle service offers from providers
@@ -106,9 +123,52 @@ io.on('connection', (socket) => {
         io.to(`provider-${data.providerId}`).emit('offerDeclined', data);
     });
     
-    socket.on('disconnect', () => {
-        console.log('User disconnected:', socket.id);
-    });
+    // socket.on('disconnect', () => {
+    //     userSockets.forEach(async (userSocket, index) => {
+    //         if (userSocket.socketId === socket.id) {
+    //             const serviceReq = await ServiceRequest.findOne({
+    //                 where: { id: userSocket.requestId }}
+    //             )
+
+    //             if(serviceReq)
+    //                 serviceReq.destroy()
+    //             userSockets.splice(index, 1); // Remove the disconnected user
+    //         }
+    //     });
+    //     console.log(userSockets)
+    //     console.log('User disconnected:', socket.id);
+    // });
+
+    socket.on('disconnect', async () => {
+    console.log('User disconnected:', socket.id);
+    
+    // Find all user sockets that match the disconnected socket ID
+    const disconnectedSockets = userSockets.filter(userSocket => userSocket.socketId === socket.id);
+    
+    // Delete each service request associated with the disconnected socket
+    for (const userSocket of disconnectedSockets) {
+        try {
+            if (userSocket.requestId) {
+                console.log(`Deleting service request: ${userSocket.requestId}`);
+                const serviceReq = await ServiceRequest.findByPk(userSocket.requestId);
+                if (serviceReq) {
+                    await serviceReq.destroy();
+                    console.log(`Service request ${userSocket.requestId} deleted successfully`);
+                }
+            }
+        } catch (error) {
+            console.error(`Error deleting service request ${userSocket.requestId}:`, error);
+        }
+    }
+    
+    // Remove all disconnected sockets from the array
+    const remainingSockets = userSockets.filter(userSocket => userSocket.socketId !== socket.id);
+    userSockets.length = 0; // Clear the array
+    userSockets.push(...remainingSockets); // Add remaining sockets back
+    
+    console.log('Remaining sockets:', userSockets);
+});
+
 });
 
 // Use server.listen instead of app.listen for Socket.io

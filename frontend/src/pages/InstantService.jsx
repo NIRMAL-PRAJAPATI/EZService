@@ -1,12 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MapPin, Clock, Send, AlertCircle, Loader2 } from 'lucide-react';
 import authApi from '../config/auth-config';
 import { io } from 'socket.io-client';
 import Navbar from '../components/Navbar';
-
-// Initialize socket connection
-const socket = io('http://localhost:3000');
 
 const InstantService = () => {
   const navigate = useNavigate();
@@ -25,9 +22,14 @@ const InstantService = () => {
   const [currentRequestId, setCurrentRequestId] = useState(null);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
+  const socket = useRef(null);
 
   // Fetch service types and identify user on component mount
   useEffect(() => {
+    // Initialize socket connection when component mounts
+    socket.current = io('http://localhost:3000');
+    console.log('Socket initialized on InstantService page');
+    
     // Get user ID from local storage or auth context
     const token = localStorage.getItem('token');
     let userId = null;
@@ -39,7 +41,7 @@ const InstantService = () => {
         userId = tokenData.id;
         
         // Identify as customer to socket server
-        socket.emit('identify', {
+        socket.current.emit('identify', {
           userType: 'customer',
           userId: userId
         });
@@ -57,11 +59,15 @@ const InstantService = () => {
       });
       
     // Socket event listeners
-    socket.on('connect', () => {
+    socket.current.on('connect', () => {
       console.log('Connected to socket server');
     });
     
-    socket.on('serviceOffer', (offer) => {
+    socket.current.on('disconnect', () => {
+      console.log('Disconnected from socket server');
+    });
+
+    socket.current.on('serviceOffer', (offer) => {
       console.log('Received service offer:', offer);
       
       // Check if this provider has reached max attempts for this service on this request
@@ -82,7 +88,7 @@ const InstantService = () => {
           console.log(`Provider ${providerId} has reached max attempts for service ${serviceId} on request ${currentRequestId}`);
           
           // Notify provider they've reached max attempts
-          socket.emit('offerRejected', {
+          socket.current.emit('offerRejected', {
             providerId,
             serviceId,
             requestId: currentRequestId,
@@ -97,11 +103,15 @@ const InstantService = () => {
       setOffers(prev => [...prev, offer]);
     });
     
+    // Clean up function to disconnect socket when component unmounts
     return () => {
-      socket.off('connect');
-      socket.off('serviceOffer');
+      if (socket.current) {
+        console.log('Disconnecting socket on leaving InstantService page');
+        socket.current.disconnect();
+        socket.current = null;
+      }
     };
-  }, [currentRequestId, offerAttempts]);
+  }, []);
   
   // Debug offers and ensure popup shows
   useEffect(() => {
@@ -142,9 +152,9 @@ const InstantService = () => {
         }));
         
         // Emit socket event for new service request
-        socket.emit('newServiceRequest', {
+        socket.current.emit('newServiceRequest', {
           requestId,
-          ...formData
+          ...formData,
         });
         
       })
@@ -181,7 +191,7 @@ const InstantService = () => {
         console.log('Order created successfully:', response.data);
         
         // Notify provider that offer was accepted
-        socket.emit('offerAccepted', { 
+        socket.current.emit('offerAccepted', { 
           offerId: selectedOffer.id,
           providerId: selectedOffer.provider.id,
           requestId: currentRequestId
@@ -210,7 +220,7 @@ const InstantService = () => {
       
       if (providerServiceAttempts >= 2) {
         // This is the 3rd attempt for this service, notify provider they've reached the limit
-        socket.emit('offerDeclined', { 
+        socket.current.emit('offerDeclined', { 
           offerId, 
           providerId,
           serviceId,
@@ -228,7 +238,7 @@ const InstantService = () => {
         }));
         
         // Notify provider that offer was declined
-        socket.emit('offerDeclined', { 
+        socket.current.emit('offerDeclined', { 
           offerId, 
           providerId,
           serviceId,
@@ -238,7 +248,7 @@ const InstantService = () => {
       }
     } else {
       // Fallback if no current request ID or service ID
-      socket.emit('offerDeclined', { offerId, providerId });
+      socket.current.emit('offerDeclined', { offerId, providerId });
     }
   };
 

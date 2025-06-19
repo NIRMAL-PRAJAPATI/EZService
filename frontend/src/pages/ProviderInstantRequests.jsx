@@ -1,11 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Bell, Clock, MapPin, AlertCircle, Send, Loader2, X } from 'lucide-react';
 import { io } from 'socket.io-client';
 import authApi from '../config/auth-config';
 import DashboardHeader from '../components/provider/Header';
-
-// Initialize socket connection
-const socket = io('http://localhost:3000');
+import api from '../config/axios-config';
 
 const ProviderInstantRequests = () => {
   const [activeRequests, setActiveRequests] = useState([]);
@@ -21,16 +19,22 @@ const ProviderInstantRequests = () => {
   const [providerInfo, setProviderInfo] = useState(null);
   const [error, setError] = useState('');
   const [showNotifications, setShowNotifications] = useState(false);
+  const socket = useRef(null);
+ 
 
   // Fetch provider info on component mount
   useEffect(() => {
+    // Initialize socket connection when component mounts
+    socket.current = io('http://localhost:3000');
+    console.log('Socket initialized on ProviderInstantRequests page');
+    
     authApi.get('/provider/profile')
       .then(response => {
         setProviderInfo(response.data);
         
         // Identify as provider to socket server
-        if (response.data && response.data.id) {
-          socket.emit('identify', {
+        if (response.data && response.data.id && socket.current) {
+          socket.current.emit('identify', {
             userType: 'provider',
             userId: response.data.id
           });
@@ -40,6 +44,14 @@ const ProviderInstantRequests = () => {
         console.error('Error fetching provider info:', error);
       });
       
+    authApi.get('/provider/services')
+      .then(async (response) => {
+        const services_ = await response.data.map(service => service.id)
+        if (socket.current) {
+          socket.current.emit('providerJoin', services_)
+        }
+      })
+
     // Fetch active service requests
     authApi.get('/service-requests/active')
       .then(response => {
@@ -50,58 +62,66 @@ const ProviderInstantRequests = () => {
       });
       
     // Socket event listeners
-    socket.on('connect', () => {
-      console.log('Provider connected to socket server');
-    });
-    
-    socket.on('newServiceRequest', (requestData) => {
-      console.log('New service request received:', requestData);
-      
-      // Add to active requests
-      setActiveRequests(prev => [requestData, ...prev]);
-      
-      // Add notification
-      addNotification('New service request received!');
-    });
-    
-    socket.on('offerAccepted', (data) => {
-      console.log('Offer accepted:', data);
-      setActiveRequests(prev => prev.filter(request => request.id !== data.requestId))
-      addNotification('Your offer was accepted! Check your orders.');
-      
-    });
-    
-    socket.on('offerDeclined', (data) => {
-      console.log('Offer declined:', data);
-      
-      // Track offer attempts per service
-      setOfferAttempts(prev => {
-        const requestId = data.requestId;
-        const serviceId = data.serviceId;
-        
-        if (!requestId || !serviceId) {
-          return prev;
-        }
-        
-        // Create a unique key for this request+service combination
-        const attemptKey = `${requestId}_${serviceId}`;
-        const attempts = prev[attemptKey] ? prev[attemptKey] + 1 : 1;
-        
-        if (attempts < 3) {
-          addNotification(`Your offer was declined. You can make ${3 - attempts} more offers for this service.`);
-        } else {
-          addNotification('Your offer was declined. Maximum offer attempts reached for this service.');
-        }
-        
-        return { ...prev, [attemptKey]: attempts };
+    if (socket.current) {
+      socket.current.on('connect', () => {
+        console.log('Provider connected to socket server');
       });
-    });
+      
+      socket.current.on('newServiceRequest', (requestData) => {
+        console.log('New service request received:', requestData);
+        
+        // Add to active requests
+        setActiveRequests(prev => [requestData, ...prev]);
+        
+        // Add notification
+        addNotification('New service request received!');
+      });
+      
+      socket.current.on('offerAccepted', (data) => {
+        console.log('Offer accepted:', data);
+        setActiveRequests(prev => prev.filter(request => request.id !== data.requestId))
+        addNotification('Your offer was accepted! Check your orders.');
+        
+      });
+      
+      socket.current.on('offerDeclined', (data) => {
+        console.log('Offer declined:', data);
+        
+        // Track offer attempts per service
+        setOfferAttempts(prev => {
+          const requestId = data.requestId;
+          const serviceId = data.serviceId;
+          
+          if (!requestId || !serviceId) {
+            return prev;
+          }
+          
+          // Create a unique key for this request+service combination
+          const attemptKey = `${requestId}_${serviceId}`;
+          const attempts = prev[attemptKey] ? prev[attemptKey] + 1 : 1;
+          
+          if (attempts < 3) {
+            addNotification(`Your offer was declined. You can make ${3 - attempts} more offers for this service.`);
+          } else {
+            addNotification('Your offer was declined. Maximum offer attempts reached for this service.');
+          }
+          
+          return { ...prev, [attemptKey]: attempts };
+        });
+      });
+    }
     
+    // Clean up function to disconnect socket when component unmounts
     return () => {
-      socket.off('connect');
-      socket.off('newServiceRequest');
-      socket.off('offerAccepted');
-      socket.off('offerDeclined');
+      if (socket.current) {
+        console.log('Disconnecting socket on leaving ProviderInstantRequests page');
+        socket.current.off('connect');
+        socket.current.off('newServiceRequest');
+        socket.current.off('offerAccepted');
+        socket.current.off('offerDeclined');
+        socket.current.disconnect();
+        socket.current = null;
+      }
     };
   }, []);
   
@@ -205,13 +225,15 @@ const ProviderInstantRequests = () => {
     });
     
     // Emit offer to customer
-    socket.emit('serviceOffer', {
-      requestId: selectedRequest.id,
-      offer: {
-        ...offer,
-        requestId: selectedRequest.id
-      }
-    });
+    if (socket.current) {
+      socket.current.emit('serviceOffer', {
+        requestId: selectedRequest.id,
+        offer: {
+          ...offer,
+          requestId: selectedRequest.id
+        }
+      });
+    }
     
     // Reset form
     setLoading(false);
