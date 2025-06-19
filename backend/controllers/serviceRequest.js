@@ -3,6 +3,7 @@ const ServiceCategory = require('../models/serviceCategory');
 const CustomerInfo = require('../models/customerInfo');
 const { addMinutes } = require('date-fns');
 const { Op } = require('sequelize');
+const ProviderInfo = require('../models/providerInfo');
 
 // Create a new service request
 const createServiceRequest = async (req, res) => {
@@ -81,12 +82,20 @@ const getActiveServiceRequests = async (req, res) => {
     if (role !== 'provider') {
       return res.status(403).json({ message: 'Access denied' });
     }
+
+    const provider = await ProviderInfo.findOne({where: { id: userId }});
     
+    if (!provider) {
+      return res.status(404).json({ message: 'Provider not found' });
+    }
+
+    const services = await provider.getServices();
     const now = new Date();
     
     const serviceRequests = await ServiceRequest.findAll({
       where: {
         status: 'PENDING',
+        service_type_id: services.map(service => service.id),
         expires_at: {
           [Op.gt]: now
         }

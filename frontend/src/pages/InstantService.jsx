@@ -1,12 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MapPin, Clock, Send, AlertCircle, Loader2 } from 'lucide-react';
 import authApi from '../config/auth-config';
 import { io } from 'socket.io-client';
 import Navbar from '../components/Navbar';
-
-// Initialize socket connection
-const socket = io('http://localhost:3000');
 
 const InstantService = () => {
   const navigate = useNavigate();
@@ -23,9 +20,16 @@ const InstantService = () => {
   const [serviceTypes, setServiceTypes] = useState([]);
   const [offerAttempts, setOfferAttempts] = useState({});
   const [currentRequestId, setCurrentRequestId] = useState(null);
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [confirmLoading, setConfirmLoading] = useState(false);
+  const socket = useRef(null);
 
   // Fetch service types and identify user on component mount
   useEffect(() => {
+    // Initialize socket connection when component mounts
+    socket.current = io('http://localhost:3000');
+    console.log('Socket initialized on InstantService page');
+    
     // Get user ID from local storage or auth context
     const token = localStorage.getItem('token');
     let userId = null;
@@ -37,7 +41,7 @@ const InstantService = () => {
         userId = tokenData.id;
         
         // Identify as customer to socket server
-        socket.emit('identify', {
+        socket.current.emit('identify', {
           userType: 'customer',
           userId: userId
         });
@@ -55,26 +59,38 @@ const InstantService = () => {
       });
       
     // Socket event listeners
-    socket.on('connect', () => {
+    socket.current.on('connect', () => {
       console.log('Connected to socket server');
     });
     
-    socket.on('serviceOffer', (offer) => {
+    socket.current.on('disconnect', () => {
+      console.log('Disconnected from socket server');
+    });
+
+    socket.current.on('serviceOffer', (offer) => {
       console.log('Received service offer:', offer);
       
-      // Check if this provider has reached max attempts for this request
-      if (currentRequestId && offer.provider && offer.provider.id) {
+      // Check if this provider has reached max attempts for this service on this request
+      if (currentRequestId && offer.provider?.id && offer.service?.id) {
         const providerId = offer.provider.id;
+        const serviceId = offer.service.id;
+        const attemptKey = `${providerId}_${serviceId}`;
         const requestAttempts = offerAttempts[currentRequestId] || {};
-        const providerAttempts = requestAttempts[providerId] || 0;
+        const providerServiceAttempts = requestAttempts[attemptKey] || 0;
+
+        console.log(attemptKey)
+        console.log(providerServiceAttempts)
+        console.log(requestAttempts)
+
         
-        if (providerAttempts >= 3) {
-          // Provider has reached max attempts, ignore this offer
-          console.log(`Provider ${providerId} has reached max attempts for request ${currentRequestId}`);
+        if (providerServiceAttempts >= 3) {
+          // Provider has reached max attempts for this service, ignore this offer
+          console.log(`Provider ${providerId} has reached max attempts for service ${serviceId} on request ${currentRequestId}`);
           
           // Notify provider they've reached max attempts
-          socket.emit('offerRejected', {
+          socket.current.emit('offerRejected', {
             providerId,
+            serviceId,
             requestId: currentRequestId,
             reason: 'MAX_ATTEMPTS_REACHED'
           });
@@ -87,11 +103,15 @@ const InstantService = () => {
       setOffers(prev => [...prev, offer]);
     });
     
+    // Clean up function to disconnect socket when component unmounts
     return () => {
-      socket.off('connect');
-      socket.off('serviceOffer');
+      if (socket.current) {
+        console.log('Disconnecting socket on leaving InstantService page');
+        socket.current.disconnect();
+        socket.current = null;
+      }
     };
-  }, [currentRequestId, offerAttempts]);
+  }, []);
   
   // Debug offers and ensure popup shows
   useEffect(() => {
@@ -132,32 +152,12 @@ const InstantService = () => {
         }));
         
         // Emit socket event for new service request
-        socket.emit('newServiceRequest', {
-          requestId,
-          ...formData
-        });
-        
-        // For testing: simulate an offer after 5 seconds
-        setTimeout(() => {
-          const testOffer = {
-            id: 'test-' + Date.now(),
-            provider: {
-              id: 999,
-              name: 'Test Provider',
-              avatar: null,
-              rating: 4.8
-            },
-            service: {
-              id: formData.serviceType,
-              name: 'Emergency Service'
-            },
-            price: 1500,
-            estimatedArrival: '10-15 minutes'
-          };
-          
-          console.log('Adding test offer:', testOffer);
-          setOffers(prev => [...prev, testOffer]);
-        }, 5000);
+        if (socket.current) {
+          socket.current.emit('newServiceRequest', {
+            requestId,
+            ...formData,
+          });
+        }
       })
       .catch(error => {
         console.error('Error creating service request:', error);
@@ -168,55 +168,90 @@ const InstantService = () => {
 
   const handleAcceptOffer = (offer) => {
     setSelectedOffer(offer);
+    setShowConfirmation(true);
+  };
+  
+  const handleConfirmOrder = () => {
+    setConfirmLoading(true);
     
-    // Navigate to book order page with offer details
-    navigate('/book-order', { 
-      state: { 
-        provider: offer.provider,
-        service: offer.service,
-        requestDetails: formData
-      } 
-    });
+    // Create order object
+    const orderData = {
+      service_id: selectedOffer.service.id,
+      provider_id: selectedOffer.provider.id,
+      location: formData.address,
+      issue: formData.description,
+      date: new Date().toISOString(),
+      estimated_charge: selectedOffer.price,
+      status: 'CONFIRMED',
+      request_id: currentRequestId
+    };
+    
+    // Create order via API
+    authApi.post('/orders', orderData)
+      .then(response => {
+        console.log('Order created successfully:', response.data);
+        
+        // Notify provider that offer was accepted
+        if (socket.current) {
+          socket.current.emit('offerAccepted', { 
+            offerId: selectedOffer.id,
+            providerId: selectedOffer.provider.id,
+            requestId: currentRequestId
+          });
+        }
+        
+        // Navigate to order details page
+        navigate(`/orders/${response.data.order_id}/view`);
+      })
+      .catch(error => {
+        console.error('Error creating order:', error);
+        setError('Failed to create order. Please try again.');
+        setConfirmLoading(false);
+      });
   };
 
-  const handleDeclineOffer = (offerId, providerId) => {
+  const handleDeclineOffer = (offerId, providerId, serviceId) => {
     // Remove the offer from the list
     setOffers(prev => prev.filter(offer => offer.id !== offerId));
     
-    // Track offer attempts for the current request
-    if (currentRequestId) {
+    // Track offer attempts for the current request and service
+    if (currentRequestId && serviceId && socket.current) {
+      // Create a unique key for this provider+service combination
+      const attemptKey = `${providerId}_${serviceId}`;
       const requestAttempts = offerAttempts[currentRequestId] || {};
-      const providerAttempts = requestAttempts[providerId] || 0;
+      const providerServiceAttempts = requestAttempts[attemptKey] || 0;
       
-      if (providerAttempts >= 2) {
-        // This is the 3rd attempt, notify provider they've reached the limit
-        socket.emit('offerDeclined', { 
+      if (providerServiceAttempts >= 2) {
+        // This is the 3rd attempt for this service, notify provider they've reached the limit
+        socket.current.emit('offerDeclined', { 
           offerId, 
           providerId,
+          serviceId,
           requestId: currentRequestId,
           maxAttemptsReached: true 
         });
       } else {
-        // Update attempts count
+        // Update attempts count for this provider+service combination
         setOfferAttempts(prev => ({
           ...prev,
           [currentRequestId]: {
             ...prev[currentRequestId],
-            [providerId]: providerAttempts + 1
+            [attemptKey]: providerServiceAttempts + 1
           }
         }));
         
         // Notify provider that offer was declined
-        socket.emit('offerDeclined', { 
+        socket.current.emit('offerDeclined', { 
           offerId, 
           providerId,
+          serviceId,
           requestId: currentRequestId,
-          attemptsRemaining: 2 - providerAttempts 
+          attemptsRemaining: 2 - providerServiceAttempts 
         });
       }
-    } else {
-      // Fallback if no current request ID
-      socket.emit('offerDeclined', { offerId, providerId });
+    } else if (socket.current) {
+      // Fallback if no current request ID or service ID
+      socket.current.emit('offerDeclined', { offerId, providerId });
     }
   };
 
@@ -326,16 +361,24 @@ const InstantService = () => {
             </div>
             
             <button
-              onClick={() => setSearching(false)}
-              className="text-indigo-600 hover:text-indigo-800 font-medium"
+              onClick={() => {
+                // Disconnect socket
+                if (socket.current) {
+                  socket.current.disconnect();
+                  socket.current = null;
+                }
+                // Redirect to home page
+                navigate('/');
+              }}
+              className="px-4 py-2 bg-red-100 text-red-700 rounded-md hover:bg-red-200 transition-colors"
             >
               Cancel Request
             </button>
           </div>
         )}
         
-        {/* Offer popup - moved outside the searching condition */}
-        {offers.length > 0 && (
+        {/* Offer popup */}
+        {offers.length > 0 && !showConfirmation && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
               <h3 className="text-xl font-semibold mb-4">Service Offer Received!</h3>
@@ -366,16 +409,16 @@ const InstantService = () => {
                   <span className="font-medium">Estimated Arrival:</span> {offers[0].estimatedArrival || "Unknown"}
                 </p>
                 
-                {currentRequestId && offers[0].provider?.id && (
+                {currentRequestId && offers[0].provider?.id && offers[0].service?.id && (
                   <p className="text-xs text-gray-500 mt-2">
-                    Offer {(offerAttempts[currentRequestId]?.[offers[0].provider.id] || 0) + 1}/3
+                    Offer {(offerAttempts[currentRequestId]?.[`${offers[0].provider.id}_${offers[0].service.id}`] || 0) + 1}/3
                   </p>
                 )}
               </div>
               
               <div className="flex space-x-3">
                 <button
-                  onClick={() => handleDeclineOffer(offers[0].id, offers[0].provider?.id)}
+                  onClick={() => handleDeclineOffer(offers[0].id, offers[0].provider?.id, offers[0].service?.id)}
                   className="flex-1 py-2 px-4 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
                 >
                   Decline
@@ -385,6 +428,90 @@ const InstantService = () => {
                   className="flex-1 py-2 px-4 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
                 >
                   Accept
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+        
+        {/* Order confirmation popup */}
+        {showConfirmation && selectedOffer && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
+              <h3 className="text-xl font-semibold mb-4">Confirm Your Order</h3>
+              
+              <div className="mb-4">
+                <h4 className="font-medium text-gray-700 mb-2">Service Details</h4>
+                <div className="p-4 bg-gray-50 rounded-md">
+                  <div className="flex items-center mb-3">
+                    <img 
+                      src={selectedOffer.provider?.avatar || "https://via.placeholder.com/40"} 
+                      alt="Provider" 
+                      className="h-12 w-12 rounded-full mr-3"
+                    />
+                    <div>
+                      <p className="font-medium">{selectedOffer.provider?.name || "Service Provider"}</p>
+                      <div className="flex items-center">
+                        <span className="text-yellow-500">★★★★☆</span>
+                        <span className="text-sm text-gray-500 ml-1">{selectedOffer.provider?.rating || "4.0"}</span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <p className="text-gray-700 mb-2">
+                    <span className="font-medium">Service:</span> {selectedOffer.service?.name || "Instant Service"}
+                  </p>
+                  <p className="text-gray-700 mb-2">
+                    <span className="font-medium">Price:</span> ₹{selectedOffer.price || "0"}
+                  </p>
+                  <p className="text-gray-700 mb-2">
+                    <span className="font-medium">Estimated Arrival:</span> {selectedOffer.estimatedArrival || "Unknown"}
+                  </p>
+                </div>
+              </div>
+              
+              <div className="mb-4">
+                <h4 className="font-medium text-gray-700 mb-2">Order Summary</h4>
+                <div className="p-4 bg-gray-50 rounded-md">
+                  <p className="text-gray-700 mb-2">
+                    <span className="font-medium">Address:</span> {formData.address}
+                  </p>
+                  <p className="text-gray-700">
+                    <span className="font-medium">Issue:</span> {formData.description}
+                  </p>
+                </div>
+              </div>
+              
+              <div className="mb-4">
+                <div className="p-3 border-t border-b border-gray-200">
+                  <div className="flex justify-between font-medium">
+                    <span>Total Amount:</span>
+                    <span>₹{selectedOffer.price || "0"}</span>
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1">Payment will be collected after service completion</p>
+                </div>
+              </div>
+              
+              <div className="flex space-x-3">
+                <button
+                  onClick={() => setShowConfirmation(false)}
+                  className="flex-1 py-2 px-4 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+                >
+                  Back
+                </button>
+                <button
+                  onClick={handleConfirmOrder}
+                  disabled={confirmLoading}
+                  className="flex-1 py-2 px-4 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 disabled:opacity-50"
+                >
+                  {confirmLoading ? (
+                    <>
+                      <Loader2 className="animate-spin h-5 w-5 mr-2 inline" />
+                      Processing...
+                    </>
+                  ) : (
+                    'Confirm Order'
+                  )}
                 </button>
               </div>
             </div>

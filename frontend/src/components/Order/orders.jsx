@@ -3,6 +3,7 @@ import { ChevronRight, ClockArrowDown, MapPin, Package } from "lucide-react"
 import { Link } from "react-router-dom"
 import api from "../../config/axios-config"
 import Loading from "../../components/Loading"
+import authApi from "../../config/auth-config"
 
 const OrderItem = ({ order }) => {
 
@@ -73,7 +74,7 @@ const OrderPage = () => {
     const cOrder = [];
     const pOrder = [];
 
-    api.get('/orders/customer/8').then((response) => {
+    authApi.get('/orders/customer/').then((response) => {
       response.data.map((order) => {
         if (order.status === "pending") {
           cOrder.push(order)
