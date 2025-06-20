@@ -36,12 +36,7 @@ import ProviderInstantRequests from './pages/ProviderInstantRequests';
 import InstantService from './pages/InstantService';
 import BookInstantOrder from './pages/BookInstantOrder';
 import OAuthTransfer from './config/authTransfer';
-import HomeAppliance from './components/Templates/HomeAppliance';
-import BeautySpa from './components/Templates/BeautySpa';
-import Party from './components/Templates/Party'
-import ProviderInstantRequests from './pages/ProviderInstantRequests';
-import InstantService from './pages/InstantService'
-import BookInstantOrder from './pages/BookInstantOrder'
+
 
 function App() {
   const location = useLocation();
