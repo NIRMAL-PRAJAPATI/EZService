@@ -7,6 +7,7 @@ const client = twilio(
 );
 
 async function sendOtp(phone) {
+  console.log("Sending OTP to: " + phone);
   return client.verify.v2
     .services(process.env.VERIFY_SERVICE_SID)
     .verifications.create({ to: phone, channel: 'sms' });

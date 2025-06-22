@@ -5,6 +5,7 @@ const { sendOtp, verifyOtp } = require('../utilities/OTPProcess');
 // Send OTP
 router.post('/send-otp', async (req, res) => {
   const { phone } = req.body;
+  console.log("Phone number received: " + phone);
   try {
     const response = await sendOtp(phone);
     console.log(phone);

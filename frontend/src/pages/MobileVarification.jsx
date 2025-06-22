@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form';
 import api from '../config/axios-config';
 
 function MobileVarification() {
-  const { register, handleSubmit, reset, watch, setValue, formState: { errors } } = useForm();
+  const { register, handleSubmit, watch, formState: { errors } } = useForm();
 
   const location = useLocation();
   const { formData } = location.state || {};
@@ -21,6 +21,20 @@ function MobileVarification() {
 
   // Timer for OTP
   useEffect(() => {
+    fetch("https://ipapi.co/json/")
+    .then((res) => res.json())
+    .then((data) => {
+      setFormDataState(prev => ({
+        ...prev,
+        city: data.city,
+        state: data.region,
+        country: data.country_name,
+      }));
+    })
+    .catch(err => {
+      console.error("Failed to fetch location:", err);
+    });
+    
     let interval;
     if (isCounting && OTPTimer > 0) {
       interval = setInterval(() => {
@@ -45,17 +59,17 @@ function MobileVarification() {
       mobile: updatedMobile,
     }));
   };
-      console.log(formDataState);
+  console.log(formDataState);
 
   const sendOTP = async () => {
     try {
       console.log(formDataState.mobile);
-      const existanceCheck = await api.post('customer/existancecheck', {mobile:  formDataState.mobile });
+      const existanceCheck = await api.post('customer/existancecheck', { mobile: formDataState.mobile });
 
-      if(existanceCheck) {
-      await api.post(`/otp/send-otp`, { phone: `+91${formDataState.mobile}` });
-      setOTPTimer(30);
-      setIsCounting(true);
+      if (existanceCheck) {
+        await api.post(`/otp/send-otp`, { phone: `+91${formDataState.mobile}` });
+        setOTPTimer(30);
+        setIsCounting(true);
       }
       setErrorMessage("");
     } catch (error) {
@@ -85,10 +99,10 @@ function MobileVarification() {
       };
 
       console.log(registrationData);
-      console.log(formDataState.mobile + data.password);
+      console.log(formDataState.mobile + data.password + data.confirmpassword);
       await api.post(`/customer/register`, registrationData);
       const loginResponse = await api.post('/customer/login', {
-        mobile: formDataState.mobile,
+        emailmobile: formDataState.mobile,
         password: data.password
       });
 

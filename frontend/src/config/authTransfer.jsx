@@ -1,6 +1,7 @@
 // src/pages/OAuthTransfer.jsx
 import { useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import api from './axios-config';
 
 const OAuthTransfer = () => {
   const { search } = useLocation();
@@ -21,8 +22,11 @@ const OAuthTransfer = () => {
       country: ''
     };
 
-    // Redirect to the mobile verification page with state
+    api.post('customer/existancecheck', {email:  email , mobile: '' }).then((response) => {
     navigate('/register/mobilevarification', { state: { formData } });
+  }).catch((error) => {
+    navigate('/login', { state: { emailmobile: email, message: "Your email is already linked to an account. Please use the password you set during registration to log in."} });
+  });
   }, []);
 
   return <p>Redirecting...</p>;

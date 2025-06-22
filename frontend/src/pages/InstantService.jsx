@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MapPin, Clock, Send, AlertCircle, Loader2 } from 'lucide-react';
+import { MapPin, Clock, Send, AlertCircle, Loader2, WrenchIcon, Info, MousePointerClickIcon, StepForward } from 'lucide-react';
 import authApi from '../config/auth-config';
 import { io } from 'socket.io-client';
 import Navbar from '../components/Navbar';
@@ -29,17 +29,17 @@ const InstantService = () => {
     // Initialize socket connection when component mounts
     socket.current = io('http://localhost:3000');
     console.log('Socket initialized on InstantService page');
-    
+
     // Get user ID from local storage or auth context
     const token = localStorage.getItem('token');
     let userId = null;
-    
+
     if (token) {
       try {
         // Extract user ID from token (simplified - use your actual token parsing logic)
         const tokenData = JSON.parse(atob(token.split('.')[1]));
         userId = tokenData.id;
-        
+
         // Identify as customer to socket server
         socket.current.emit('identify', {
           userType: 'customer',
@@ -49,7 +49,7 @@ const InstantService = () => {
         console.error('Error parsing token:', e);
       }
     }
-    
+
     authApi.get('/category/names')
       .then(response => {
         setServiceTypes(response.data);
@@ -57,19 +57,19 @@ const InstantService = () => {
       .catch(error => {
         console.error('Error fetching service types:', error);
       });
-      
+
     // Socket event listeners
     socket.current.on('connect', () => {
       console.log('Connected to socket server');
     });
-    
+
     socket.current.on('disconnect', () => {
       console.log('Disconnected from socket server');
     });
 
     socket.current.on('serviceOffer', (offer) => {
       console.log('Received service offer:', offer);
-      
+
       // Check if this provider has reached max attempts for this service on this request
       if (currentRequestId && offer.provider?.id && offer.service?.id) {
         const providerId = offer.provider.id;
@@ -82,11 +82,11 @@ const InstantService = () => {
         console.log(providerServiceAttempts)
         console.log(requestAttempts)
 
-        
+
         if (providerServiceAttempts >= 3) {
           // Provider has reached max attempts for this service, ignore this offer
           console.log(`Provider ${providerId} has reached max attempts for service ${serviceId} on request ${currentRequestId}`);
-          
+
           // Notify provider they've reached max attempts
           socket.current.emit('offerRejected', {
             providerId,
@@ -94,15 +94,15 @@ const InstantService = () => {
             requestId: currentRequestId,
             reason: 'MAX_ATTEMPTS_REACHED'
           });
-          
+
           return;
         }
       }
-      
+
       // Add offer to the list
       setOffers(prev => [...prev, offer]);
     });
-    
+
     // Clean up function to disconnect socket when component unmounts
     return () => {
       if (socket.current) {
@@ -112,7 +112,7 @@ const InstantService = () => {
       }
     };
   }, []);
-  
+
   // Debug offers and ensure popup shows
   useEffect(() => {
     console.log('Current offers:', offers);
@@ -127,30 +127,30 @@ const InstantService = () => {
     e.preventDefault();
     setError('');
     setLoading(true);
-    
+
     // Validate form
     if (!formData.address || !formData.serviceType || !formData.description) {
       setError('Please fill all required fields');
       setLoading(false);
       return;
     }
-    
+
     // Create service request
     authApi.post('/service-requests', formData)
       .then(response => {
         setLoading(false);
         setSearching(true);
-        
+
         // Set current request ID
         const requestId = response.data.id;
         setCurrentRequestId(requestId);
-        
+
         // Reset offer attempts for this request
         setOfferAttempts(prev => ({
           ...prev,
           [requestId]: {}
         }));
-        
+
         // Emit socket event for new service request
         if (socket.current) {
           socket.current.emit('newServiceRequest', {
@@ -170,10 +170,10 @@ const InstantService = () => {
     setSelectedOffer(offer);
     setShowConfirmation(true);
   };
-  
+
   const handleConfirmOrder = () => {
     setConfirmLoading(true);
-    
+
     // Create order object
     const orderData = {
       service_id: selectedOffer.service.id,
@@ -185,21 +185,21 @@ const InstantService = () => {
       status: 'CONFIRMED',
       request_id: currentRequestId
     };
-    
+
     // Create order via API
     authApi.post('/orders', orderData)
       .then(response => {
         console.log('Order created successfully:', response.data);
-        
+
         // Notify provider that offer was accepted
         if (socket.current) {
-          socket.current.emit('offerAccepted', { 
+          socket.current.emit('offerAccepted', {
             offerId: selectedOffer.id,
             providerId: selectedOffer.provider.id,
             requestId: currentRequestId
           });
         }
-        
+
         // Navigate to order details page
         navigate(`/orders/${response.data.order_id}/view`);
       })
@@ -213,22 +213,22 @@ const InstantService = () => {
   const handleDeclineOffer = (offerId, providerId, serviceId) => {
     // Remove the offer from the list
     setOffers(prev => prev.filter(offer => offer.id !== offerId));
-    
+
     // Track offer attempts for the current request and service
     if (currentRequestId && serviceId && socket.current) {
       // Create a unique key for this provider+service combination
       const attemptKey = `${providerId}_${serviceId}`;
       const requestAttempts = offerAttempts[currentRequestId] || {};
       const providerServiceAttempts = requestAttempts[attemptKey] || 0;
-      
+
       if (providerServiceAttempts >= 2) {
         // This is the 3rd attempt for this service, notify provider they've reached the limit
-        socket.current.emit('offerDeclined', { 
-          offerId, 
+        socket.current.emit('offerDeclined', {
+          offerId,
           providerId,
           serviceId,
           requestId: currentRequestId,
-          maxAttemptsReached: true 
+          maxAttemptsReached: true
         });
       } else {
         // Update attempts count for this provider+service combination
@@ -239,14 +239,14 @@ const InstantService = () => {
             [attemptKey]: providerServiceAttempts + 1
           }
         }));
-        
+
         // Notify provider that offer was declined
-        socket.current.emit('offerDeclined', { 
-          offerId, 
+        socket.current.emit('offerDeclined', {
+          offerId,
           providerId,
           serviceId,
           requestId: currentRequestId,
-          attemptsRemaining: 2 - providerServiceAttempts 
+          attemptsRemaining: 2 - providerServiceAttempts
         });
       }
     } else if (socket.current) {
@@ -258,73 +258,60 @@ const InstantService = () => {
   return (
     <>
       <div className="max-w-4xl mx-auto pt-20 px-4 py-8">
-        <h1 className="text-3xl font-bold text-center mb-8">Book an Instant Service</h1>
-        
+        <h1 className="text-3xl font-bold text-center mb-8">Find an Instant Service</h1>
+
         {!searching ? (
-          <div className="bg-white rounded-lg shadow-md p-6">
+          <div className="bg-white rounded-lg">
             {error && (
               <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-md flex items-center">
                 <AlertCircle className="h-5 w-5 mr-2" />
                 <span>{error}</span>
               </div>
             )}
-            
+
             <form onSubmit={handleSubmit}>
-              <div className="mb-4">
-                <label className="block text-gray-700 font-medium mb-2">
-                  Service Type <span className="text-red-500">*</span>
-                </label>
+              <div className="mb-4 relative">
+                <label className="absolute left-3 flex -top-3 bg-white px-1 text-sm font-medium text-indigo-500"><WrenchIcon className="mr-1" size={18} />Select Service Type</label>
                 <select
                   name="serviceType"
                   value={formData.serviceType}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                  required
-                >
+                  className="block w-full pl-4 pr-3 py-3 text-lg md:text-sm text-gray-800 border border-gray-300 rounded-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" required>
                   <option value="">Select a service type</option>
                   {serviceTypes.map(type => (
                     <option key={type.id} value={type.id}>{type.name}</option>
                   ))}
                 </select>
               </div>
-              
-              <div className="mb-4">
-                <label className="block text-gray-700 font-medium mb-2">
-                  Your Address <span className="text-red-500">*</span>
-                </label>
-                <div className="relative">
-                  <MapPin className="absolute left-3 top-3 text-gray-400" size={18} />
-                  <input
-                    type="text"
-                    name="address"
-                    value={formData.address}
-                    onChange={handleChange}
-                    placeholder="Enter your full address"
-                    className="w-full pl-10 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                    required
-                  />
-                </div>
-              </div>
-              
-              <div className="mb-6">
-                <label className="block text-gray-700 font-medium mb-2">
-                  Describe Your Issue <span className="text-red-500">*</span>
-                </label>
+
+              <div className="mb-4 relative">
+                <label className="absolute left-3 flex -top-3 bg-white px-1 text-sm font-medium text-indigo-500"><MapPin className="mr-1" size={18} />Residential Address</label>
                 <textarea
+                  rows={3}
+                  placeholder="Enter your address"
+                  type="text"
+                  name="address"
+                  value={formData.address}
+                  onChange={handleChange}
+                  className="block w-full pl-4 pr-3 py-3 text-lg md:text-sm text-gray-800 border border-gray-300 rounded-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" required
+                />
+              </div>
+
+              <div className="mb-4 relative">
+                <label className="absolute left-3 flex -top-3 bg-white px-1 text-sm font-medium text-indigo-500"><Info className="mr-1" size={18} />Describe Your Issue</label>
+                <textarea
+                  rows={4}
                   name="description"
                   value={formData.description}
                   onChange={handleChange}
-                  placeholder="Please describe your issue in detail"
-                  rows="4"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                  required
-                ></textarea>
+                  className="block w-full pl-4 pr-3 py-3 text-lg md:text-sm text-gray-800 border border-gray-300 rounded-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" required
+                />
               </div>
-              
+
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 flex items-center justify-center"
+                className="w-full bg-indigo-500 text-white py-3 px-4 rounded-sm hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 flex items-center justify-center"
               >
                 {loading ? (
                   <>
@@ -339,6 +326,18 @@ const InstantService = () => {
                 )}
               </button>
             </form>
+            <section className="text-gray-800 tracking-wide py-5 px-auto">
+              <h5 className='font-bold'>How process goes</h5>
+              <ul className='list-disc pl-3 space-y-2 mt-2 text-sm'>
+              <li className=''><span className='font-semibold'>Tell Us What You Need - </span>Choose a service, enter your address, and describe your issue.</li>
+              <li className=''><span className='font-semibold'>We Find Nearby Experts - </span>Our system searches for available service providers in your area.</li>
+              <li className=''><span className='font-semibold'>Wait for Provider Acceptance - </span>A nearby provider reviews your request and accepts the job.</li>
+              <li className=''><span className='font-semibold'>You Confirm the Provider - </span>Once a provider accepts, you review their details and confirm.
+              </li>
+              <li className=''><span className='font-semibold'>Service Request Placed! - </span>Your request is confirmed, the provider will be come as soon as possible!</li>
+              </ul>
+            </section>
+
           </div>
         ) : (
           <div className="bg-white rounded-lg shadow-md p-6 text-center">
@@ -348,18 +347,18 @@ const InstantService = () => {
                 <div className="radar-sweep"></div>
               </div>
             </div>
-            
+
             <h2 className="text-2xl font-semibold mb-4">Finding Service Providers...</h2>
             <p className="text-gray-600 mb-6">
               We're connecting you with available service providers in your area.
               This usually takes 1-3 minutes.
             </p>
-            
+
             <div className="flex items-center justify-center mb-6">
               <Clock className="h-5 w-5 text-indigo-600 mr-2" />
               <span className="text-sm text-gray-500">Request sent at {new Date().toLocaleTimeString()}</span>
             </div>
-            
+
             <button
               onClick={() => {
                 // Disconnect socket
@@ -376,18 +375,18 @@ const InstantService = () => {
             </button>
           </div>
         )}
-        
+
         {/* Offer popup */}
         {offers.length > 0 && !showConfirmation && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
               <h3 className="text-xl font-semibold mb-4">Service Offer Received!</h3>
-              
+
               <div className="mb-4 p-4 border border-gray-200 rounded-md">
                 <div className="flex items-center mb-2">
-                  <img 
-                    src={offers[0].provider?.avatar || "https://via.placeholder.com/40"} 
-                    alt="Provider" 
+                  <img
+                    src={offers[0].provider?.avatar || "https://via.placeholder.com/40"}
+                    alt="Provider"
                     className="h-10 w-10 rounded-full mr-3"
                   />
                   <div>
@@ -398,7 +397,7 @@ const InstantService = () => {
                     </div>
                   </div>
                 </div>
-                
+
                 <p className="text-gray-700 mb-2">
                   <span className="font-medium">Service:</span> {offers[0].service?.name || "Instant Service"}
                 </p>
@@ -408,14 +407,14 @@ const InstantService = () => {
                 <p className="text-gray-700">
                   <span className="font-medium">Estimated Arrival:</span> {offers[0].estimatedArrival || "Unknown"}
                 </p>
-                
+
                 {currentRequestId && offers[0].provider?.id && offers[0].service?.id && (
                   <p className="text-xs text-gray-500 mt-2">
                     Offer {(offerAttempts[currentRequestId]?.[`${offers[0].provider.id}_${offers[0].service.id}`] || 0) + 1}/3
                   </p>
                 )}
               </div>
-              
+
               <div className="flex space-x-3">
                 <button
                   onClick={() => handleDeclineOffer(offers[0].id, offers[0].provider?.id, offers[0].service?.id)}
@@ -433,20 +432,20 @@ const InstantService = () => {
             </div>
           </div>
         )}
-        
+
         {/* Order confirmation popup */}
         {showConfirmation && selectedOffer && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
               <h3 className="text-xl font-semibold mb-4">Confirm Your Order</h3>
-              
+
               <div className="mb-4">
                 <h4 className="font-medium text-gray-700 mb-2">Service Details</h4>
                 <div className="p-4 bg-gray-50 rounded-md">
                   <div className="flex items-center mb-3">
-                    <img 
-                      src={selectedOffer.provider?.avatar || "https://via.placeholder.com/40"} 
-                      alt="Provider" 
+                    <img
+                      src={selectedOffer.provider?.avatar || "https://via.placeholder.com/40"}
+                      alt="Provider"
                       className="h-12 w-12 rounded-full mr-3"
                     />
                     <div>
@@ -457,7 +456,7 @@ const InstantService = () => {
                       </div>
                     </div>
                   </div>
-                  
+
                   <p className="text-gray-700 mb-2">
                     <span className="font-medium">Service:</span> {selectedOffer.service?.name || "Instant Service"}
                   </p>
@@ -469,7 +468,7 @@ const InstantService = () => {
                   </p>
                 </div>
               </div>
-              
+
               <div className="mb-4">
                 <h4 className="font-medium text-gray-700 mb-2">Order Summary</h4>
                 <div className="p-4 bg-gray-50 rounded-md">
@@ -481,7 +480,7 @@ const InstantService = () => {
                   </p>
                 </div>
               </div>
-              
+
               <div className="mb-4">
                 <div className="p-3 border-t border-b border-gray-200">
                   <div className="flex justify-between font-medium">
@@ -491,7 +490,7 @@ const InstantService = () => {
                   <p className="text-xs text-gray-500 mt-1">Payment will be collected after service completion</p>
                 </div>
               </div>
-              
+
               <div className="flex space-x-3">
                 <button
                   onClick={() => setShowConfirmation(false)}
@@ -518,7 +517,7 @@ const InstantService = () => {
           </div>
         )}
       </div>
-      
+
       <style jsx>{`
         .radar-animation {
           position: relative;

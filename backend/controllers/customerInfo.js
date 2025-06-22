@@ -31,6 +31,8 @@ const getCustomerInfo = async (req, res) => {
 const loginCustomer = async (req, res) => {
     let { emailmobile, password } = req.body;
 
+    console.log("emailmobile : " + emailmobile + " password : " + password);
+
     try {
         const existanceCheck = await User.findOne({
             where: { [Op.or]: [{ mobile: emailmobile }, { email: emailmobile }] }
@@ -70,7 +72,7 @@ async function existanceCheck(req, res) {
     console.log("mobile : " + mobile + " email : " + email);
 
     try {
-        // if(email == undefined){
+        if(email == undefined){
         const mobileCheck = await User.findOne({
             where: { mobile: mobile }
         });
@@ -80,19 +82,18 @@ async function existanceCheck(req, res) {
                 errorMessage: "Entered mobile is already registered",
             });
         }
-    // }else {
-    //     const emailCheck = await User.findOne({
-    //         where: { email: email }
-    //     });
+    }else {
+        const emailCheck = await User.findOne({
+            where: { email: email }
+        });
 
-    //     if (emailCheck) {
-    //         return res.status(409).json({
-    //             errorMessage: "Entered email is already registered",
-    //         });
-    //     }
-    // }
-
-        res.status(201).json({message: "Mobile number is ready to send OTP"})
+        if (emailCheck) {
+            return res.status(409).json({
+                errorMessage: "Entered email is already registered",
+            });
+        }
+    }
+        res.status(201).json({message: "Not exists!"})
     }catch(error) {
         res.status(500).json({errorMessage: "Internal Server Error"})
     }

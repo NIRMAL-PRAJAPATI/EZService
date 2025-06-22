@@ -1,21 +1,29 @@
-import React from 'react'
 import { Plug, LibraryBig, Car, Wrench, PartyPopper } from 'lucide-react'
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
 import api from '../config/axios-config'
 
 function Login() {
-    const [formData, setFormData] = useState({ emailmobile: "", password: "" })
-    const [errorMessage, setErrorMessage] = useState("");
+    const location = useLocation();
     const navigate = useNavigate();
+    const [formData, setFormData] = useState({emailmobile: location.state?.emailmobile || '',
+    password: location.state?.password || '',})
+    const [errorMessage, setErrorMessage] = useState("");
+    const [oAuthMessage, setoAuthMessage] = useState("");
 
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData((prev) => ({ ...prev, [name]: value }));
     };
 
+    useEffect(() => {
+  if (location.state?.message) {
+    setoAuthMessage(location.state.message);
+  }
+}, [location.state]);
+
     const submitData = (e) => {
-    e.preventDefault();
+        e.preventDefault();
 
         api.post('/customer/login', formData, {
             headers: {
@@ -67,6 +75,7 @@ function Login() {
                                         value={formData.emailmobile}
                                         onChange={handleChange}
                                         required />
+                                        <p className='text-gray-500 text-xs'>{oAuthMessage}</p>
                                 </div><br />
                                 <div className="relative">
                                     <label className="absolute left-3 -top-3 bg-white px-1 text-sm font-medium text-indigo-500">Password</label>
@@ -85,7 +94,7 @@ function Login() {
                             </div>
                         </form>
                         <div className='w-full flex'>
-                        <a href='/register' className='-mt-3 mx-auto text-gray-600 tracking-wide font-semibold cursor-pointer'>Create a new account?</a>
+                            <a href='/register' className='-mt-3 mx-auto text-gray-600 tracking-wide font-semibold cursor-pointer'>Create a new account?</a>
                         </div>
                     </div>
                 </main>
