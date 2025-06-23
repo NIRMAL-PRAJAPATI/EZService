@@ -33,3 +33,7 @@ build/
 
 # Debugging tools
 *.tgz
+
+# upload files
+uploads/*
+uploads/
