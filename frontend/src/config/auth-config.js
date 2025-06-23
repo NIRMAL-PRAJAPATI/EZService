@@ -3,8 +3,8 @@ import axios from "axios";
 // create axios instance
 const authApi = axios.create(
     {
-        baseURL: 'http://ec2-43-204-112-76.ap-south-1.compute.amazonaws.com',
-        // baseURL: 'http://ec2-43-204-112-76.ap-south-1.compute.amazonaws.com',
+        baseURL: 'http://localhost:3000',
+        // baseURL: 'http://localhost:3000',
         headers: {
             'Content-Type':'application/json'
         }

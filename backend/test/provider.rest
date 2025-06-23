@@ -1,4 +1,4 @@
-@baseUrl = http://ec2-43-204-112-76.ap-south-1.compute.amazonaws.com
+@baseUrl = http://localhost:3000
 @providerToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwicm9sZSI6InByb3ZpZGVyIiwiaWF0IjoxNzQ2OTQ2NTc0LCJleHAiOjE3NDY5NTAxNzR9.8ICXKvSea-lmbzlGjPUyPMzZ_og8x1zna6BrEqwjsd0
 
 ###

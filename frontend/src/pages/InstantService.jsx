@@ -28,7 +28,7 @@ const InstantService = () => {
   // Fetch service types and identify user on component mount
   useEffect(() => {
     // Initialize socket connection when component mounts
-    socket.current = io('http://ec2-43-204-112-76.ap-south-1.compute.amazonaws.com');
+    socket.current = io('http://localhost:3000');
     console.log('Socket initialized on InstantService page');
 
     // Get user ID from local storage or auth context

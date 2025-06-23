@@ -21,7 +21,7 @@ function Registration () {
   }, [setValue]);
     
   const [errorMessage, setErrorMessage] = useState("");
-  const api = 'http://ec2-43-204-112-76.ap-south-1.compute.amazonaws.com';
+  const api = 'http://localhost:3000';
 
   const onVarifyData = async (data) => {
     const { confirmpassword, ...formData } = data;
