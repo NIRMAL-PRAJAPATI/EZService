@@ -15,7 +15,7 @@ export default function ThirdPartyRegistration () {
         </div>
 
         <div className="mt-6 space-y-3">
-          <a href='http://localhost:3000/auth/google'
+          <a href='http://ec2-43-204-112-76.ap-south-1.compute.amazonaws.com/auth/google'
             type="button"
             className="w-full flex py-3 px-4 border border-gray-300 rounded-sm bg-white hover:bg-gray-50" 
           >

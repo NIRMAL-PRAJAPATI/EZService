@@ -173,5 +173,5 @@ io.on('connection', (socket) => {
 
 // Use server.listen instead of app.listen for Socket.io
 server.listen(3000, () => {
-    console.log("Server is running on port http://localhost:3000/");
+    console.log("Server is running on port http://ec2-43-204-112-76.ap-south-1.compute.amazonaws.com/");
 });

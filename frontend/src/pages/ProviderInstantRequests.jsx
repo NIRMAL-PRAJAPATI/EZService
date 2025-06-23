@@ -25,7 +25,7 @@ const ProviderInstantRequests = () => {
   // Fetch provider info on component mount
   useEffect(() => {
     // Initialize socket connection when component mounts
-    socket.current = io('http://localhost:3000');
+    socket.current = io('http://ec2-43-204-112-76.ap-south-1.compute.amazonaws.com');
     console.log('Socket initialized on ProviderInstantRequests page');
     
     authApi.get('/provider/profile')
