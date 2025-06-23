@@ -1,9 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MapPin, Clock, Send, AlertCircle, Loader2, WrenchIcon, Info, MousePointerClickIcon, StepForward } from 'lucide-react';
+import { MapPin, Clock, Send, AlertCircle, Loader2, WrenchIcon, Info, MapPinned, Plug, Car, LibraryBig, PartyPopper, Wrench } from 'lucide-react';
 import authApi from '../config/auth-config';
 import { io } from 'socket.io-client';
-import Navbar from '../components/Navbar';
+import Lottie from 'lottie-react';
+import providerFindAnimation from '../../public/img/animation2.json';
 
 const InstantService = () => {
   const navigate = useNavigate();
@@ -256,12 +257,11 @@ const InstantService = () => {
   };
 
   return (
-    <>
-      <div className="max-w-4xl mx-auto pt-20 px-4 py-8">
-        <h1 className="text-3xl font-bold text-center mb-8">Find an Instant Service</h1>
-
+    <div className='flex justify-center items-center min-h-screen'>
+      <div className="max-w-4xl mx-auto px-4 py-3">
         {!searching ? (
           <div className="bg-white rounded-lg">
+        <h1 className="text-3xl font-bold text-center mb-8">Find an Instant Service</h1>
             {error && (
               <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-md flex items-center">
                 <AlertCircle className="h-5 w-5 mr-2" />
@@ -269,14 +269,14 @@ const InstantService = () => {
               </div>
             )}
 
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit} className='tracking-wide'>
               <div className="mb-4 relative">
                 <label className="absolute left-3 flex -top-3 bg-white px-1 text-sm font-medium text-indigo-500"><WrenchIcon className="mr-1" size={18} />Select Service Type</label>
                 <select
                   name="serviceType"
                   value={formData.serviceType}
                   onChange={handleChange}
-                  className="block w-full pl-4 pr-3 py-3 text-lg md:text-sm text-gray-800 border border-gray-300 rounded-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" required>
+                  className="block w-full pl-3 pr-3 py-3 text-lg md:text-sm text-gray-800 border border-gray-300 rounded-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" required>
                   <option value="">Select a service type</option>
                   {serviceTypes.map(type => (
                     <option key={type.id} value={type.id}>{type.name}</option>
@@ -297,6 +297,33 @@ const InstantService = () => {
                 />
               </div>
 
+              <div className='sm:flex gap-2'>
+                <div className="mb-4 relative w-full">
+                  <label className="absolute left-3 -top-3 bg-white px-1 text-sm font-medium text-indigo-500">City / Town</label>
+                  <input
+                    type="text"
+                    name="country"
+                    className="block w-full pl-4 pr-3 py-3 text-lg md:text-sm text-gray-800 border border-gray-300 rounded-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  />
+                </div>
+                <div className="mb-4 relative w-full">
+                  <label className="absolute left-3 -top-3 bg-white px-1 text-sm font-medium text-indigo-500">State</label>
+                  <input
+                    type="text"
+                    name="state"
+                    className="block w-full pl-4 pr-3 py-3 text-lg md:text-sm text-gray-800 border border-gray-300 rounded-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  />
+                </div>
+                <div className="mb-4 relative w-full">
+                  <label className="absolute left-3 -top-3 bg-white px-1 text-sm font-medium text-indigo-500">Country</label>
+                  <input
+                    type="text"
+                    name="country"
+                    className="block w-full pl-4 pr-3 py-3 text-lg md:text-sm text-gray-800 border border-gray-300 rounded-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  />
+                </div>
+              </div>
+
               <div className="mb-4 relative">
                 <label className="absolute left-3 flex -top-3 bg-white px-1 text-sm font-medium text-indigo-500"><Info className="mr-1" size={18} />Describe Your Issue</label>
                 <textarea
@@ -304,6 +331,7 @@ const InstantService = () => {
                   name="description"
                   value={formData.description}
                   onChange={handleChange}
+                  placeholder='You want to find the service for your issue, like "AC not cooling" or "plumbing issue"'
                   className="block w-full pl-4 pr-3 py-3 text-lg md:text-sm text-gray-800 border border-gray-300 rounded-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" required
                 />
               </div>
@@ -326,37 +354,51 @@ const InstantService = () => {
                 )}
               </button>
             </form>
-            <section className="text-gray-800 tracking-wide py-5 px-auto">
+            <section className="text-gray-800 py-5 px-auto">
               <h5 className='font-bold'>How process goes</h5>
               <ul className='list-disc pl-3 space-y-2 mt-2 text-sm'>
-              <li className=''><span className='font-semibold'>Tell Us What You Need - </span>Choose a service, enter your address, and describe your issue.</li>
-              <li className=''><span className='font-semibold'>We Find Nearby Experts - </span>Our system searches for available service providers in your area.</li>
-              <li className=''><span className='font-semibold'>Wait for Provider Acceptance - </span>A nearby provider reviews your request and accepts the job.</li>
-              <li className=''><span className='font-semibold'>You Confirm the Provider - </span>Once a provider accepts, you review their details and confirm.
-              </li>
-              <li className=''><span className='font-semibold'>Service Request Placed! - </span>Your request is confirmed, the provider will be come as soon as possible!</li>
+                <li className=''><span className='font-semibold'>Tell Us What You Need - </span>Choose a service, enter your address, and describe your issue.</li>
+                <li className=''><span className='font-semibold'>We Find Nearby Experts - </span>Our system searches for available service providers in your area.</li>
+                <li className=''><span className='font-semibold'>Wait for Provider Acceptance - </span>A nearby provider reviews your request and accepts the job.</li>
+                <li className=''><span className='font-semibold'>You Confirm the Provider - </span>Once a provider accepts, you review their details and confirm.
+                </li>
+                <li className=''><span className='font-semibold'>Service Request Placed! - </span>Your request is confirmed, the provider will be come as soon as possible!</li>
               </ul>
             </section>
 
           </div>
         ) : (
-          <div className="bg-white rounded-lg shadow-md p-6 text-center">
-            <div className="mb-8">
+          <div className="text-center">
+            {/* <div className="mb-8">
               <div className="radar-animation mx-auto">
                 <div className="radar-circle"></div>
                 <div className="radar-sweep"></div>
               </div>
+            </div> */}
+            <div className="absolute inset-0 z-0 h-full w-full sm:items-center sm:justify-center overflow-hidden left-0 right-0 mx-auto bottom-0 z-0">
+
+              <div className="text-gray-500 overflow-hidden z-0 opacity-40 hidden md:block">
+                <Plug className="absolute top-24 left-60 rotate-[330deg] z-0" />
+                <Car className="absolute top-[400px] left-[30vw] rotate-[330deg] z-0" />
+                <LibraryBig className="absolute top-[500px] right-20 z-0" />
+                <Wrench className="absolute top-[500px] left-40 rotate-[10deg] z-0" />
+                <PartyPopper className="absolute top-[150px] right-[20%] z-0" />
             </div>
 
-            <h2 className="text-2xl font-semibold mb-4">Finding Service Providers...</h2>
-            <p className="text-gray-600 mb-6">
+      <Lottie animationData={providerFindAnimation} loop={true} className='opacity-100 sm:opacity-30' />
+    </div>
+
+<div className='relative z-50 tracking-wide'>
+  <MapPinned className='text-indigo-500 mt-1 mr-2 h-10 w-full justify-center items-center'/>
+            <h2 className="text-2xl sm:text-3xl text-gray-800 font-bold mb-4">Finding Service Providers...</h2>
+            <p className="text-gray-700 mb-6">
               We're connecting you with available service providers in your area.
               This usually takes 1-3 minutes.
             </p>
 
             <div className="flex items-center justify-center mb-6">
               <Clock className="h-5 w-5 text-indigo-600 mr-2" />
-              <span className="text-sm text-gray-500">Request sent at {new Date().toLocaleTimeString()}</span>
+              <span className="text-sm text-gray-600">Request sent at {new Date().toLocaleTimeString()}</span>
             </div>
 
             <button
@@ -369,10 +411,11 @@ const InstantService = () => {
                 // Redirect to home page
                 navigate('/');
               }}
-              className="px-4 py-2 bg-red-100 text-red-700 rounded-md hover:bg-red-200 transition-colors"
+              className="px-4 py-2 bg-red-50 border border-red-500 text-red-600 hover:text-white tracking-wide rounded-md hover:bg-red-500 transition-colors z-30"
             >
-              Cancel Request
+              Stop Find Request
             </button>
+            </div>
           </div>
         )}
 
@@ -521,8 +564,8 @@ const InstantService = () => {
       <style jsx>{`
         .radar-animation {
           position: relative;
-          width: 200px;
-          height: 200px;
+          width: 300px;
+          height: 300px;
         }
         
         .radar-circle {
@@ -556,7 +599,7 @@ const InstantService = () => {
           }
         }
       `}</style>
-    </>
+    </div>
   );
 };
 

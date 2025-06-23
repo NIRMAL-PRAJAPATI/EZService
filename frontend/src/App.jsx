@@ -40,7 +40,7 @@ import OAuthTransfer from './config/authTransfer';
 
 function App() {
   const location = useLocation();
-  const hideHeaderFooter = (location.pathname === '/login') || (location.pathname === '/errorpage') || (location.pathname === '/register') || (location.pathname === '/register/mobilevarification' || location.pathname?.startsWith('/provider/'));
+  const hideHeaderFooter = (location.pathname === '/login') || (location.pathname === '/errorpage') || (location.pathname === '/register') || (location.pathname === '/register/mobilevarification' || location.pathname?.startsWith('/provider/')) || (location.pathname === '/authtransfer') || (location.pathname === '/book-instant-order') || (location.pathname === '/book') || (location.pathname === '/instant-service');
 
   return (
       <div className="">
