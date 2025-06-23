@@ -1,10 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MapPin, Clock, Send, AlertCircle, Loader2, WrenchIcon, Info, MapPinned, Plug, Car, LibraryBig, PartyPopper, Wrench } from 'lucide-react';
+import { MapPin, Clock, Send, AlertCircle, Loader2, Info, MapPinned, Plug, Car, LibraryBig, PartyPopper, Wrench, ArrowDownFromLine } from 'lucide-react';
 import authApi from '../config/auth-config';
 import { io } from 'socket.io-client';
 import Lottie from 'lottie-react';
-import providerFindAnimation from '../../public/img/animation2.json';
+import providerFindAnimation from '../assets/animation2.json';
 
 const InstantService = () => {
   const navigate = useNavigate();
@@ -261,7 +261,7 @@ const InstantService = () => {
       <div className="max-w-4xl mx-auto px-4 py-3">
         {!searching ? (
           <div className="bg-white rounded-lg">
-        <h1 className="text-3xl font-bold text-center mb-8">Find an Instant Service</h1>
+            <h1 className="text-3xl font-bold text-center mb-8">Find an Instant Service</h1>
             {error && (
               <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-md flex items-center">
                 <AlertCircle className="h-5 w-5 mr-2" />
@@ -271,7 +271,7 @@ const InstantService = () => {
 
             <form onSubmit={handleSubmit} className='tracking-wide'>
               <div className="mb-4 relative">
-                <label className="absolute left-3 flex -top-3 bg-white px-1 text-sm font-medium text-indigo-500"><WrenchIcon className="mr-1" size={18} />Select Service Type</label>
+                <label className="absolute left-3 flex -top-3 bg-white px-1 text-sm font-medium text-indigo-500"><Wrench className="mr-1" size={18} />Select Service Type</label>
                 <select
                   name="serviceType"
                   value={formData.serviceType}
@@ -369,12 +369,6 @@ const InstantService = () => {
           </div>
         ) : (
           <div className="text-center">
-            {/* <div className="mb-8">
-              <div className="radar-animation mx-auto">
-                <div className="radar-circle"></div>
-                <div className="radar-sweep"></div>
-              </div>
-            </div> */}
             <div className="absolute inset-0 z-0 h-full w-full sm:items-center sm:justify-center overflow-hidden left-0 right-0 mx-auto bottom-0 z-0">
 
               <div className="text-gray-500 overflow-hidden z-0 opacity-40 hidden md:block">
@@ -383,91 +377,99 @@ const InstantService = () => {
                 <LibraryBig className="absolute top-[500px] right-20 z-0" />
                 <Wrench className="absolute top-[500px] left-40 rotate-[10deg] z-0" />
                 <PartyPopper className="absolute top-[150px] right-[20%] z-0" />
+              </div>
+
+              <Lottie animationData={providerFindAnimation} loop={true} className='opacity-100 sm:opacity-30' />
             </div>
 
-      <Lottie animationData={providerFindAnimation} loop={true} className='opacity-100 sm:opacity-30' />
-    </div>
+            <div className='relative z-50 tracking-wide'>
+              <MapPinned className='text-indigo-500 mt-1 mr-2 h-10 w-full justify-center items-center' />
+              <h2 className="text-2xl sm:text-4xl text-gray-800 font-bold mb-4">Finding Service Providers...</h2>
+              <p className="text-gray-700 mb-6 text-lg">
+                We're connecting you with available service providers in your area.
+                This usually takes 1-3 minutes.
+              </p>
 
-<div className='relative z-50 tracking-wide'>
-  <MapPinned className='text-indigo-500 mt-1 mr-2 h-10 w-full justify-center items-center'/>
-            <h2 className="text-2xl sm:text-3xl text-gray-800 font-bold mb-4">Finding Service Providers...</h2>
-            <p className="text-gray-700 mb-6">
-              We're connecting you with available service providers in your area.
-              This usually takes 1-3 minutes.
-            </p>
+              <div className="flex items-center justify-center mb-6">
+                <Clock className="h-5 w-5 text-indigo-600 mr-2" />
+                <span className="text-gray-600">Request sent at {new Date().toLocaleTimeString()}</span>
+              </div>
 
-            <div className="flex items-center justify-center mb-6">
-              <Clock className="h-5 w-5 text-indigo-600 mr-2" />
-              <span className="text-sm text-gray-600">Request sent at {new Date().toLocaleTimeString()}</span>
-            </div>
-
-            <button
-              onClick={() => {
-                // Disconnect socket
-                if (socket.current) {
-                  socket.current.disconnect();
-                  socket.current = null;
-                }
-                // Redirect to home page
-                navigate('/');
-              }}
-              className="px-4 py-2 bg-red-50 border border-red-500 text-red-600 hover:text-white tracking-wide rounded-md hover:bg-red-500 transition-colors z-30"
-            >
-              Stop Find Request
-            </button>
+              <button
+                onClick={() => {
+                  // Disconnect socket
+                  if (socket.current) {
+                    socket.current.disconnect();
+                    socket.current = null;
+                  }
+                  // Redirect to home page
+                  navigate('/');
+                }}
+                className="px-6 py-3 bg-red-50 border border-red-500 text-red-600 hover:text-white tracking-wide rounded-md hover:bg-red-500 transition-colors z-30"
+              >
+                Stop Find Request
+              </button>
             </div>
           </div>
         )}
 
         {/* Offer popup */}
         {offers.length > 0 && !showConfirmation && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
-              <h3 className="text-xl font-semibold mb-4">Service Offer Received!</h3>
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-sm shadow-xl p-6 w-full max-w-md m-1">
+              
+              <div className='flex justify-between'>
+              <h3 className="text-xl font-semibold mb-2">Service Offer Received!</h3>{currentRequestId && offers[0].provider?.id && offers[0].service?.id && (
+                  <p className="text-xs text-gray-500 mt-2 ml-4">
+                    {(offerAttempts[currentRequestId]?.[`${offers[0].provider.id}_${offers[0].service.id}`] || 0) + 1}/3
+                  </p>
+                )}
+                </div>
 
-              <div className="mb-4 p-4 border border-gray-200 rounded-md">
-                <div className="flex items-center mb-2">
+              <div className="mb-4 pt-3 border border-gray-200 rounded-md">
+                <div className="flex items-center mb-2 ml-4">
                   <img
                     src={offers[0].provider?.avatar || "https://via.placeholder.com/40"}
                     alt="Provider"
                     className="h-10 w-10 rounded-full mr-3"
                   />
                   <div>
-                    <h4 className="font-medium">{offers[0].provider?.name || "Service Provider"}</h4>
+                    <h4 className="font-medium -mb-1">{offers[0].provider?.name || "Service Provider"}</h4>
                     <div className="flex items-center">
-                      <span className="text-yellow-500">★★★★☆</span>
+                      <span className="text-indigo-500">★★★★☆</span>
                       <span className="text-sm text-gray-500 ml-1">{offers[0].provider?.rating || "4.0"}</span>
                     </div>
                   </div>
                 </div>
 
-                <p className="text-gray-700 mb-2">
-                  <span className="font-medium">Service:</span> {offers[0].service?.name || "Instant Service"}
-                </p>
-                <p className="text-gray-700 mb-2">
-                  <span className="font-medium">Price:</span> ₹{offers[0].price || "0"}
-                </p>
-                <p className="text-gray-700">
-                  <span className="font-medium">Estimated Arrival:</span> {offers[0].estimatedArrival || "Unknown"}
-                </p>
-
-                {currentRequestId && offers[0].provider?.id && offers[0].service?.id && (
-                  <p className="text-xs text-gray-500 mt-2">
-                    Offer {(offerAttempts[currentRequestId]?.[`${offers[0].provider.id}_${offers[0].service.id}`] || 0) + 1}/3
-                  </p>
-                )}
+                <table className="w-full text-sm text-left text-gray-700">
+                  <tbody>
+                    <tr className="border-b border-t border-gray-300">
+                      <th className="px-3 py-2 font-medium text-gray-900 bg-gray-100 w-1/3">Service</th>
+                      <td className="px-3 py-2">{offers[0].service?.name || "Instant Service"}</td>
+                    </tr>
+                    <tr className="border-b border-gray-300">
+                      <th className="px-3 py-2 font-medium text-gray-900 bg-gray-100">Visiting Charge</th>
+                      <td className="px-3 py-2">₹{offers[0].price || "0"}</td>
+                    </tr>
+                    <tr>
+                      <th className="px-3 py-2 font-medium text-gray-900 bg-gray-100">Estimated Arrival</th>
+                      <td className="px-3 py-2">{offers[0].estimatedArrival || "Unknown"}</td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
 
               <div className="flex space-x-3">
                 <button
                   onClick={() => handleDeclineOffer(offers[0].id, offers[0].provider?.id, offers[0].service?.id)}
-                  className="flex-1 py-2 px-4 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+                  className="flex-1 py-2 px-4 border border-gray-300 rounded-sm text-gray-700 hover:bg-gray-50"
                 >
                   Decline
                 </button>
                 <button
                   onClick={() => handleAcceptOffer(offers[0])}
-                  className="flex-1 py-2 px-4 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
+                  className="flex-1 py-2 px-4 bg-indigo-500 text-white rounded-sm hover:bg-indigo-600"
                 >
                   Accept
                 </button>
@@ -478,14 +480,14 @@ const InstantService = () => {
 
         {/* Order confirmation popup */}
         {showConfirmation && selectedOffer && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
-              <h3 className="text-xl font-semibold mb-4">Confirm Your Order</h3>
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-sm px-1 py-6 w-full max-w-md overflow-y-auto max-h-[95vh]">
+              <h3 className="text-xl text-indigo-500 font-bold mb-4 ml-5">Confirm Your Order</h3>
 
               <div className="mb-4">
-                <h4 className="font-medium text-gray-700 mb-2">Service Details</h4>
-                <div className="p-4 bg-gray-50 rounded-md">
-                  <div className="flex items-center mb-3">
+                <h4 className="font-medium text-gray-700 mb-2 ml-3">Service Details</h4>
+                <div className="pt-3 bg-gray-50">
+                  <div className="flex items-center mb-2 ml-4">
                     <img
                       src={selectedOffer.provider?.avatar || "https://via.placeholder.com/40"}
                       alt="Provider"
@@ -494,47 +496,60 @@ const InstantService = () => {
                     <div>
                       <p className="font-medium">{selectedOffer.provider?.name || "Service Provider"}</p>
                       <div className="flex items-center">
-                        <span className="text-yellow-500">★★★★☆</span>
+                        <span className="text-yellow-500 -mt-1">★★★★☆</span>
                         <span className="text-sm text-gray-500 ml-1">{selectedOffer.provider?.rating || "4.0"}</span>
                       </div>
                     </div>
                   </div>
 
-                  <p className="text-gray-700 mb-2">
-                    <span className="font-medium">Service:</span> {selectedOffer.service?.name || "Instant Service"}
-                  </p>
-                  <p className="text-gray-700 mb-2">
-                    <span className="font-medium">Price:</span> ₹{selectedOffer.price || "0"}
-                  </p>
-                  <p className="text-gray-700 mb-2">
-                    <span className="font-medium">Estimated Arrival:</span> {selectedOffer.estimatedArrival || "Unknown"}
-                  </p>
+                  <table className="w-full text-sm text-left text-gray-700">
+                  <tbody>
+                    <tr className="border-b border-t border-gray-300">
+                      <th className="px-3 py-2 font-medium text-gray-900 bg-gray-100 w-1/3">Service</th>
+                      <td className="px-3 py-2">{selectedOffer.service?.name || "Instant Service"}</td>
+                    </tr>
+                    <tr className="border-b border-gray-300">
+                      <th className="px-3 py-2 font-medium text-gray-900 bg-gray-100">Visiting Charge</th>
+                      <td className="px-3 py-2">₹{selectedOffer.price || "0"}</td>
+                    </tr>
+                    <tr className='border-b border-gray-300'>
+                      <th className="px-3 py-2 font-medium text-gray-900 bg-gray-100">Estimated Arrival</th>
+                      <td className="px-3 py-2">{selectedOffer.estimatedArrival || "Unknown"}</td>
+                    </tr>
+                  </tbody>
+                </table>
                 </div>
               </div>
 
               <div className="mb-4">
-                <h4 className="font-medium text-gray-700 mb-2">Order Summary</h4>
-                <div className="p-4 bg-gray-50 rounded-md">
-                  <p className="text-gray-700 mb-2">
-                    <span className="font-medium">Address:</span> {formData.address}
-                  </p>
-                  <p className="text-gray-700">
-                    <span className="font-medium">Issue:</span> {formData.description}
-                  </p>
-                </div>
+                <h4 className="font-medium text-gray-700 mb-2 ml-3">Order Summary</h4>
+                <table className="w-full text-sm text-left text-gray-700 bg-gray-50">
+                  <tbody>
+                    <tr className="border-b border-t border-gray-300">
+                      <th className="px-3 py-2 font-medium text-gray-900 bg-gray-100 w-1/3">Address</th>
+                      <td className="px-3 py-2">{formData.address}</td>
+                    </tr>
+                    <tr className="border-b border-gray-300">
+                      <th className="px-3 py-2 font-medium text-gray-900 bg-gray-100">Issue</th>
+                      <td className="px-3 py-2">{formData.description}</td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
 
-              <div className="mb-4">
+              <ArrowDownFromLine  className='justify-center w-full text-indigo-500'/>
+
+              <div className="my-4">
                 <div className="p-3 border-t border-b border-gray-200">
-                  <div className="flex justify-between font-medium">
-                    <span>Total Amount:</span>
-                    <span>₹{selectedOffer.price || "0"}</span>
+                  <div className="flex justify-between font-semibold text-gray-800">
+                    <span>Total Amount</span>
+                    <span className='text-xl'>₹{selectedOffer.price || "0"}</span>
                   </div>
-                  <p className="text-xs text-gray-500 mt-1">Payment will be collected after service completion</p>
+                  <p className="text-xs text-gray-500 -mt-1">Payment will be collected after service completion</p>
                 </div>
               </div>
 
-              <div className="flex space-x-3">
+              <div className="flex space-x-2 tracking-wide px-2">
                 <button
                   onClick={() => setShowConfirmation(false)}
                   className="flex-1 py-2 px-4 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
@@ -560,45 +575,6 @@ const InstantService = () => {
           </div>
         )}
       </div>
-
-      <style jsx>{`
-        .radar-animation {
-          position: relative;
-          width: 300px;
-          height: 300px;
-        }
-        
-        .radar-circle {
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          border-radius: 50%;
-          border: 2px solid #4f46e5;
-        }
-        
-        .radar-sweep {
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          border-radius: 50%;
-          background: linear-gradient(90deg, rgba(79, 70, 229, 0.3) 50%, transparent 50%);
-          animation: rotate 3s infinite linear;
-          transform-origin: center;
-        }
-        
-        @keyframes rotate {
-          from {
-            transform: rotate(0deg);
-          }
-          to {
-            transform: rotate(360deg);
-          }
-        }
-      `}</style>
     </div>
   );
 };

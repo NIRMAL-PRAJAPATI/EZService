@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { ChevronDown, ChevronUp , UserRound , AlignRight, LucideShoppingCart, LucideShoppingBag, Heart, Search, X, SearchIcon, ArrowUpRightFromCircle} from "lucide-react";
+import { UserRound , AlignRight, LucideShoppingBag, X, ArrowUpRightFromCircle, Watch} from "lucide-react";
 import resources from "../resource";
 
 const Navbar = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchBoxOpen, setSearchBoxOpen] = useState(false);
-  const [tokenCheck, setTokenCheck] = useState(false);
+  const [tokenCheck, setTokenCheck] = useState(!!localStorage.getItem("token"));
 
   const toggleDropdown = () => {
     setDropdownOpen(!dropdownOpen);
@@ -23,7 +23,7 @@ const Navbar = () => {
 
    useEffect(() => {
     const token = localStorage.getItem("token");
-    setTokenCheck(token);
+    setTokenCheck(!!token);
   }, []);
 
   return (
@@ -129,9 +129,9 @@ const Navbar = () => {
             {/* Account Button */}
             {tokenCheck ? (<div className="flex md:space-x-1 mt-4 md:mt-0">
               <Link to="/instant-service"
-                className="py-2 px-4 text-white bg-indigo-600 hover:bg-indigo-700 border border-indigo-600 rounded flex"
+                className="py-2 px-4 text-white bg-indigo-500 hover:bg-indigo-600 border border-indigo-500 rounded flex"
               >
-                <Search className="h-5 w-5 transition duration-150" />
+                <Watch className="h-5 w-5 transition duration-150" />
                 <span className="-mt-0.5 ml-1">Book Instant</span>
               </Link>
             <Link onClick={toggleMenu}
