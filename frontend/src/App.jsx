@@ -24,7 +24,7 @@ import BookOrderPage from './pages/BookOrder';
 import Login from './pages/Login';
 import MobileVarification from './pages/MobileVarification';
 const ErrorPage = lazy(() => import('./pages/ErrorPage'));
-const Register = lazy(() => import('./pages/register'));
+const Register = lazy(() => import('./pages/Register'));
 import Dashboard  from './pages/ProviderDashboard';
 import RegistrationForm from './components/Register/ProviderRegistration'
 import LoginForm from './components/Register/ProviderLogin';
