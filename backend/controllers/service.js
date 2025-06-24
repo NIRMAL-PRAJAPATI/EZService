@@ -8,11 +8,11 @@ const getServices = async (req, res) => {
     try {
         const {page, limit} = req.pagination;
         const services = await service.findAll({
-            include: [                    
-                      [
+            attributes: ['id','name', 'cover_image', 'visiting_charge', 'instant_visiting_charge', 'description', 'city', 'state', 'country', 'category_id','badge_status','created','experience','working_images',
+              [ 
                         Sequelize.literal(`(SELECT AVG("rating") FROM "service_review" WHERE "service_review"."service_id" = "Service"."id")`),
                         'average_rating'
-                      ]
+            ]
             ],
             include: [{
                 model: ServiceCategory,
