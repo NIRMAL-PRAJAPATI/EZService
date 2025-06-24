@@ -12,7 +12,7 @@ const Complaint = lazy(() => import('./pages/Complaint'));
 const Order = lazy(() => import('./pages/Order'));
 const Rankings = lazy(()=> import('./pages/Rankings'))
 const ServiceProfilePage = lazy(() => import('./pages/ServiceProfilePage'));
-const Templates = lazy(() => import('./pages/Templates/Templates'));
+const Templates = lazy(() => import('./pages/Templates'));
 const HomeRenovation = lazy(() => import('./components/Templates/home-renovation'));
 const WeddingRequisites = lazy(() => import('./components/Templates/wedding-requisites'));
 const HomeAppliance = lazy(() => import('./components/Templates/HomeAppliance'));

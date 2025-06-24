@@ -1,5 +1,5 @@
 import React from 'react'
-import TemplateServices from '../../components/Templates/Templateservices'
+import TemplateServices from '../components/Templates/TemplateServices';
 
 function Templates() {
   return (
