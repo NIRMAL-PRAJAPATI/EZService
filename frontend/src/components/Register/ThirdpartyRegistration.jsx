@@ -15,7 +15,7 @@ export default function ThirdPartyRegistration () {
         </div>
 
         <div className="mt-6 space-y-3">
-          <a href='http://localhost:3000/auth/google'
+          <a href={`${import.meta.env.VITE_API_BACKEND_API}/auth/google`}
             type="button"
             className="w-full flex py-3 px-4 border border-gray-300 rounded-sm bg-white hover:bg-gray-50" 
           >

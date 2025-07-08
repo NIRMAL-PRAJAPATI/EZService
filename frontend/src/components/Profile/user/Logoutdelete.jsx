@@ -1,7 +1,7 @@
 import React from 'react';
-import CustomAlert from "../CustomAlert";
+import CustomAlert from "../../CustomAlert";
 import { useState } from 'react';
-import authApi from '../../config/auth-config';
+import authApi from '../../../config/auth-config';
 
 function Logoutdelete() {
   const [alert, setAlert] = useState({

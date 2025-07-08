@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
-import authApi from '../../config/auth-config';
-import CustomAlert from "../CustomAlert";
-import Loading from "../Loading";
+import authApi from '../../../config/auth-config';
+import CustomAlert from "../../CustomAlert";
+import Loading from "../../Loading";
 
 function ProfileInfo() {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     mobile: "",
+    address: "",
     city: "",
     state: "",
     country: ""
@@ -24,10 +25,26 @@ function ProfileInfo() {
     const fetchProfile = async () => {
       try {
         setLoading(true);
-        const response = await authApi.get("/customer/profile");
+        const response = await authApi.get("/provider/profile");
         setFormData(response.data);
       } catch (error) {
-        console.error("Error fetching profile:", error);
+        console.error("Error fetching bank details:", error);
+        setAlert({
+          title: "Error Loading Bank Details",
+          description: "Failed to load bank information. Please try again.",
+          status: true,
+          buttonText: "Ok",
+          onClose: handleClose,
+          cancel: handleClose
+        });
+        setAlert({
+          title: "Error Loading Profile",
+          description: "Failed to load profile data. Please try again.",
+          status: true,
+          buttonText: "Ok",
+          onClose: handleClose,
+          cancel: handleClose
+        });
       } finally {
         setLoading(false);
       }
@@ -47,10 +64,25 @@ function ProfileInfo() {
     setAlert(prev => ({ ...prev, status: false }));
   };
 
+//   photo things
+const [photo, setPhoto] = useState("");
+
+const handlePhotoChange = (e) => {
+    if (e.target.files && e.target.files[0]) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        if (e.target && e.target.result) {
+          setPhoto(e.target.result.toString());
+        }
+      };
+      reader.readAsDataURL(e.target.files[0]);
+    }
+  };
+
   const handleEditOrSave = async () => {
     if (isEditing) {
       try {
-        await authApi.put("/customer/profile/update", formData);
+        await authApi.put("/provider/info", formData);
         setIsEditing(false);
         setAlert({
         title: "Profile Updated !",
@@ -75,6 +107,21 @@ function ProfileInfo() {
       setIsEditing(true);
     }
   };
+
+  const PhotoInput = ({ photo, handlePhotoChange }) => (
+  <div className="col-span-6 sm:col-span-4">
+                <input id="photo" type="file" className="hidden" onChange={handlePhotoChange} ></input>
+                <div className="mt-2">
+                  <img
+                   src={photo ? photo : `https://ui-avatars.com/api/?bold=true&name=${encodeURIComponent(formData.name)}&color=4c51bf&background=82efe3`}
+                    className="h-20 w-20 rounded-full object-cover"
+                  />
+                </div>
+                <button type="button" className={`items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest shadow-sm hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:ring focus:ring-blue-200 active:text-gray-800 active:bg-gray-50 disabled:opacity-25 transition mr-2 mt-2 ${isEditing ? "inline-flex" : "hidden"}`}>
+                  Select A New Photo </button>
+              </div>
+);
+
 if(loading)
     return <Loading />
 
@@ -102,18 +149,7 @@ if(loading)
           <div className="bg-white px-4 py-5 shadow sm:p-6 sm:rounded-t-md">
             <div className="grid grid-cols-6 gap-6">
               {/* Profile Picture */}
-              <div className="col-span-6 sm:col-span-4">
-                <input id="photo" type="file" className="hidden"></input>
-                <div className="mt-2">
-                  <img
-                    src={`https://ui-avatars.com/api/?bold=true&name=${encodeURIComponent(formData.name)}&color=4c51bf&background=82efe3`}
-                    className="h-20 w-20 rounded-full object-cover"
-                  />
-
-                </div>
-                <button type="button" className="inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest shadow-sm hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:ring focus:ring-blue-200 active:text-gray-800 active:bg-gray-50 disabled:opacity-25 transition mr-2 mt-2">
-                  Select A New Photo </button>
-              </div>
+            <PhotoInput photo={photo} handlePhotoChange={handlePhotoChange} />
 
               {/* Name */}
               <div className="col-span-6 sm:col-span-4">
@@ -153,6 +189,19 @@ if(loading)
                   disabled={true}
                   className={`block w-full tracking-wide border-b border-gray-300 pl-1 text-lg sm:text-[16px] text-gray-600 outline-none`}
                 />
+              </div>
+
+              <div className="col-span-6 sm:col-span-4">
+                <label className="block text-sm font-semibold text-gray-700">Address</label>
+                <textarea
+                  name="address"
+                  rows={4}
+                  value={formData.address}
+                  onChange={handleChange}
+                  disabled={!isEditing}
+                  className={`block w-full tracking-wide border-b border-gray-300 pl-1 text-lg sm:text-[16px] ${isEditing ? "text-gray-800 border-gray-400" : "text-gray-600"
+                    } outline-none`}
+                ></textarea>
               </div>
 
               {/* location */}

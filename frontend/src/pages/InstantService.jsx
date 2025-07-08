@@ -28,7 +28,7 @@ const InstantService = () => {
   // Fetch service types and identify user on component mount
   useEffect(() => {
     // Initialize socket connection when component mounts
-    socket.current = io('http://localhost:3000');
+    socket.current = io(import.meta.env.VITE_API_BACKEND_API);
     console.log('Socket initialized on InstantService page');
 
     // Get user ID from local storage or auth context

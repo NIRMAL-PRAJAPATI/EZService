@@ -20,8 +20,7 @@ function UserHome() {
   const [isLoading, setIsLoading] = useState(true)
   const [cityServices, setCityServices] = useState([])
   const [city, setCity] = useState('ahmedabad')
-
-  
+  const [tokenCheck, setTokenCheck] = useState(false);
   
   useEffect(()=>{
     
@@ -53,6 +52,9 @@ function UserHome() {
       }).finally(()=>{
         setIsLoading(false)
       })
+
+      const token = localStorage.getItem("token");
+        setTokenCheck(token);
   },[])
   
   if(isLoading)
@@ -60,7 +62,8 @@ function UserHome() {
 
   return (
     <div className="bg-gray-50">
-      <HeroSection />
+      {!tokenCheck ? (
+      <HeroSection />) : <></>}
       <Category categories={categories} />
       <Services services={services}/>
       {/* <div className="p-5 container mx-auto">
@@ -112,7 +115,8 @@ function UserHome() {
       <Template templates={templates}/>
       <UserReview />
 
-      <LRAlert />
+{!tokenCheck ? (
+      <LRAlert />) : <></>}
     </div>
   );
 }

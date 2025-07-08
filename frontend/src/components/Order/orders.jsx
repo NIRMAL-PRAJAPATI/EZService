@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { ChevronRight, ClockArrowDown, MapPin, Package } from "lucide-react"
+import { ChevronRight, ClockArrowDown, MapPin, Package, Wrench } from "lucide-react"
 import { Link } from "react-router-dom"
 import api from "../../config/axios-config"
 import Loading from "../../components/Loading"
@@ -54,12 +54,12 @@ const NoOrders = () => {
   
   return (
   <div className="flex flex-col items-center justify-center py-8 bg-gray-50 rounded-lg border border-dashed border-gray-300">
-    <Package className="w-16 h-16 text-gray-400 mb-4" />
-    <h3 className="text-xl font-medium text-gray-700">No Current Orders</h3>
-    <p className="text-gray-500 mt-2 text-center max-w-md">
-      You don't have any active orders at the moment. Browse our products and place an order to see it here.
+    <Wrench className="w-15 h-15 text-gray-400 mb-2" />
+    <h3 className="text-xl font-bold text-gray-700">No Services Booked Yet</h3>
+    <p className="text-gray-500 mt-2 text-center max-w-lg">
+      You don't have any active service orders at the moment. Browse our services and book the service to see it here.
     </p>
-    <button className="mt-6 px-4 py-2 bg-gray-800 text-white rounded-md hover:bg-gray-700 transition-colors">
+    <button className="mt-6 px-5 py-2 bg-gray-800 text-white rounded-sm hover:bg-gray-700 transition-colors">
       Start Shopping
     </button>
   </div>
@@ -99,22 +99,35 @@ const OrderPage = () => {
   return (
    
     <div className="max-w-5xl mx-auto px-4 py-4">
-      <section>
-        <h2 className="text-xl font-semibold mb-4">Current Orders</h2>
-        {currentOrders.length > 0 ? (
-          currentOrders.map((order) =>  <Link to={`/orders/${order?.order_id}/view`}> <OrderItem key={order.id} order={order} /> </Link>)
-        ) : (
-          <NoOrders />
-        )}
-      </section>
+  {(currentOrders.length === 0 && pastOrders.length === 0) ? (
+    <NoOrders />
+  ) : (
+    <>
+      {currentOrders.length > 0 && (
+        <section>
+          <h2 className="text-xl font-semibold mb-4">Current Orders</h2>
+          {currentOrders.map((order) => (
+            <Link key={order.id} to={`/orders/${order?.order_id}/view`}>
+              <OrderItem order={order} />
+            </Link>
+          ))}
+        </section>
+      )}
 
-      <section>
-        <h2 className="text-xl font-semibold mb-4">Past Orders</h2>
-        {pastOrders.map((order) => (
-          <Link to={`/orders/${order?.order_id}/view`}> <OrderItem key={order.id} order={order} /> </Link>
-        ))}
-      </section>
-    </div>
+      {pastOrders.length > 0 && (
+        <section>
+          <h2 className="text-xl font-semibold mb-4">Past Orders</h2>
+          {pastOrders.map((order) => (
+            <Link key={order.id} to={`/orders/${order?.order_id}/view`}>
+              <OrderItem order={order} />
+            </Link>
+          ))}
+        </section>
+      )}
+    </>
+  )}
+</div>
+
   )
 }
 

@@ -21,13 +21,30 @@ const getProviderProfile = async (req, res) => {
         if (!providerId) {
             return res.status(400).json({ message: 'Provider ID is required' });
         }
-        const provider = await Provider.findByPk(providerId, {
-            include: [
-        {
-                model: provider_bank,
-                as: 'providerBank'
-        }]
-        });
+        const provider = await Provider.findByPk(providerId);
+        if (!provider) {
+            return res.status(404).json({ message: 'Provider not found' });
+        }
+        res.status(200).json(provider);
+    }catch(e){
+        console.error('Error fetching provider info:', e);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+}
+
+const getProviderBank = async (req, res) => {
+    console.log("runnnnn");
+    try{
+        const providerId = req.userId;
+        const role = req.role;
+        if (role !== 'provider') {
+            return res.status(403).json({ message: 'Access denied' });
+        }
+
+        if (!providerId) {
+            return res.status(400).json({ message: 'Provider ID is required' });
+        }
+        const provider = await provider_bank.findByPk(providerId);
         if (!provider) {
             return res.status(404).json({ message: 'Provider not found' });
         }
@@ -303,4 +320,4 @@ const getProviderOrders = async (req,res)=>{
 
 
 
-module.exports = {getProviderProfile, getProviderWithServices, getProviderStats, registerProvider, loginProvider, getProviderOrders, getProviderServices}
+module.exports = {getProviderProfile, getProviderWithServices, getProviderStats, registerProvider, loginProvider, getProviderOrders, getProviderServices, getProviderBank}

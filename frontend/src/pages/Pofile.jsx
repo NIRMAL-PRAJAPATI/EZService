@@ -1,8 +1,8 @@
 import { LogOut, Trash2 } from "lucide-react";
-import Profileinfo from "../components/Profile/Profileinfo";
-import Updateinfo from "../components/Profile/Updateinfo";
-import LogoutDelete from "../components/Profile/Logoutdelete";
-import ProfileNav from '../components/Profile/ProfileNav';
+import Profileinfo from "../components/Profile/user/Profileinfo";
+import Updateinfo from "../components/Profile/user/Updateinfo";
+import LogoutDelete from "../components/Profile/user/Logoutdelete";
+import ProfileNav from '../components/Profile/user/ProfileNav';
 
 export default function ProfilePage() {
   return (

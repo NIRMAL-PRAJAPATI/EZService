@@ -2,6 +2,7 @@ import { useForm } from 'react-hook-form';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import api from '../config/axios-config'
 
 function Registration () {
   const { register, handleSubmit, reset, watch,setValue, formState: {errors} } = useForm();
@@ -21,13 +22,12 @@ function Registration () {
   }, [setValue]);
     
   const [errorMessage, setErrorMessage] = useState("");
-  const api = 'http://localhost:3000';
 
   const onVarifyData = async (data) => {
     const { confirmpassword, ...formData } = data;
     console.log(formData);
 
-      await axios.post(`${api}/customer/varifyemailmobile`, formData).then(response => {
+      await api.post('/customer/varifyemailmobile', formData).then(response => {
         navigate('/register/mobilevarification', {state: {'formData': formData}});
       }).catch((error) => {
       if(error.response) {

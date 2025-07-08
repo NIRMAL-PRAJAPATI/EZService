@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import authApi from '../../config/auth-config';
-import CustomAlert from "../CustomAlert";
+import authApi from '../../../config/auth-config';
+import CustomAlert from "../../CustomAlert";
 
 function Updateinfo() {
   const [password, setPassword] = useState({
