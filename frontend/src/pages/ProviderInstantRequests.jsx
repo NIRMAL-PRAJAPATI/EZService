@@ -253,13 +253,13 @@ const ProviderInstantRequests = () => {
   return (
     <>
       <DashboardHeader />
-      <div className="max-w-7xl mx-auto pt-20 px-4 py-8">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-2xl font-bold">Instant Service Requests</h1>
+      <div className="max-w-7xl mx-auto pt-18 px-4 py-8">
+        <div className="flex justify-between items-center">
+          <h1 className="text-xl font-bold -mt-3">Instant Service Requests</h1>
           
           <div className="relative">
             <button 
-              className="p-2 bg-gray-100 rounded-full relative"
+              className="p-2 bg-gray-100 rounded-full relative mb-2"
               onClick={() => {
                 setShowNotifications(!showNotifications);
                 if (!showNotifications) {
@@ -312,23 +312,26 @@ const ProviderInstantRequests = () => {
             </div>
           ) : (
             activeRequests.map((request, index) => (
-              <div key={request.id || index} className="bg-white rounded-lg shadow-md p-4 border-l-4 border-indigo-500">
+              <div key={request.id || index} className="bg-white rounded-sm shadow-md p-4 border border-gray-300 overflow-hidden">
                 <div className="flex justify-between items-start mb-3">
-                  <h3 className="font-medium">Service Request</h3>
-                  <div className="flex items-center space-x-2">
+                  <div className='-mt-2'>
+                    <p className='text-xs text-gray-500'>send by: </p>
+                  <h3 className="font-medium -mt-1">Nirmal Prajapati</h3>
+                  </div>
+                  <div className="flex items-center space-x-2 -mt-2">
                     {request.id && request.serviceType && offerAttempts[`${request.id}_${request.serviceType}`] && (
                       <span className="bg-gray-100 text-gray-700 text-xs px-2 py-1 rounded-full">
                         {offerAttempts[`${request.id}_${request.serviceType}`]}/3 offers
                       </span>
                     )}
-                    <span className="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full">
+                    <span className="tracking-wider bg-indigo-100 px-2 py-1 rounded-bl-lg -mt-3 -mr-4 font-semibold text-indigo-800 text-xs">
                       New
                     </span>
                   </div>
                 </div>
                 
                 <div className="mb-3 flex items-start">
-                  <MapPin className="h-5 w-5 text-gray-500 mr-2 mt-0.5 flex-shrink-0" />
+                  <MapPin className="h-4 w-4 text-gray-500 mr-2 mt-0.5 flex-shrink-0" />
                   <p className="text-sm text-gray-700">{request.address}</p>
                 </div>
                 
@@ -340,7 +343,7 @@ const ProviderInstantRequests = () => {
                 </div>
                 
                 <div className="flex items-center text-sm text-gray-500 mb-4">
-                  <Clock className="h-4 w-4 mr-1" />
+                  <Clock className="h-3 w-3 mr-1" />
                   <span>
                     {request.created ? new Date(request.created).toLocaleTimeString() : 'Just now'}
                   </span>
@@ -349,10 +352,10 @@ const ProviderInstantRequests = () => {
                 <button
                   onClick={() => handleRequestSelect(request)}
                   disabled={(offerAttempts[`${request.id}_${request.serviceType}`] || 0) >= 3}
-                  className={`w-full py-2 rounded-md transition-colors ${
+                  className={`w-full py-2 rounded-sm transition-colors ${
                     (offerAttempts[`${request.id}_${request.serviceType}`] || 0) >= 3
                       ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                      : 'bg-indigo-600 text-white hover:bg-indigo-700'
+                      : 'bg-indigo-500 text-white hover:bg-indigo-600'
                   }`}
                 >
                   {(offerAttempts[`${request.id}_${request.serviceType}`] || 0) >= 3 ? 'Max Offers Reached' : 'Send Offer'}
@@ -364,23 +367,32 @@ const ProviderInstantRequests = () => {
         
         {/* Offer Form Modal */}
         {showOfferForm && selectedRequest && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="text-xl font-semibold">Send Service Offer</h3>
+          <div className="fixed inset-0 bg-black/50 bg-opacity-50 flex items-center justify-center z-50 h-full">
+            <div className="bg-white rounded-sm shadow-xl p-6 w-full max-w-lg overflow-y-auto max-h-[95vh]">
+              <div className="flex justify-between items-center mb-2">
+                <h3 className="text-xl font-bold">Send Service Offer</h3>
                 <button onClick={() => setShowOfferForm(false)} className="text-gray-500 hover:text-gray-700">
-                  <X className="h-6 w-6" />
+                  <X className="h-7 w-7 -mr-2 -mt-3" />
                 </button>
               </div>
               
-              <div className="mb-4 p-3 bg-gray-50 rounded-md">
-                <p className="text-sm font-medium mb-1">Customer Request:</p>
-                <p className="text-sm">{selectedRequest.description}</p>
-                <div className="flex items-center mt-2 text-sm text-gray-500">
-                  <MapPin className="h-4 w-4 mr-1" />
-                  <span>{selectedRequest.address}</span>
-                </div>
-              </div>
+                <p className="text-sm font-medium mb-1 tracking-wide">To: Requester Name</p>
+              <table className="w-full text-sm text-left text-gray-700 border border-gray-300">
+                  <tbody>
+                    <tr className="border-b border-gray-300">
+                      <th className="px-2 py-1.5 font-medium text-gray-900 bg-gray-100 w-1/4">Service&nbsp;for</th>
+                      <td className="px-2 py-1.5">Service name</td>
+                    </tr>
+                    <tr className="border-b border-gray-300">
+                      <th className="px-2 py-1.5 font-medium text-gray-900 bg-gray-100">Address</th>
+                      <td className="px-2 py-1.5">{selectedRequest.address}</td>
+                    </tr>
+                    <tr>
+                      <th className="px-2 py-1.5 font-medium text-gray-900 bg-gray-100">Issue</th>
+                      <td className="px-2 py-1.5">{selectedRequest.description}</td>
+                    </tr>
+                  </tbody>
+                </table>
               
               {error && (
                 <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-md flex items-center">
@@ -390,27 +402,37 @@ const ProviderInstantRequests = () => {
               )}
               
               <form onSubmit={handleSubmitOffer}>
-                <div className="mb-4">
+                <div className="my-4">
                   <label className="block text-sm font-medium mb-1">
-                    Your Price (₹) <span className="text-red-500">*</span>
+                    Your Visiting Charge <span className="text-red-500">*</span>
                   </label>
+                  <div className='flex border border-gray-300 rounded'>
+                    <p className='py-1.5 px-4 bg-gray-100 text-xl text-indigo-500 font-bold'>₹</p>
                   <input
                     type="number"
                     name="price"
                     value={offerData.price}
                     onChange={handleInputChange}
                     placeholder="Enter your price"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    className="w-full ml-2 outline-none rounded-md focus:outline-none"
                     required
                   />
+                  </div>
                   
-                  <div className="mt-2 flex space-x-2">
+                  <div className="mt-2 flex space-x-1.5 font-semibold tracking-wide">
                     <button
                       type="button"
                       onClick={() => setOfferData(prev => ({ ...prev, price: (parseInt(offerData.price) - 100).toString() }))}
-                      className="flex-1 py-1 px-2 bg-gray-100 text-gray-700 text-sm rounded border border-gray-300 hover:bg-gray-200"
+                      className="flex-1 py-2 px-2 bg-gray-100 text-gray-700 text-sm rounded border border-gray-300 hover:bg-gray-200"
                     >
                       -₹100
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setOfferData(prev => ({ ...prev, price: (parseInt(offerData.price) - 100).toString() }))}
+                      className="flex-1 py-2 px-2 bg-gray-100 text-gray-700 text-sm rounded border border-gray-300 hover:bg-gray-200"
+                    >
+                      -₹50
                     </button>
                     <button
                       type="button"
@@ -422,14 +444,21 @@ const ProviderInstantRequests = () => {
                     <button
                       type="button"
                       onClick={() => setOfferData(prev => ({ ...prev, price: (parseInt(offerData.price) + 100).toString() }))}
-                      className="flex-1 py-1 px-2 bg-gray-100 text-gray-700 text-sm rounded border border-gray-300 hover:bg-gray-200"
+                      className="flex-1 py-2 px-2 bg-gray-100 text-gray-700 text-sm rounded border border-gray-300 hover:bg-gray-200"
+                    >
+                      +₹50
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setOfferData(prev => ({ ...prev, price: (parseInt(offerData.price) + 100).toString() }))}
+                      className="flex-1 py-2 px-2 bg-gray-100 text-gray-700 text-sm rounded border border-gray-300 hover:bg-gray-200"
                     >
                       +₹100
                     </button>
                   </div>
                 </div>
                 
-                <div className="mb-6">
+                <div>
                   <label className="block text-sm font-medium mb-1">
                     Estimated Arrival Time
                   </label>
@@ -437,7 +466,7 @@ const ProviderInstantRequests = () => {
                     name="estimatedArrival"
                     value={offerData.estimatedArrival}
                     onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   >
                     <option value="5-10 minutes">5-10 minutes</option>
                     <option value="15-20 minutes">15-20 minutes</option>
@@ -445,11 +474,16 @@ const ProviderInstantRequests = () => {
                     <option value="1 hour">1 hour</option>
                   </select>
                 </div>
+
+                <div className='text-sm flex gap-2 my-4'>
+                  <input type='checkbox' name='confirm'></input>
+                  <label>I confirm that all details have been verified and the request is ready to be submitted</label>
+                </div>
                 
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 flex items-center justify-center"
+                  className="w-full bg-indigo-600 text-white py-2 px-4 rounded hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 flex items-center justify-center"
                 >
                   {loading ? (
                     <>
@@ -458,8 +492,8 @@ const ProviderInstantRequests = () => {
                     </>
                   ) : (
                     <>
-                      <Send className="h-5 w-5 mr-2" />
-                      Send Offer
+                      <Send className="h-4 w-4 mr-2" />
+                      Send Offer Request
                     </>
                   )}
                 </button>

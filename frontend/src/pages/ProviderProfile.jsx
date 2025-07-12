@@ -3,11 +3,14 @@ import Profileinfo from "../components/Profile/provider/ProfileInfo";
 import ProfileBank from "../components/Profile/provider/ProfileBank";
 import LogoutDelete from "../components/Profile/provider/ProfileLogDel";
 import ProfilePassword from '../components/Profile/provider/ProfilePassword';
+import DashboardHeader from "../components/provider/Header";
 
 export default function ProfilePage() {
   return (
+    <>
+            <DashboardHeader />
     <div className="bg-gray-100">
-      <main className="max-w-7xl mx-auto py-4 sm:px-6 lg:px-8 font-sans">
+      <main className="max-w-7xl mx-auto py-4 sm:px-6 lg:px-8 font-sans pt-20">
         <div>
           <Profileinfo />
           <div className="hidden sm:block">
@@ -31,6 +34,7 @@ export default function ProfilePage() {
         <LogoutDelete />
       </main>
     </div>
+    </>
   );
 }
 

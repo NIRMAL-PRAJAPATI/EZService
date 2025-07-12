@@ -31,7 +31,7 @@ const DashboardHeader = () => {
                   to={to}
                   className={`text-sm ${
                     currentPath === to
-                      ? "text-indigo-600 font-medium border-b-2 border-indigo-500"
+                      ? "text-indigo-600 font-medium"
                       : "text-gray-600 hover:text-gray-800"
                   }`}
                 >
@@ -39,9 +39,6 @@ const DashboardHeader = () => {
                 </Link>
               ))}
             </div>
-          </div>
-          <div className="flex items-center">
-            <Bell className="h-6 w-6 text-gray-600" />
           </div>
         </div>
       </div>
