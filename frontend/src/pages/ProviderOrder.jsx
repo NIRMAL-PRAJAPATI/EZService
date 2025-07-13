@@ -45,7 +45,7 @@ function OrderItem({ order, onStatusUpdate }) {
   };
   
   return (
-    <li>
+    <li className='hover:bg-gray-50/30 hover:border hover:border-indigo-200'>
       <div className="px-4 py-4 sm:px-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center">
@@ -63,16 +63,16 @@ function OrderItem({ order, onStatusUpdate }) {
         <div className="mt-2 sm:flex sm:justify-between">
           <div className="sm:flex">
             <p className="flex items-center text-sm text-gray-500 font-medium">
-              <FileDigit className="flex-shrink-0 mr-1.5 h-5 w-5 text-primary/60" />
-              <span>Order No: #{order.orderNo}</span>
+              <FileDigit className="flex-shrink-0 mr-1.5 h-4 w-4 text-primary/60" />
+              <span>#{order.orderNo}</span>
             </p>
             <p className="mt-2 flex items-center text-sm text-gray-500 sm:mt-0 sm:ml-6">
-              <MapPin className="flex-shrink-0 mr-1.5 h-5 w-5 text-primary/60" />
+              <MapPin className="flex-shrink-0 mr-1.5 h-4 w-4 text-primary/60" />
               <span className="w-full sm:w-[25vw] truncate">{order.address}</span>
             </p>
           </div>
           <div className="mt-2 flex items-center text-sm text-gray-500 sm:mt-0">
-            <Calendar className="flex-shrink-0 mr-1.5 h-5 w-5 text-primary/60" />
+            <Calendar className="flex-shrink-0 mr-1.5 h-4 w-4 text-primary/60" />
             <p>{order.serviceTime}</p>
           </div>
         </div>
@@ -104,7 +104,7 @@ function OrderItem({ order, onStatusUpdate }) {
 
 function OrderList({ orders, onStatusUpdate }) {
   return (
-    <div className="mt-5">
+    <div className="mt-3">
       <h2 className="text-lg leading-6 font-medium text-gray-900">Orders</h2>
       <div className="mt-4 bg-white shadow overflow-hidden sm:rounded-md">
         {orders.length === 0 ? (
@@ -216,8 +216,8 @@ function ProviderOrder() {
   return (
     <>
     <DashboardHeader />
-    <div className="bg-white shadow overflow-hidden sm:rounded-md max-w-7xl mx-auto pt-20">
-    <div className="px-4 py-5 sm:px-6">
+    <div className="bg-white shadow overflow-hidden sm:rounded-md max-w-7xl mx-auto pt-18">
+    <div className="px-4 py-3 sm:px-6">
         <div className="flex justify-between items-center mb-4">
           <div className="flex space-x-2">
             {statusFilters.map((status) => (

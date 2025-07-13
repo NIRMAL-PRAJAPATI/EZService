@@ -179,16 +179,16 @@ function Dashboard() {
 function DashboardCard({ icon, title, value }) {
   return (
     <div className="bg-white overflow-hidden shadow rounded-lg">
-      <div className="p-4 flex items-center">
-        <div className="flex-shrink-0 bg-indigo-500 rounded-md p-3">
+      <div className="px-3 sm:px-4 py-2 sm:py-3 flex items-center">
+        <div className="flex-shrink-0 bg-indigo-500 rounded-md p-2 sm:p-3">
           {renderLucideIcon(icon)}
         </div>
-        <div className="ml-5 flex-1">
-          <dt className="text-sm font-medium text-gray-500 truncate">{title}</dt>
-          <dd className="mt-1 text-2xl font-bold text-gray-900">{value}</dd>
+        <div className="ml-2 sm:ml-5 flex-1">
+          <dt className="text-xs sm:text-sm font-medium text-gray-500 truncate">{title}</dt>
+          <dd className="-mt-1 text-xl sm:text-2xl font-bold text-gray-900">{value}</dd>
         </div>
       </div>
-      <div className="bg-gray-50 px-4 py-4">
+      <div className="bg-gray-50 px-4 py-2 sm:py-3">
         <a href="#" className="text-sm font-medium text-indigo-600 hover:text-indigo-500">
           View details
         </a>
@@ -225,7 +225,7 @@ function calculatePercentage(base, current) {
 
 function renderLucideIcon(name) {
   const IconComponent = iconMap[name];
-  return IconComponent ? <IconComponent className="w-5 h-5 text-white" /> : null;
+  return IconComponent ? <IconComponent className="w-4 sm:w-5 h-4 sm:h-5 text-white" /> : null;
 }
 
 export default Dashboard;

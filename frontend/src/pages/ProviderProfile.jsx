@@ -9,8 +9,8 @@ export default function ProfilePage() {
   return (
     <>
             <DashboardHeader />
-    <div className="bg-gray-100">
-      <main className="max-w-7xl mx-auto py-4 sm:px-6 lg:px-8 font-sans pt-20">
+    <div className="bg-gray-100 md:bg-gray-50">
+      <main className="max-w-7xl mx-auto py-4 sm:px-6 lg:px-8 font-sans pt-20 space-y-8 sm:space-y-0">
         <div>
           <Profileinfo />
           <div className="hidden sm:block">
