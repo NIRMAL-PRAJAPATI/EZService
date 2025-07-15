@@ -4,7 +4,7 @@ import axios from "axios";
 const api = axios.create(
     {
         // baseURL: import.meta.env.VITE_API_BACKEND_API,
-        baseURL: "http://ec2-43-204-112-76.ap-south-1.compute.amazonaws.com",
+        baseURL: "https://ezservice.duckdns.org",
         // baseURL: 'http://localhost:3000',
         headers: {
             'Content-Type':'application/json'
