@@ -89,7 +89,7 @@ function UserHome() {
 
 <Card services={cityServices} city={city}/>
 
-    <div className="px-5 container mx-auto">
+    <div className="px-2 sm:px-5 container mx-auto">
       <div className="bg-indigo-500/80 rounded-xl shadow-lg overflow-hidden flex w-full sm:h-90">
       <div className="w-1/2 hidden sm:block">
         <img

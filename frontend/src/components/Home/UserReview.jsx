@@ -5,7 +5,7 @@ const UserReview = () => {
     return (
         <div>
         <section id="testimonials" className="bg-gray-50 mt-10 mb-10 text-black">
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-2 sm:px-4">
           <div className="text-center mb-5">
             <h2 className="text-3xl font-bold text-indigo-500">
               What Our Clients Say

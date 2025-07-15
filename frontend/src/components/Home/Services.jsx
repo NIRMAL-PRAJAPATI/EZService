@@ -9,7 +9,7 @@ export default function Services({services}) {
   return (
     <div>
       {/* Featured Services */}
-      <section className="p-5 mx-auto text-black">
+      <section className="p-2 sm:p-5 mx-auto text-black">
         <div>
           <div className="w-full overflow-x-auto removeScroll">
           <div className="gap-2 flex w-max">

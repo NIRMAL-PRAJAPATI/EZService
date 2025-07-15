@@ -6,7 +6,7 @@ function Category({categories}) {
 
   return (
     
-    <section className="p-2 mx-auto bg-indigo-500/90">
+    <section className="p-2 mx-auto bg-indigo-500">
     <div>
       <div className="overflow-x-auto removeScroll">
         <div className="flex justify-center align-middle space-x-1 w-max">
@@ -15,7 +15,7 @@ function Category({categories}) {
           <button
             type="submit"
             key={category.id}
-            className="flex cursor-pointer py-1 px-3 text-sm transition-shadow hover:border-indigo-300 truncate text-white/90 hover:text-white"            
+            className="flex cursor-pointer py-1 px-3 text-sm transition-shadow hover:border-indigo-300 truncate tracking-wide text-white/90 hover:text-white"            
             >{category.name}</button>
             </Link>
         ))}

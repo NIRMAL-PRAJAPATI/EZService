@@ -3,7 +3,7 @@ function Template({templates}) {
   return (
     <>
       <section className="bg-white py-12">
-        <div className="mx-auto px-4 max-w-8x1">
+        <div className="mx-auto px-2 sm:px-4 max-w-8x1">
           <h2 className="text-3xl font-bold text-gray-900 mb-6">Explore Template Categories</h2>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {templates.map((template, index) => (
@@ -11,7 +11,7 @@ function Template({templates}) {
                 key={index}
                 className="bg-white rounded-xl transition-shadow duration-300 overflow-hidden border border-gray-300"
               >
-                <div className="p-6">
+                <div className="p-5">
                   <h2 className="text-2xl font-bold text-gray-900">{template.name}</h2>
                   <p className="text-gray-600 mb-5 text-sm">{template.description}</p>
                   <div className="grid grid-cols-3 gap-4">

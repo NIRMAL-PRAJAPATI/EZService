@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { UserRound , AlignRight, LucideShoppingBag, X, ArrowUpRightFromCircle, Watch} from "lucide-react";
+import { UserRound , AlignRight, LucideShoppingBag, X, ArrowUpRightFromCircle, Watch, Webhook} from "lucide-react";
 import resources from "../resource";
 
 const Navbar = () => {
@@ -28,7 +28,7 @@ const Navbar = () => {
 
   return (
     <nav className="bg-white shadow-sm top-0 left-0 w-full z-50 text-black border-b border-gray-200">
-      <div className="mx-auto py-2 px-4">
+      <div className="mx-auto py-2 px-3">
         <div className="flex items-center justify-between">
           {/* Logo and Brand */}
           <div className="flex items-center">
@@ -118,20 +118,20 @@ const Navbar = () => {
               >
                 Complaint
               </Link> */}
-              {/* <Link onClick={toggleMenu}
+              <Link onClick={toggleMenu}
                 to="/about"
                 className="text-gray-600 hover:text-black"
               >
                 About
-              </Link> */}
+              </Link>
             </div>
 
             {/* Account Button */}
             {tokenCheck ? (<div className="flex md:space-x-1 mt-4 md:mt-0">
               <Link to="/instant-service"
-                className="py-2 px-4 text-white bg-indigo-500 hover:bg-indigo-600 border border-indigo-500 rounded flex"
+                className="py-2 px-4 text-white bg-indigo-500 hover:bg-indigo-600 rounded flex"
               >
-                <Watch className="h-5 w-5 transition duration-150" />
+                <Webhook className="h-5 w-4 transition duration-150" />
                 <span className="-mt-0.5 ml-1">Book Instant</span>
               </Link>
             <Link onClick={toggleMenu}
