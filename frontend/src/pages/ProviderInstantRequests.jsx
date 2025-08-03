@@ -25,7 +25,7 @@ const ProviderInstantRequests = () => {
   // Fetch provider info on component mount
   useEffect(() => {
     // Initialize socket connection when component mounts
-    socket.current = io("https://ezservice.duckdns.org");
+    socket.current = io(import.meta.env.VITE_API_BACKEND_API);
     console.log('Socket initialized on ProviderInstantRequests page');
 
     authApi.get('/provider/profile')
