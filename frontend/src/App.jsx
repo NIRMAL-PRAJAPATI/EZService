@@ -31,6 +31,8 @@ import LoginForm from './components/Register/ProviderLogin';
 import ProviderProfile from './pages/ProviderProfile';
 import ProviderReview from './pages/ProviderReview';
 import ProviderOrder from './pages/ProviderOrder';
+import ProviderOrderView from './pages/ProviderOrderView';
+import ProviderComplaint from './pages/ProviderComplaint';
 import ProviderServices from './pages/ProviderServices';
 import ProviderInstantRequests from './pages/ProviderInstantRequests';
 import InstantService from './pages/InstantService';
@@ -74,8 +76,9 @@ function App() {
             <Route path='register' element={<RegistrationForm />} />
             <Route path='login' element={<LoginForm />} />
             <Route path='profile' element={<ProviderProfile />} />
-            <Route path='complaints' element={<ProviderReview />} />
+            <Route path='complaints' element={<ProviderComplaint />} />
             <Route path='orders' element={<ProviderOrder />} />
+            <Route path='orders/:orderId/view' element={<ProviderOrderView />} />
             {/* <Route path='complaints' element={<Complaint />} /> */}
             <Route path='services' element={<ProviderServices />} />
             <Route path='instant-requests' element={<ProviderInstantRequests />} />

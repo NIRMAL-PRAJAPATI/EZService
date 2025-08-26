@@ -100,11 +100,22 @@ function Dashboard() {
         {/* Performance Metrics */}
         <section className="mt-8">
           <h2 className="text-lg leading-6 font-medium text-gray-900 px-4 sm:px-0">Performance Metrics</h2>
-          <div className="mt-2 grid grid-cols-1 gap-2 sm:gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            <MetricBar title="Orders" percent={calculatePercentage(stats.lastMonthOrders, stats.currentMonthOrders)} message={`${stats.lastMonthOrders} last month, ${stats.currentMonthOrders} this month`} />
+          <div className="mt-2 grid grid-cols-1 gap-2 sm:gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <MetricBar title="Orders Growth" percent={calculatePercentage(stats.lastMonthOrders, stats.currentMonthOrders)} message={`${stats.lastMonthOrders} last month, ${stats.currentMonthOrders} this month`} />
             <MetricBar title="Completion Rate" percent={calculatePercentage(stats.totalOrders, stats.completedOrders)} message={`${stats.completedOrders} completed, ${stats.pendingOrders} pending`} />
             <MetricBar title="Customer Satisfaction" percent={stats.customer_satisfation * 20} message={csGreet[Math.floor(stats.customer_satisfation || 0)]} />
-            <MetricBar title="Repeat Customers" percent={stats.repeatCustomers} message={`${stats.repeatCustomers} repeat customers`} ispercentage={false} />
+            <MetricBar title="Complaint Resolution" percent={calculatePercentage(stats.totalComplaints, stats.resolvedComplaints)} message={`${stats.resolvedComplaints || 0} resolved, ${stats.openComplaints || 0} open`} />
+          </div>
+        </section>
+
+        {/* Quick Stats */}
+        <section className="mt-8">
+          <h2 className="text-lg leading-6 font-medium text-gray-900 px-4 sm:px-0">Quick Overview</h2>
+          <div className="mt-2 grid grid-cols-2 gap-2 sm:gap-4 sm:grid-cols-4">
+            <QuickStat title="Pending Orders" value={stats.pendingOrders || 0} color="yellow" />
+            <QuickStat title="Confirmed Orders" value={stats.confirmedOrders || 0} color="blue" />
+            <QuickStat title="Open Complaints" value={stats.openComplaints || 0} color="red" />
+            <QuickStat title="Total Services" value={stats.totalServices || 0} color="green" />
           </div>
         </section>
 
@@ -212,6 +223,26 @@ function MetricBar({ title, percent, message, ispercentage = true }) {
           className="h-1 bg-indigo-500 rounded"
           style={{ width: `${percent}%` }}
         />
+      </div>
+    </div>
+  );
+}
+
+function QuickStat({ title, value, color }) {
+  const colorMap = {
+    yellow: 'bg-yellow-100 text-yellow-800',
+    blue: 'bg-blue-100 text-blue-800', 
+    red: 'bg-red-100 text-red-800',
+    green: 'bg-green-100 text-green-800'
+  };
+  
+  return (
+    <div className="bg-white overflow-hidden shadow rounded-lg p-3">
+      <div className="text-center">
+        <div className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${colorMap[color]}`}>
+          {title}
+        </div>
+        <div className="mt-2 text-2xl font-bold text-gray-900">{value}</div>
       </div>
     </div>
   );

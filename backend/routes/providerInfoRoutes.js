@@ -8,7 +8,8 @@ router.get('/bank', verifyToken, Controller.getProviderBank);
 router.get('/orders', verifyToken, Controller.getProviderOrders);
 router.get('/services', verifyToken,  Controller.getProviderServices);
 router.get('/view/profile',  Controller.getProviderWithServices);
-router.get('/stats', verifyToken ,Controller.getProviderStats);
+router.get('/stats', verifyToken, Controller.getDashboardStats);
+router.get('/basic-stats', verifyToken, Controller.getProviderStats);
 router.post('/register', Controller.registerProvider);
 router.post('/login', Controller.loginProvider);
 

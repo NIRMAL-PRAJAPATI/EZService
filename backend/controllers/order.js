@@ -113,10 +113,21 @@ const updateOrderStatus = async (req, res) => {
         const { status } = req.body;
         const { userId, role } = req;
         
-        // Validate status
-        if (!['accepted', 'rejected'].includes(status)) {
-            return res.status(400).json({ message: "Invalid status. Must be CONFIRMED or CANCELLED" });
+        // Validate and map status
+        const validStatuses = ['accepted', 'rejected', 'CONFIRMED', 'CANCELLED', 'COMPLETED'];
+        if (!validStatuses.includes(status)) {
+            return res.status(400).json({ message: "Invalid status" });
         }
+        
+        const statusMap = {
+            'accepted': 'CONFIRMED',
+            'rejected': 'CANCELLED',
+            'CONFIRMED': 'CONFIRMED',
+            'CANCELLED': 'CANCELLED',
+            'COMPLETED': 'COMPLETED'
+        };
+        
+        const mappedStatus = statusMap[status] || status;
         
         // Check if user is a provider
         if (role !== 'provider') {
@@ -127,10 +138,14 @@ const updateOrderStatus = async (req, res) => {
         const order = await Order.findOne({ 
             where: { 
                 order_id: orderId,
-                provider_id: userId,
-                status: 'PENDING' // Only PENDING orders can be updated
+                provider_id: userId
             }
         });
+        
+        // Check if order can be updated based on current status
+        if (order && order.status === 'COMPLETED') {
+            return res.status(400).json({ message: "Completed orders cannot be updated" });
+        }
         
         if (!order) {
             return res.status(404).json({ message: "Order not found or cannot be updated" });
@@ -138,12 +153,12 @@ const updateOrderStatus = async (req, res) => {
         
         // Update the order status
         await order.update({ 
-            status,
+            status: mappedStatus,
             updated: new Date()
         });
         
         res.status(200).json({ 
-            message: `Order ${status === 'CONFIRMED' ? 'accepted' : 'declined'} successfully`,
+            message: `Order ${mappedStatus === 'CONFIRMED' ? 'accepted' : mappedStatus === 'CANCELLED' ? 'declined' : 'updated'} successfully`,
             order
         });
         

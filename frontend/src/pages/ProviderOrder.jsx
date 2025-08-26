@@ -1,11 +1,13 @@
-import { FileDigit, MapPin, Calendar } from 'lucide-react';
+import { FileDigit, MapPin, Calendar, Eye } from 'lucide-react';
 import DashboardHeader from '../components/provider/Header';
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import authApi from '../config/auth-config';
 import Loading from '../components/Loading';
 
 function OrderItem({ order, onStatusUpdate }) {
   const [isUpdating, setIsUpdating] = useState(false);
+  const navigate = useNavigate();
   
   console.log("Order in OrderItem:", order);
   
@@ -79,24 +81,33 @@ function OrderItem({ order, onStatusUpdate }) {
         <p className="text-gray-500 text-sm mt-3 font-semibold">
           Issue: <span className="font-normal">{order.issue}</span>
         </p>
-        {(!order.status || order.status === 'PENDING' || order.status.toUpperCase() === 'PENDING') && (
-          <div className="mt-2 flex justify-end space-x-2">
-            <button 
-              onClick={() => handleStatusUpdate('rejected')}
-              disabled={isUpdating}
-              className="inline-flex items-center px-4 py-2 border border-red-500 font-medium rounded text-red-500 hover:bg-red-50 disabled:opacity-50"
-            >
-              {isUpdating ? 'Processing...' : 'Decline'}
-            </button>
-            <button 
-              onClick={() => handleStatusUpdate('accepted')}
-              disabled={isUpdating}
-              className="inline-flex items-center px-4 py-2 border border-transparent font-medium rounded text-white bg-indigo-500 hover:bg-indigo-600 disabled:opacity-50"
-            >
-              {isUpdating ? 'Processing...' : 'Accept order'}
-            </button>
-          </div>
-        )}
+        <div className="mt-2 flex justify-between items-center">
+          <button 
+            onClick={() => navigate(`/provider/orders/${order.orderNo}/view`)}
+            className="inline-flex items-center px-3 py-1 border border-gray-300 font-medium rounded text-gray-700 hover:bg-gray-50"
+          >
+            <Eye className="h-4 w-4 mr-1" />
+            View Details
+          </button>
+          {(!order.status || order.status === 'PENDING' || order.status.toUpperCase() === 'PENDING') && (
+            <div className="flex space-x-2">
+              <button 
+                onClick={() => handleStatusUpdate('rejected')}
+                disabled={isUpdating}
+                className="inline-flex items-center px-4 py-2 border border-red-500 font-medium rounded text-red-500 hover:bg-red-50 disabled:opacity-50"
+              >
+                {isUpdating ? 'Processing...' : 'Decline'}
+              </button>
+              <button 
+                onClick={() => handleStatusUpdate('accepted')}
+                disabled={isUpdating}
+                className="inline-flex items-center px-4 py-2 border border-transparent font-medium rounded text-white bg-indigo-500 hover:bg-indigo-600 disabled:opacity-50"
+              >
+                {isUpdating ? 'Processing...' : 'Accept order'}
+              </button>
+            </div>
+          )}
+        </div>
       </div>
     </li>
   );
@@ -130,6 +141,7 @@ function OrderList({ orders, onStatusUpdate }) {
 function ProviderOrder() {
   const [ordersData, setOrdersData] = useState([]);
   const [filter, setFilter] = useState("All");
+  const navigate = useNavigate();
   console.log("Orders data:", ordersData);
   const filteredOrders =
     filter === "All"
@@ -139,7 +151,7 @@ function ProviderOrder() {
           return orderStatus === filter;
         });
 
-  const statusFilters = ["All", "PENDING", "CONFIRMED", "REJECTED", "FULFILLED"];
+  const statusFilters = ["All", "PENDING", "CONFIRMED", "REJECTED", "COMPLETED"];
   const [loading, setLoading] = useState(true);
 
   const fetchOrders = () => {

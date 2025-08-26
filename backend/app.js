@@ -33,6 +33,7 @@ app.use("/template",require("./routes/categoryTemplateRoutes"))
 app.use("/reviews",require("./routes/serviceReviewRoutes"))
 app.use("/orders",require("./routes/orderRoutes"))
 app.use("/provider",require("./routes/providerInfoRoutes"))
+app.use("/complaints",require("./routes/customerComplaintRoutes"))
 app.use("/service-requests", require("./routes/serviceRequestRoutes"))
 
 // Utility
