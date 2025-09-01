@@ -74,12 +74,12 @@ function ProviderOrderView() {
   return (
     <>
       <DashboardHeader />
-      <div className='bg-gray-50 px-2'>
+      <div className='bg-gray-100 px-2'>
       <div className="max-w-7xl mx-auto py-8 text-gray-900">
         {/* Header */}
-        <div className="mb-4">
-          <div className="flex justify-between items-center mt-10">
-            <h1 className="text-3xl font-bold text-gray-900">Order Details</h1>
+        <div className="mb-4 mx-2">
+          <div className="flex justify-between items-center mt-8">
+            <h1 className="text-2xl font-bold text-gray-900">Order Details</h1>
             {getStatusBadge(order.status)}
           </div>
         </div>
@@ -155,11 +155,11 @@ function ProviderOrderView() {
 
             {/* Location */}
             <div className="bg-white border border-gray-200 rounded-md p-6">
-              <div className='flex'>
-              <h2 className="text-xl font-semibold text-gray-900 mb-3">Service Location</h2>
+              <div className='sm:flex'>
+              <h2 className="text-xl font-semibold text-gray-900 -mb-2 sm:mb-3">Service Location</h2>
               <span className='text-xs mt-2 ml-1 text-gray-500'>(the location you need to provide the service)</span>
               </div>
-              <div className="flex items-start">
+              <div className="flex items-start mt-2 sm:mt-0">
                 <MapPin className="h-5 w-5 text-indigo-500 mr-3 mt-1" />
                 <p className="text-gray-700">{order.location || 'Location not specified'}</p>
               </div>

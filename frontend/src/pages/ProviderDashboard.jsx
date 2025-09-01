@@ -62,7 +62,7 @@ function Dashboard() {
   }, []);
 
   return (
-    <div className="bg-gray-50 min-h-screen">
+    <div className="bg-gray-100 min-h-screen">
       {/* Navigation */}
       <DashboardHeader />
 
@@ -102,8 +102,11 @@ function Dashboard() {
           <h2 className="text-lg leading-6 font-medium text-gray-900 px-4 sm:px-0">Performance Metrics</h2>
           <div className="mt-2 grid grid-cols-1 gap-2 sm:gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <MetricBar title="Orders Growth" percent={calculatePercentage(stats.lastMonthOrders, stats.currentMonthOrders)} message={`${stats.lastMonthOrders} last month, ${stats.currentMonthOrders} this month`} />
+            
             <MetricBar title="Completion Rate" percent={calculatePercentage(stats.totalOrders, stats.completedOrders)} message={`${stats.completedOrders} completed, ${stats.pendingOrders} pending`} />
+
             <MetricBar title="Customer Satisfaction" percent={stats.customer_satisfation * 20} message={csGreet[Math.floor(stats.customer_satisfation || 0)]} />
+
             <MetricBar title="Complaint Resolution" percent={calculatePercentage(stats.totalComplaints, stats.resolvedComplaints)} message={`${stats.resolvedComplaints || 0} resolved, ${stats.openComplaints || 0} open`} />
           </div>
         </section>
@@ -112,10 +115,10 @@ function Dashboard() {
         <section className="mt-8">
           <h2 className="text-lg leading-6 font-medium text-gray-900 px-4 sm:px-0">Quick Overview</h2>
           <div className="mt-2 grid grid-cols-2 gap-2 sm:gap-4 sm:grid-cols-4">
-            <QuickStat title="Pending Orders" value={stats.pendingOrders || 0} color="yellow" />
-            <QuickStat title="Confirmed Orders" value={stats.confirmedOrders || 0} color="blue" />
-            <QuickStat title="Open Complaints" value={stats.openComplaints || 0} color="red" />
-            <QuickStat title="Total Services" value={stats.totalServices || 0} color="green" />
+            <QuickStat title="Pending Orders" value={stats.pendingOrders || 0} />
+            <QuickStat title="Confirmed Orders" value={stats.confirmedOrders || 0} />
+            <QuickStat title="Open Complaints" value={stats.openComplaints || 0} />
+            <QuickStat title="Total Services" value={stats.totalServices || 0} />
           </div>
         </section>
 
@@ -228,21 +231,15 @@ function MetricBar({ title, percent, message, ispercentage = true }) {
   );
 }
 
-function QuickStat({ title, value, color }) {
-  const colorMap = {
-    yellow: 'bg-yellow-100 text-yellow-800',
-    blue: 'bg-blue-100 text-blue-800', 
-    red: 'bg-red-100 text-red-800',
-    green: 'bg-green-100 text-green-800'
-  };
+function QuickStat({ title, value}) {
   
   return (
-    <div className="bg-white overflow-hidden shadow rounded-lg p-3">
-      <div className="text-center">
-        <div className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${colorMap[color]}`}>
+    <div className="bg-white overflow-hidden shadow rounded-lg">
+      <div className="text-center flex">
+        <div className={`inline-flex items-center w-full flex p-3 text-[14px] justify-center font-medium`}>
           {title}
         </div>
-        <div className="mt-2 text-2xl font-bold text-gray-900">{value}</div>
+        <div className="px-4 py-2 text-xl font-bold bg-indigo-500 text-white">{value}</div>
       </div>
     </div>
   );

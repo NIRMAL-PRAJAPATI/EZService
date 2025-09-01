@@ -1,4 +1,4 @@
-import { FileDigit, MapPin, Calendar, Eye } from 'lucide-react';
+import { FileDigit, MapPin, Calendar, Eye, Wrench } from 'lucide-react';
 import DashboardHeader from '../components/provider/Header';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -33,21 +33,23 @@ function OrderItem({ order, onStatusUpdate }) {
     const status = order.status || "PENDING";
     
     switch(status.toLowerCase()) {
-      case 'pending':
-        return <span className="px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">Pending</span>;
+      case 'pending' || 'PENDING':
+        return <span className="">Pending</span>;
       case 'confirmed':
-        return <span className="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">Accepted</span>;
+        return <span className="">Accepted</span>;
       case 'rejected':
-        return <span className="px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">Declined</span>;
+        return <span className="">Declined</span>;
       case 'fulfilled':
-        return <span className="px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">Completed</span>;
+        return <span className="">Completed</span>;
+      case 'completed':
+        return <span className="">Completed</span>;
       default:
-        return <span className="px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800">{status}</span>;
+        return <span className="">{status}</span>;
     }
   };
   
   return (
-    <li className='hover:bg-gray-50/30 hover:border hover:border-indigo-200'>
+    <li className='hover:bg-gray-50/30 hover:border hover:border-indigo-200 overflow-hidden'>
       <div className="px-4 py-4 sm:px-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center">
@@ -56,35 +58,29 @@ function OrderItem({ order, onStatusUpdate }) {
             </p>
           </div>
           <div className="ml-2 flex-shrink-0 flex items-center space-x-2">
-            {renderStatusBadge()}
-            <p className="text-sm text-gray-500">
-              {order.serviceType}
-            </p>
+            <p className='bg-indigo-500 text-white -mt-8 -mr-6 px-2 rounded-bl-md text-xs py-1.5'>{renderStatusBadge()}</p>
           </div>
         </div>
         <div className="mt-2 sm:flex sm:justify-between">
           <div className="sm:flex">
             <p className="flex items-center text-sm text-gray-500 font-medium">
-              <FileDigit className="flex-shrink-0 mr-1.5 h-4 w-4 text-primary/60" />
-              <span>#{order.orderNo}</span>
+              <Wrench className="flex-shrink-0 mr-1.5 h-4 w-4 text-indigo-500" />
+              <span>{order.serviceType}</span>
             </p>
             <p className="mt-2 flex items-center text-sm text-gray-500 sm:mt-0 sm:ml-6">
-              <MapPin className="flex-shrink-0 mr-1.5 h-4 w-4 text-primary/60" />
+              <MapPin className="flex-shrink-0 mr-1.5 h-4 w-4 text-indigo-500" />
               <span className="w-full sm:w-[25vw] truncate">{order.address}</span>
             </p>
           </div>
           <div className="mt-2 flex items-center text-sm text-gray-500 sm:mt-0">
-            <Calendar className="flex-shrink-0 mr-1.5 h-4 w-4 text-primary/60" />
+            <Calendar className="flex-shrink-0 mr-1.5 h-4 w-4 text-indigo-500" />
             <p>{order.serviceTime}</p>
           </div>
         </div>
-        <p className="text-gray-500 text-sm mt-3 font-semibold">
-          Issue: <span className="font-normal">{order.issue}</span>
-        </p>
-        <div className="mt-2 flex justify-between items-center">
+        <div className="mt-2 flex justify-between items-center w-full justify-end">
           <button 
             onClick={() => navigate(`/provider/orders/${order.orderNo}/view`)}
-            className="inline-flex items-center px-3 py-1 border border-gray-300 font-medium rounded text-gray-700 hover:bg-gray-50"
+            className="inline-flex items-center px-3 py-1 mt-2 border border-gray-300 font-medium rounded text-gray-700 hover:bg-gray-50"
           >
             <Eye className="h-4 w-4 mr-1" />
             View Details
