@@ -222,7 +222,7 @@ function ProviderOrder() {
   };
 
   return (
-    <>
+    <div className='bg-gray-50'>
     <DashboardHeader />
     <div className="bg-white shadow overflow-hidden sm:rounded-md max-w-7xl mx-auto pt-18">
     <div className="px-4 py-3 sm:px-6">
@@ -256,7 +256,7 @@ function ProviderOrder() {
     <main className="max-w-7xl mx-auto z-0">
       {loading ? <Loading /> : <OrderList orders={filteredOrders} onStatusUpdate={handleStatusUpdate} />}
     </main>
-    </>
+    </div>
   );
 }
 

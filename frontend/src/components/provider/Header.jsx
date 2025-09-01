@@ -33,7 +33,7 @@ const DashboardHeader = () => {
             </div>
             <div className={`flex flex-col md:flex-row space-x-5 ml-7 md:items-center justify-between absolute md:w-full md:relative z-10 top-12 md:top-0 w-[70vw] sm:w-[50vw] ${
               menuOpen ? "right-0" : "right-[100vw]"
-            } md:right-0 bg-white text-left md:bg-transparent p-6 md:p-0 z-20 border-none transition-all duration-100 gap-3`}>
+            } md:right-0 bg-white text-left md:bg-transparent p-6 md:p-0 z-20 border-none transition-all duration-100 gap-1`}>
               {navLinks.map(({ id, to }) => (
                 <Link
                   key={id}

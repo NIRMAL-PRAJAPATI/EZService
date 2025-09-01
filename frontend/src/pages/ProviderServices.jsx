@@ -14,77 +14,6 @@ import DashboardHeader from '../components/provider/Header';
 import authApi from '../config/auth-config';
 import api from "../config/axios-config"
 
-function ServiceRow({ service, onEdit, onDelete }) {
-  return (
-    <tr>
-      <td className="px-6 py-4 whitespace-nowrap">
-        <div className="text-sm font-medium text-gray-900">{service.name}</div>
-      </td>
-      <td className="px-6 py-4 whitespace-nowrap">
-        <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-primary-100 text-primary-800">
-          {service.category}
-        </span>
-      </td>
-      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-        ₹{service.visitingCharge?.toFixed(2)}
-      </td>
-      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-        ₹{service.instantServiceCharge?.toFixed(2)}
-      </td>
-      <td className="px-6 py-4 text-sm text-gray-500">
-        <div className="w-[300px]">{service.description}</div>
-      </td>
-      <td className="px-6 py-4 text-sm text-gray-500">
-        <div className="min-w-[300px]">
-          {service.coverImage && (
-            <img src={service.coverImage} alt="Cover" className="h-10 w-10 object-cover rounded" />
-          )}
-        </div>
-      </td>
-      <td className="px-6 py-4 text-sm text-gray-500">
-        <ul className="w-[200px]">
-          {Array.isArray(service.serviceLocations) && service.serviceLocations.map((location, index) => (
-            <li key={index}>{location}</li>
-          ))}
-        </ul>
-      </td>
-      <td className="px-6 py-4 text-sm text-gray-500">
-        <div>{service.experience} {service.experience > 1 ? 'years' : 'year'}</div>
-      </td>
-      <td className="px-6 py-4 text-sm text-gray-500">
-        <ul className="w-[300px]">
-          {Array.isArray(service.providedServices) && service.providedServices.map((providedService, index) => (
-            <li key={index}>{providedService}</li>
-          ))}
-        </ul>
-      </td>
-      <td className="px-6 py-4 text-sm text-gray-500">
-        <ul className="min-w-[300px]">
-          {Array.isArray(service.workingImages) && service.workingImages.map((image, index) => (
-            <li key={index}>
-              <img src={image} alt={`Work ${index + 1}`} className="h-10 w-10 object-cover rounded mb-1" />
-            </li>
-          ))}
-        </ul>
-      </td>
-      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-y-2">
-        <button
-          onClick={() => onEdit(service.id)}
-          className="text-primary hover:text-primary-900 mr-3 flex items-center"
-        >
-          <Edit2 className="w-4 h-4 mr-1" /> Edit
-        </button>
-        <button
-          onClick={() => onDelete(service.id)}
-          className="text-red-600 hover:text-red-900 flex items-center"
-        >
-          <Trash className="w-4 h-4 mr-1" /> Delete
-        </button>
-      </td>
-    </tr>
-  );
-}
-
 function EditServiceModal({ isOpen, onClose, service, onSave, categories }) {
   const [name, setName] = useState('');
   const [categoryId, setCategoryId] = useState('');
@@ -511,7 +440,7 @@ function ServiceList() {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-2 md:p-6">
+    <div className="bg-gray-50">
       <div className="flex justify-between items-center mb-6">
         <div className="items-center hidden sm:flex">
           <List className="w-6 h-6 mr-2 text-primary" />
@@ -534,7 +463,7 @@ function ServiceList() {
             <Filter className="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
             <select
               id="filterCategory"
-              className="pl-8 px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-primary"
+              className="pl-8 px-3 py-2 border bg-white border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-primary"
               value={filterCategory}
               onChange={(e) => setFilterCategory(e.target.value)}
             >
@@ -547,56 +476,87 @@ function ServiceList() {
         </div>
       </div>
 
-      <div className="overflow-x-scroll">
-        <table className="min-w-full divide-y">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Service Name
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Category
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                VISITING CHARGE(₹)
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                INSTANT SERVICE CHARGE(₹)
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                DESCRIPTION
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                COVER IMAGE
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                SERVICE LOCATIONS
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                EXPERIENCE
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                PROVIDED SERVICES
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                WORKING IMAGES
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Actions
-              </th>
-            </tr>
-          </thead>
-          <tbody id="servicesList" className="bg-white divide-y divide-gray-200">
-            {filteredServices.map((service) => (
-              <ServiceRow
-                key={service.id}
-                service={service}
-                onEdit={handleEdit}
-                onDelete={handleDelete}
-              />
-            ))}
-          </tbody>
-        </table>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        {filteredServices.map((service) => (
+          <div
+  key={service.id}
+  className="bg-white border border-gray-200 rounded-lg relative"
+>
+  {/* Image */}
+  <div className="relative z-0">
+    <img
+      src={
+        service.coverImage ||
+        'https://images.pexels.com/photos/264636/pexels-photo-264636.jpeg?cs=srgb&dl=pexels-pixabay-264636.jpg&fm=jpg'
+      }
+      alt={service.name}
+      className="w-full h-40 object-cover rounded-t-lg"
+    />
+    {service.badge_status && (
+      <span className="absolute top-2 right-2 bg-green-500 text-white px-2 py-1 rounded-full text-xs z-20">
+        Verified
+      </span>
+    )}
+  </div>
+
+  {/* Content with slight overlap (≈10% of image height) */}
+  <div className="relative z-0 -mt-16 p-4 bg-gradient-to-b from-white/10 via-white to-white rounded-b-lg">
+    <div className="items-start mb-2 mt-14">
+      <div className='flex justify-end'>
+      <p className="text-sm text-indigo-600 bg-indigo-50 px-2 -mt-5 py-1 rounded">
+        {service.category}
+      </p>
+      </div>
+      <h3 className="text-lg font-semibold text-gray-900 truncate -mt-1">{service.name}</h3>
+    </div>
+
+    <p className="text-gray-600 text-sm mb-3 line-clamp-2">{service.description}</p>    
+              <div className="space-y-2 mb-4">
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-500">Visiting Charge</span>
+                  <span className="font-medium">₹{service.visitingCharge}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-500">Instant Service</span>
+                  <span className="font-medium">₹{service.instantServiceCharge}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-500">Experience</span>
+                  <span className="font-medium">{service.experience} years</span>
+                </div>
+              </div>
+              
+              <div className="mb-3 flex">
+                <p className="text-xs text-gray-500 mb-1 mr-2">Locations </p>
+                <div className="flex flex-wrap gap-1">
+                  {service.serviceLocations?.slice(0, 2).map((location, index) => (
+                    <span key={index} className="text-xs rounded">
+                      {location} | 
+                    </span>
+                  ))}
+                  {service.serviceLocations?.length > 2 && (
+                    <span className="text-xs text-gray-500">+{service.serviceLocations.length - 2} more</span>
+                  )}
+                </div>
+              </div>
+              
+              <div className="flex space-x-2">
+                <button
+                  onClick={() => handleEdit(service)}
+                  className="flex-1 bg-indigo-500 text-white px-3 py-2 rounded text-sm hover:bg-indigo-600 transition-colors"
+                >
+                  Edit
+                </button>
+                <button
+                  onClick={() => handleDelete(service.id)}
+                  className="flex-1 bg-red-500 text-white px-3 py-2 rounded text-sm hover:bg-red-600 transition-colors"
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
       {filteredServices.length === 0 && (
         <div id="noServices" className="text-center py-4 text-gray-500">
@@ -625,7 +585,7 @@ function ProviderServices() {
   return (
     <>
     <DashboardHeader />
-    <main className=' mx-auto py-4 px-3 sm:px-6 lg:px-8 pt-20 z-0 overflow-x-scroll'>
+    <main className='bg-gray-50 mx-auto py-4 px-3 sm:px-6 lg:px-8 pt-20 z-0 overflow-x-scroll'>
       <ServiceList />
     </main>
     
