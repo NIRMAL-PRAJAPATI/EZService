@@ -128,7 +128,7 @@ const Navbar = () => {
 
             {/* Account Button */}
             {tokenCheck ? (<div className="flex md:space-x-1 mt-4 md:mt-0">
-              <Link to="/instant-service"
+              <Link onClick={toggleMenu} to="/instant-service"
                 className="py-2 px-4 text-white bg-indigo-500 hover:bg-indigo-600 rounded flex"
               >
                 <Webhook className="h-5 w-4 transition duration-150" />

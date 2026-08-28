@@ -1,57 +1,90 @@
-import React, { useEffect, useState } from "react";
-import { UserCheck, MapPin, Star, BriefcaseBusiness ,Tag} from "lucide-react";
-import api from "../../config/axios-config";
+import React from "react";
+import { MapPin, Star, ChevronRight, UserCheck } from "lucide-react";
 import { Link } from "react-router-dom";
 
-export default function Services({services}) {
-
+export default function Services({ services }) {
+  if (!services || services.length === 0) return null;
 
   return (
-    <div>
-      {/* Featured Services */}
-      <section className="p-2 sm:p-5 mx-auto text-black">
+    <section className="py-10 px-4 sm:px-6 container mx-auto text-gray-900">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-6">
         <div>
-          <div className="w-full overflow-x-auto removeScroll">
-          <div className="gap-2 flex w-max">
-            {services.map((service) => (
-            <div className="bg-white rounded-lg overflow-hidden border border-gray-300 p-4 w-[270px]">
-              <Link to={`/service/${service.id}`} className="flex flex-col gap-2">
-            <div>
-                    <h3 className="text-md font-bold -mb-1">
-                      {service?.ProviderInfo?.name}
-                    </h3>
-                    <p className="text-gray-600 text-xs">{service?.name}</p>
+          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 tracking-tight">
+            Featured Services
+          </h2>
+          <p className="text-gray-500 text-sm mt-1">
+            Top-rated, verified professional services ready to assist you
+          </p>
+        </div>
+        <Link
+          to="/services"
+          className="text-sm font-semibold text-indigo-600 hover:text-indigo-700 flex items-center gap-1 transition shrink-0"
+        >
+          <span>View All</span>
+          <ChevronRight className="w-4 h-4" />
+        </Link>
+      </div>
+
+      {/* Services Horizontal / Grid Container */}
+      <div className="w-full overflow-x-auto removeScroll pb-2">
+        <div className="flex gap-4 w-max">
+          {services.map((service) => (
+            <div
+              key={service.id}
+              className="bg-white rounded-xl overflow-hidden border border-gray-200 hover:border-indigo-400 hover:shadow-lg transition-all duration-200 w-[280px] flex flex-col justify-between"
+            >
+              <Link to={`/service/${service.id}`} className="block h-full flex flex-col">
+                {/* Image Cover */}
+                <div className="relative aspect-[16/10] overflow-hidden bg-gray-100">
+                  <img
+                    src={
+                      service.cover_image ||
+                      "https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=400&auto=format&fit=crop&q=80"
+                    }
+                    alt={service.name}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    loading="lazy"
+                  />
+                  <div className="absolute top-2.5 right-2.5 bg-white/90 backdrop-blur-xs text-indigo-600 font-bold text-xs px-2.5 py-1 rounded shadow-xs">
+                    ₹{service.visiting_charge}
                   </div>
-              <img src={service.cover_image ? service.cover_image : `https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQeJQeJyzgAzTEVqXiGe90RGBFhfp_4RcJJMQ&s`}
-                className="w-full h-35 object-cover p-0"
-              />
-              <p className="line-clamp-2 text-sm text-gray-600">{service.description ? service.description : `lorem this is my service description for basic knowledge of service provided by the provider`}</p>
-              <div className="mt-2">
-                <div className="flex justify-between items-start">
-                  <span className="bg-indigo-500/10 text-indigo-500 px-2 py-1 rounded-md text-sm">₹{service.visiting_charge}</span>
-                <div className="flex items-center gap-1">
-                  <Star className="h-4 w-4 text-indigo-500 fill-indigo-500"/>
-                  <span className="font-medium text-sm">{parseFloat(service?.average_rating || 0).toFixed(1)}</span>
                 </div>
+
+                {/* Content */}
+                <div className="p-4 flex-1 flex flex-col justify-between">
+                  <div>
+                    <div className="flex items-center justify-between text-xs text-gray-500 mb-1">
+                      <span className="font-semibold text-indigo-600 truncate max-w-[170px]">
+                        {service?.ProviderInfo?.name || "Verified Provider"}
+                      </span>
+                      <div className="flex items-center gap-1 text-gray-800 font-semibold">
+                        <Star className="h-3.5 w-3.5 text-indigo-500 fill-indigo-500" />
+                        <span>{parseFloat(service?.average_rating || 4.5).toFixed(1)}</span>
+                      </div>
+                    </div>
+
+                    <h3 className="text-base font-bold text-gray-900 mb-1 line-clamp-1">
+                      {service.name}
+                    </h3>
+
+                    <p className="line-clamp-2 text-xs text-gray-600 mb-3 leading-relaxed">
+                      {service.description || "Expert service provided with high quality standards and satisfaction guarantee."}
+                    </p>
+                  </div>
+
+                  <div className="pt-2 border-t border-gray-100 flex items-center text-xs text-gray-500">
+                    <MapPin className="h-3.5 w-3.5 text-gray-400 mr-1 shrink-0" />
+                    <span className="truncate">
+                      {[service.city, service.state].filter(Boolean).join(", ") || "All Locations"}
+                    </span>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2 my-1 text-sm">
-                  <MapPin className="h-4 w-4 text-gray-600" />
-                  <span>{service.city}, {service.state}, {service.country}</span>
-                </div>
-              </div>
               </Link>
             </div>
-            ))}
-          </div>
-          </div>
+          ))}
         </div>
-      </section>
-      {/* city section */}
-      
-      {/* sponsered service list */}
-      
-      {/* template section */}
-      
-    </div>
+      </div>
+    </section>
   );
 }

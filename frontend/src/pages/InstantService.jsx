@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MapPin, Clock, Send, AlertCircle, Loader2, Info, MapPinned, Plug, Car, LibraryBig, PartyPopper, Wrench, ArrowDownFromLine } from 'lucide-react';
 import authApi from '../config/auth-config';
@@ -23,14 +23,25 @@ const InstantService = () => {
   const [currentRequestId, setCurrentRequestId] = useState(null);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
+  const [locationData, setLocationData] = useState(null);
   const socket = useRef(null);
 
   // Fetch service types and identify user on component mount
   useEffect(() => {
     // Initialize socket connection when component mounts
-    socket.current = io("https://ezservice.duckdns.org");
-    // socket.current = io(import.meta.env.VITE_API_BACKEND_API);
+    // socket.current = io("https://ezservice.duckdns.org");
+    socket.current = io(import.meta.env.VITE_API_BACKEND_API || 'http://localhost:3000');
     console.log('Socket initialized on InstantService page');
+
+    // Fetch location data from local storage
+    const storedLocationData = localStorage.getItem('location');
+    if (storedLocationData) {
+      setLocationData(storedLocationData);
+      setFormData(prev => ({
+        ...prev,
+        address: prev.address || storedLocationData
+      }));
+    }
 
     // Get user ID from local storage or auth context
     const token = localStorage.getItem('token');
@@ -38,15 +49,19 @@ const InstantService = () => {
 
     if (token) {
       try {
-        // Extract user ID from token (simplified - use your actual token parsing logic)
-        const tokenData = JSON.parse(atob(token.split('.')[1]));
-        userId = tokenData.id;
+        const parts = token.split('.');
+        if (parts.length === 3) {
+          const tokenData = JSON.parse(atob(parts[1]));
+          userId = tokenData.id;
 
-        // Identify as customer to socket server
-        socket.current.emit('identify', {
-          userType: 'customer',
-          userId: userId
-        });
+          // Identify as customer to socket server
+          if (socket.current) {
+            socket.current.emit('identify', {
+              userType: 'customer',
+              userId: userId
+            });
+          }
+        }
       } catch (e) {
         console.error('Error parsing token:', e);
       }
@@ -79,11 +94,6 @@ const InstantService = () => {
         const attemptKey = `${providerId}_${serviceId}`;
         const requestAttempts = offerAttempts[currentRequestId] || {};
         const providerServiceAttempts = requestAttempts[attemptKey] || 0;
-
-        console.log(attemptKey)
-        console.log(providerServiceAttempts)
-        console.log(requestAttempts)
-
 
         if (providerServiceAttempts >= 3) {
           // Provider has reached max attempts for this service, ignore this offer
@@ -203,7 +213,7 @@ const InstantService = () => {
         }
 
         // Navigate to order details page
-        navigate(`/orders/${response.data.order_id}/view`);
+        navigate(`/orders/${response.data.id || response.data.order_id}/view`);
       })
       .catch(error => {
         console.error('Error creating order:', error);
@@ -298,33 +308,6 @@ const InstantService = () => {
                 />
               </div>
 
-              <div className='sm:flex gap-2'>
-                <div className="mb-4 relative w-full">
-                  <label className="absolute left-3 -top-3 bg-white px-1 text-sm font-medium text-indigo-500">City / Town</label>
-                  <input
-                    type="text"
-                    name="country"
-                    className="block w-full pl-4 pr-3 py-3 text-lg md:text-sm text-gray-800 border border-gray-300 rounded-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                  />
-                </div>
-                <div className="mb-4 relative w-full">
-                  <label className="absolute left-3 -top-3 bg-white px-1 text-sm font-medium text-indigo-500">State</label>
-                  <input
-                    type="text"
-                    name="state"
-                    className="block w-full pl-4 pr-3 py-3 text-lg md:text-sm text-gray-800 border border-gray-300 rounded-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                  />
-                </div>
-                <div className="mb-4 relative w-full">
-                  <label className="absolute left-3 -top-3 bg-white px-1 text-sm font-medium text-indigo-500">Country</label>
-                  <input
-                    type="text"
-                    name="country"
-                    className="block w-full pl-4 pr-3 py-3 text-lg md:text-sm text-gray-800 border border-gray-300 rounded-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                  />
-                </div>
-              </div>
-
               <div className="mb-4 relative">
                 <label className="absolute left-3 flex -top-3 bg-white px-1 text-sm font-medium text-indigo-500"><Info className="mr-1" size={18} />Describe Your Issue</label>
                 <textarea
@@ -380,7 +363,7 @@ const InstantService = () => {
                 <PartyPopper className="absolute top-[150px] right-[20%] z-0" />
               </div>
 
-              <Lottie animationData={providerFindAnimation} loop={true} className='opacity-100 sm:opacity-30' />
+              <Lottie animationData={providerFindAnimation} loop={true} className='opacity-50 sm:opacity-50' />
             </div>
 
             <div className='relative z-50 tracking-wide'>
