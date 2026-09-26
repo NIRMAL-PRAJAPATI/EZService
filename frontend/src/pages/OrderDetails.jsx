@@ -26,7 +26,7 @@ const HERO = {
   ARRIVED: { icon: MapPinCheck, title: 'Provider has arrived', text: 'Your professional has reached your location.', tone: 'bg-green-50 text-green-800', iconTone: 'bg-green-100 text-green-600' },
   PENDING: { icon: Clock, title: 'Waiting for the provider', text: 'We have sent your booking. You will see it here as soon as they confirm.', tone: 'bg-amber-50 text-amber-800', iconTone: 'bg-amber-100 text-amber-600' },
   CONFIRMED: { icon: CheckCircle2, title: 'Provider confirmed', text: 'Your professional will visit at the booked time.', tone: 'bg-green-50 text-green-800', iconTone: 'bg-green-100 text-green-600' },
-  COMPLETED: { icon: BadgeCheck, title: 'Service completed', text: 'Thanks for using EZService.', tone: 'bg-indigo-50 text-indigo-50', iconTone: 'bg-indigo-100 text-indigo-600' },
+  COMPLETED: { icon: BadgeCheck, title: 'Service completed', text: 'Thanks for using KnockNow.', tone: 'bg-indigo-50 text-indigo-50', iconTone: 'bg-indigo-100 text-indigo-600' },
   CANCELLED: { icon: XCircle, title: 'Booking cancelled', text: 'This booking will not go ahead.', tone: 'bg-red-50 text-red-800', iconTone: 'bg-red-100 text-red-600' },
 };
 

@@ -89,7 +89,7 @@ export default function PaymentCard({ order, providerName = 'your provider' }) {
           <Button
             block
             icon={Smartphone}
-            href={upiUrl({ upiId: payment.payee.upi_id, name: payment.payee.name, amount, note: `EZService #${shortOrderId(order.order_id)}` })}
+            href={upiUrl({ upiId: payment.payee.upi_id, name: payment.payee.name, amount, note: `KnockNow #${shortOrderId(order.order_id)}` })}
           >
             Pay with UPI app
           </Button>

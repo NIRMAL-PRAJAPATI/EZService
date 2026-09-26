@@ -12,7 +12,7 @@ export const paymentLabel = (mode) => PAYMENT_MODES.find((m) => m.key === mode)?
 // Standard UPI payment link: every UPI app (GPay, PhonePe, Paytm, BHIM…) understands it,
 // both as a QR code and as a tap-to-pay link on phones.
 export const upiUrl = ({ upiId, name, amount, note }) => {
-  const params = new URLSearchParams({ pa: upiId, pn: name || 'EZService provider', cu: 'INR' });
+  const params = new URLSearchParams({ pa: upiId, pn: name || 'KnockNow provider', cu: 'INR' });
   if (Number(amount) > 0) params.set('am', Number(amount).toFixed(2));
   if (note) params.set('tn', note);
   return `upi://pay?${params.toString().replace(/\+/g, '%20')}`;

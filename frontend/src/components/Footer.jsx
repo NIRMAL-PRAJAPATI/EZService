@@ -12,7 +12,7 @@ const Footer = () => {
         </div>
         <nav aria-label="Footer" className="grid grid-cols-2 gap-x-12 gap-y-2 text-sm">
           <Link to="/services" className="text-gray-600 hover:text-gray-900">All services</Link>
-          <Link to="/about" className="text-gray-600 hover:text-gray-900">About EZService</Link>
+          <Link to="/about" className="text-gray-600 hover:text-gray-900">About KnockNow</Link>
           <Link to="/instant-service" className="text-gray-600 hover:text-gray-900">Instant service</Link>
           <Link to="/complaint" className="text-gray-600 hover:text-gray-900">Help &amp; complaints</Link>
           <Link to="/Rankings" className="text-gray-600 hover:text-gray-900">Top-rated services</Link>
@@ -20,7 +20,7 @@ const Footer = () => {
         </nav>
       </div>
       <div className="border-t border-gray-100">
-        <p className="max-w-6xl mx-auto px-6 py-4 text-xs text-gray-400">© {new Date().getFullYear()} EZService</p>
+        <p className="max-w-6xl mx-auto px-6 py-4 text-xs text-gray-400">© {new Date().getFullYear()} KnockNow</p>
       </div>
     </footer>
   );

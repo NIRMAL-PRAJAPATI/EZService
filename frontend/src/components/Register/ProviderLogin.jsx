@@ -48,13 +48,13 @@ const LoginForm = () => {
       <div className="flex items-center justify-center w-full max-w-7xl">
         <main className="relative z-10 flex items-center justify-center md:justify-between border-dashed w-full border-indigo-500 md:border-2 md:m-10 md:p-10 lg:m-10 lg:p-20 rounded-lg bg-white">
           <div className="mx-2 mt-10 w-[550px] hidden md:block">
-            <span className="inline-block mb-4 rounded-full bg-indigo-50 px-3 py-1 text-sm font-semibold text-indigo-600">EZService Partner</span>
+            <span className="inline-block mb-4 rounded-full bg-indigo-50 px-3 py-1 text-sm font-semibold text-indigo-600">KnockNow Partner</span>
             <h1 className="text-5xl font-bold tracking-wide">Grow Your Service <span className="bg-indigo-500 text-white">Business</span></h1>
             <p className="text-gray-500 mt-4 mr-10">Welcome back, partner. Log in to accept new bookings, go online for instant requests, manage your services and track your earnings, all in one place.</p>
           </div>
           <div className="max-w-md w-full">
             <div className="text-center">
-              <span className="md:hidden inline-block mb-2 rounded-full bg-indigo-50 px-3 py-1 text-xs font-semibold text-indigo-600">EZService Partner</span>
+              <span className="md:hidden inline-block mb-2 rounded-full bg-indigo-50 px-3 py-1 text-xs font-semibold text-indigo-600">KnockNow Partner</span>
               <h2 className="mt-2 text-3xl font-extrabold">
                 Login as Provider
               </h2>

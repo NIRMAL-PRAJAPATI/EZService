@@ -1,7 +1,7 @@
 import { forwardRef } from 'react';
 
 /**
- * The EZService outlined input: a bordered box with the label sitting on the
+ * The KnockNow outlined input: a bordered box with the label sitting on the
  * top border (same look as the Login/Register fields). Used by other forms so
  * every input in the app shares one style.
  */

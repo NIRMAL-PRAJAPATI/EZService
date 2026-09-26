@@ -81,7 +81,7 @@ export default function PaymentSheet({ open, onClose, order, onComplete, complet
   // UPI QR code
   const upiLink =
     payment?.mode === 'UPI' && payment.payee?.upi_id
-      ? upiUrl({ upiId: payment.payee.upi_id, name: payment.payee.name, amount: payment.amount, note: `EZService #${shortOrderId(order.order_id)}` })
+      ? upiUrl({ upiId: payment.payee.upi_id, name: payment.payee.name, amount: payment.amount, note: `KnockNow #${shortOrderId(order.order_id)}` })
       : '';
   useEffect(() => {
     if (!upiLink) return setQrSvg('');
@@ -199,7 +199,7 @@ export default function PaymentSheet({ open, onClose, order, onComplete, complet
                 <ol className="space-y-1.5 text-sm text-gray-700 list-decimal pl-5">
                   <li>{customerName} opens their bank app or net banking.</li>
                   <li>They add the account below as a payee and send {formatPrice(payment.amount)} by IMPS (instant).</li>
-                  <li>They enter the transaction reference (UTR) in their EZService booking.</li>
+                  <li>They enter the transaction reference (UTR) in their KnockNow booking.</li>
                   <li>You check the credit in your bank app and end the trip.</li>
                 </ol>
                 <div className="rounded-md border border-gray-200 px-3 divide-y divide-gray-100">

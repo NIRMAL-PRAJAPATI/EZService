@@ -26,7 +26,7 @@ const DashboardHeader = () => {
         <div className="h-full px-4 lg:pl-6 flex items-center gap-3">
           <Link to="/provider/trips" className="flex items-center gap-2">
             <img src={resources.Logo.src} className="h-6 w-6" alt="" />
-            <span className="font-bold">EZService</span>
+            <span className="font-bold">KnockNow</span>
             <span className="ml-1 rounded-sm bg-indigo-50 px-1.5 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-indigo-600">Partner</span>
           </Link>
           <div className="ml-auto">
