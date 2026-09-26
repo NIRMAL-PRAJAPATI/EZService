@@ -1,182 +1,195 @@
-import { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { MapPin, Clock, Send, AlertCircle, Loader2, Info, MapPinned, Plug, Car, LibraryBig, PartyPopper, Wrench, ArrowDownFromLine } from 'lucide-react';
-import authApi from '../config/auth-config';
-import { io } from 'socket.io-client';
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
+import { AnimatePresence, motion } from 'framer-motion';
+import { MapPin, Clock, FileText, Zap, LogIn, BadgeIndianRupee, ChevronDown, ArrowLeft } from 'lucide-react';
 import Lottie from 'lottie-react';
 import providerFindAnimation from '../assets/animation2.json';
+import { io } from 'socket.io-client';
+import authApi from '../config/auth-config';
+import PageHeader from '../components/ui/PageHeader';
+import Button from '../components/ui/Button';
+import OutlinedField from '../components/ui/OutlinedField';
+import BottomSheet from '../components/ui/BottomSheet';
+import Rating from '../components/ui/Rating';
+import { Avatar } from '../components/ui/ServiceImage';
+import { EmptyState, InlineError } from '../components/ui/States';
+import { Skeleton } from '../components/ui/Skeleton';
+import { getCategoryIcon } from '../lib/categories';
+import { getSavedAddress, getCity } from '../lib/location';
+import { getAuthUser } from '../lib/auth';
+import { formatPrice } from '../lib/format';
+
+const SOCKET_URL = import.meta.env.VITE_API_BACKEND_API || 'http://localhost:3000';
 
 const InstantService = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const [searchParams] = useSearchParams();
+  const user = getAuthUser();
+  const isCustomer = user?.role === 'customer';
+
   const [formData, setFormData] = useState({
-    address: '',
-    serviceType: '',
+    address: getSavedAddress() || getCity() || '',
+    serviceType: searchParams.get('category') || '',
     description: '',
   });
+  const [showAllTypes, setShowAllTypes] = useState(false);
   const [loading, setLoading] = useState(false);
   const [searching, setSearching] = useState(false);
+  const [searchStartedAt, setSearchStartedAt] = useState(null);
   const [error, setError] = useState('');
   const [offers, setOffers] = useState([]);
   const [selectedOffer, setSelectedOffer] = useState(null);
   const [serviceTypes, setServiceTypes] = useState([]);
+  const [typesLoading, setTypesLoading] = useState(true);
   const [offerAttempts, setOfferAttempts] = useState({});
   const [currentRequestId, setCurrentRequestId] = useState(null);
-  const [showConfirmation, setShowConfirmation] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
+  const [customerName, setCustomerName] = useState('');
   const socket = useRef(null);
+  // Mirrors state that the socket listener (registered once per connection) needs
+  // to read with up-to-date values, since its closure would otherwise go stale.
+  const currentRequestIdRef = useRef(null);
+  const offerAttemptsRef = useRef({});
 
-  // Fetch service types and identify user on component mount
   useEffect(() => {
-    // Initialize socket connection when component mounts
-    socket.current = io("https://ezservice.duckdns.org");
-    // socket.current = io(import.meta.env.VITE_API_BACKEND_API);
-    console.log('Socket initialized on InstantService page');
+    currentRequestIdRef.current = currentRequestId;
+  }, [currentRequestId]);
 
-    // Get user ID from local storage or auth context
-    const token = localStorage.getItem('token');
-    let userId = null;
+  useEffect(() => {
+    offerAttemptsRef.current = offerAttempts;
+  }, [offerAttempts]);
 
-    if (token) {
-      try {
-        // Extract user ID from token (simplified - use your actual token parsing logic)
-        const tokenData = JSON.parse(atob(token.split('.')[1]));
-        userId = tokenData.id;
+  // The search screen covers the whole page; stop the page behind it from scrolling.
+  useEffect(() => {
+    if (!searching) return undefined;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    window.scrollTo(0, 0);
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [searching]);
 
-        // Identify as customer to socket server
-        socket.current.emit('identify', {
-          userType: 'customer',
-          userId: userId
-        });
-      } catch (e) {
-        console.error('Error parsing token:', e);
-      }
+  const connectSocket = useCallback(() => {
+    const s = io(SOCKET_URL);
+    socket.current = s;
+
+    if (user?.id) {
+      s.emit('identify', { userType: 'customer', userId: user.id });
     }
 
-    authApi.get('/category/names')
-      .then(response => {
-        setServiceTypes(response.data);
-      })
-      .catch(error => {
-        console.error('Error fetching service types:', error);
-      });
+    s.on('serviceOffer', (offer) => {
+      const activeRequestId = currentRequestIdRef.current;
 
-    // Socket event listeners
-    socket.current.on('connect', () => {
-      console.log('Connected to socket server');
-    });
+      // Ignore any offer that isn't for the request we're currently tracking
+      if (!activeRequestId || offer.requestId !== activeRequestId) return;
 
-    socket.current.on('disconnect', () => {
-      console.log('Disconnected from socket server');
-    });
-
-    socket.current.on('serviceOffer', (offer) => {
-      console.log('Received service offer:', offer);
-
-      // Check if this provider has reached max attempts for this service on this request
-      if (currentRequestId && offer.provider?.id && offer.service?.id) {
-        const providerId = offer.provider.id;
-        const serviceId = offer.service.id;
-        const attemptKey = `${providerId}_${serviceId}`;
-        const requestAttempts = offerAttempts[currentRequestId] || {};
-        const providerServiceAttempts = requestAttempts[attemptKey] || 0;
-
-        console.log(attemptKey)
-        console.log(providerServiceAttempts)
-        console.log(requestAttempts)
-
-
-        if (providerServiceAttempts >= 3) {
-          // Provider has reached max attempts for this service, ignore this offer
-          console.log(`Provider ${providerId} has reached max attempts for service ${serviceId} on request ${currentRequestId}`);
-
-          // Notify provider they've reached max attempts
-          socket.current.emit('offerRejected', {
-            providerId,
-            serviceId,
-            requestId: currentRequestId,
-            reason: 'MAX_ATTEMPTS_REACHED'
+      // Respect the per provider+service attempt limit for this request
+      if (offer.provider?.id && offer.service?.id) {
+        const attemptKey = `${offer.provider.id}_${offer.service.id}`;
+        const requestAttempts = offerAttemptsRef.current[activeRequestId] || {};
+        if ((requestAttempts[attemptKey] || 0) >= 3) {
+          s.emit('offerRejected', {
+            providerId: offer.provider.id,
+            serviceId: offer.service.id,
+            requestId: activeRequestId,
+            reason: 'MAX_ATTEMPTS_REACHED',
           });
-
           return;
         }
       }
 
-      // Add offer to the list
-      setOffers(prev => [...prev, offer]);
+      // One live offer per provider: a newer offer replaces the older one.
+      setOffers((prev) => [...prev.filter((o) => o.provider?.id !== offer.provider?.id), offer]);
     });
 
-    // Clean up function to disconnect socket when component unmounts
+    return s;
+    // user.id is stable for the life of the page
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    if (!isCustomer) return undefined;
+    connectSocket();
+
+    authApi
+      .get('/category/names')
+      .then((response) => setServiceTypes(response.data || []))
+      .catch(() => setError("We couldn't load services. Please refresh the page."))
+      .finally(() => setTypesLoading(false));
+
+    authApi
+      .get('/customer/profile')
+      .then((res) => setCustomerName(res.data?.name || ''))
+      .catch(() => {});
+
     return () => {
       if (socket.current) {
-        console.log('Disconnecting socket on leaving InstantService page');
         socket.current.disconnect();
         socket.current = null;
       }
     };
-  }, []);
-
-  // Debug offers and ensure popup shows
-  useEffect(() => {
-    console.log('Current offers:', offers);
-  }, [offers]);
+  }, [isCustomer, connectSocket]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  const selectedType = serviceTypes.find((t) => String(t.id) === String(formData.serviceType));
+
   const handleSubmit = (e) => {
-    e.preventDefault();
+    e?.preventDefault();
     setError('');
+
+    if (!formData.serviceType) return setError('Please choose a service.');
+    if (!formData.address.trim()) return setError('Please add the address where you need the service.');
+    if (formData.description.trim().length < 5) return setError('Please describe the problem in a few words.');
+
     setLoading(true);
-
-    // Validate form
-    if (!formData.address || !formData.serviceType || !formData.description) {
-      setError('Please fill all required fields');
-      setLoading(false);
-      return;
-    }
-
-    // Create service request
-    authApi.post('/service-requests', formData)
-      .then(response => {
+    authApi
+      .post('/service-requests', formData)
+      .then((response) => {
         setLoading(false);
         setSearching(true);
+        setSearchStartedAt(new Date());
+        setOffers([]);
 
-        // Set current request ID
         const requestId = response.data.id;
         setCurrentRequestId(requestId);
+        currentRequestIdRef.current = requestId;
+        setOfferAttempts((prev) => ({ ...prev, [requestId]: {} }));
 
-        // Reset offer attempts for this request
-        setOfferAttempts(prev => ({
-          ...prev,
-          [requestId]: {}
-        }));
-
-        // Emit socket event for new service request
-        if (socket.current) {
-          socket.current.emit('newServiceRequest', {
-            requestId,
-            ...formData,
-          });
-        }
+        // Broadcast the request to online providers in this category
+        socket.current?.emit('newServiceRequest', {
+          requestId,
+          ...formData,
+          categoryName: selectedType?.name,
+          customerName,
+        });
       })
-      .catch(error => {
-        console.error('Error creating service request:', error);
-        setError('Failed to create service request. Please try again.');
+      .catch(() => {
+        setError("We couldn't send your request. Please try again.");
         setLoading(false);
       });
   };
 
-  const handleAcceptOffer = (offer) => {
-    setSelectedOffer(offer);
-    setShowConfirmation(true);
+  const stopSearching = () => {
+    // Disconnecting makes the server delete the pending request.
+    socket.current?.disconnect();
+    socket.current = null;
+    setSearching(false);
+    setOffers([]);
+    setCurrentRequestId(null);
+    currentRequestIdRef.current = null;
+    connectSocket();
   };
 
   const handleConfirmOrder = () => {
     setConfirmLoading(true);
+    setError('');
 
-    // Create order object
     const orderData = {
       service_id: selectedOffer.service.id,
       provider_id: selectedOffer.provider.id,
@@ -185,396 +198,323 @@ const InstantService = () => {
       date: new Date().toISOString(),
       estimated_charge: selectedOffer.price,
       status: 'CONFIRMED',
-      request_id: currentRequestId
+      request_id: currentRequestId,
     };
 
-    // Create order via API
-    authApi.post('/orders', orderData)
-      .then(response => {
-        console.log('Order created successfully:', response.data);
-
-        // Notify provider that offer was accepted
-        if (socket.current) {
-          socket.current.emit('offerAccepted', {
-            offerId: selectedOffer.id,
-            providerId: selectedOffer.provider.id,
-            requestId: currentRequestId
-          });
-        }
-
-        // Navigate to order details page
-        navigate(`/orders/${response.data.order_id}/view`);
+    authApi
+      .post('/orders', orderData)
+      .then((response) => {
+        socket.current?.emit('offerAccepted', {
+          offerId: selectedOffer.id,
+          providerId: selectedOffer.provider.id,
+          requestId: currentRequestId,
+        });
+        navigate(`/orders/${response.data.order_id || response.data.id}/view`, { replace: true, state: { justBooked: true } });
       })
-      .catch(error => {
-        console.error('Error creating order:', error);
-        setError('Failed to create order. Please try again.');
+      .catch((err) => {
+        setError(err.response?.data?.message || "We couldn't confirm this professional. Please try again.");
         setConfirmLoading(false);
       });
   };
 
-  const handleDeclineOffer = (offerId, providerId, serviceId) => {
-    // Remove the offer from the list
-    setOffers(prev => prev.filter(offer => offer.id !== offerId));
+  const handleDeclineOffer = (offer) => {
+    const { id: offerId } = offer;
+    const providerId = offer.provider?.id;
+    const serviceId = offer.service?.id;
+    setOffers((prev) => prev.filter((o) => o.id !== offerId));
 
-    // Track offer attempts for the current request and service
     if (currentRequestId && serviceId && socket.current) {
-      // Create a unique key for this provider+service combination
       const attemptKey = `${providerId}_${serviceId}`;
       const requestAttempts = offerAttempts[currentRequestId] || {};
-      const providerServiceAttempts = requestAttempts[attemptKey] || 0;
+      const attempts = requestAttempts[attemptKey] || 0;
 
-      if (providerServiceAttempts >= 2) {
-        // This is the 3rd attempt for this service, notify provider they've reached the limit
-        socket.current.emit('offerDeclined', {
-          offerId,
-          providerId,
-          serviceId,
-          requestId: currentRequestId,
-          maxAttemptsReached: true
-        });
+      if (attempts >= 2) {
+        socket.current.emit('offerDeclined', { offerId, providerId, serviceId, requestId: currentRequestId, maxAttemptsReached: true });
       } else {
-        // Update attempts count for this provider+service combination
-        setOfferAttempts(prev => ({
+        setOfferAttempts((prev) => ({
           ...prev,
-          [currentRequestId]: {
-            ...prev[currentRequestId],
-            [attemptKey]: providerServiceAttempts + 1
-          }
+          [currentRequestId]: { ...prev[currentRequestId], [attemptKey]: attempts + 1 },
         }));
-
-        // Notify provider that offer was declined
-        socket.current.emit('offerDeclined', {
-          offerId,
-          providerId,
-          serviceId,
-          requestId: currentRequestId,
-          attemptsRemaining: 2 - providerServiceAttempts
-        });
+        socket.current.emit('offerDeclined', { offerId, providerId, serviceId, requestId: currentRequestId, attemptsRemaining: 2 - attempts });
       }
     } else if (socket.current) {
-      // Fallback if no current request ID or service ID
       socket.current.emit('offerDeclined', { offerId, providerId });
     }
   };
 
-  return (
-    <div className='flex justify-center items-center min-h-screen'>
-      <div className="max-w-4xl mx-auto px-4 py-3">
-        {!searching ? (
-          <div className="bg-white rounded-lg">
-            <h1 className="text-3xl font-bold text-center mb-8">Find an Instant Service</h1>
-            {error && (
-              <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-md flex items-center">
-                <AlertCircle className="h-5 w-5 mr-2" />
-                <span>{error}</span>
+  if (!isCustomer) {
+    return (
+      <>
+        <PageHeader title="Instant Service" />
+        <EmptyState
+          icon={LogIn}
+          title="Log in to request help"
+          description="Instant Service sends your request to available professionals nearby. Log in to continue."
+          actionLabel="Log in"
+          onAction={() => navigate('/login', { state: { from: `${location.pathname}${location.search}` } })}
+        />
+      </>
+    );
+  }
+
+  /* ---------- Searching / offers ---------- */
+  if (searching) {
+    const TypeIcon = getCategoryIcon(selectedType?.name || '');
+    return (
+      <div className="fixed inset-0 z-50 overflow-hidden bg-gray-50">
+        {/* Map-like backdrop */}
+        <div
+          aria-hidden="true"
+          className="absolute inset-0"
+          style={{
+            backgroundImage:
+              'linear-gradient(rgba(99,102,241,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(99,102,241,0.08) 1px, transparent 1px)',
+            backgroundSize: '48px 48px',
+          }}
+        />
+
+        {/*
+          Full-page search animation. Its center sits on the bottom edge of the
+          screen, so the waves rise from the bottom to the top. It is sized to
+          4x the distance from that point to the farthest top corner, so the
+          first half of each wave already covers the whole page.
+        */}
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
+          <Lottie
+            animationData={providerFindAnimation}
+            loop
+            className="absolute left-1/2 top-full -translate-x-1/2 -translate-y-1/2 max-w-none w-[440vmax] h-[440vmax] opacity-70"
+            style={{ width: 'calc(4 * hypot(50vw, 100vh))', height: 'calc(4 * hypot(50vw, 100vh))' }}
+            rendererSettings={{ preserveAspectRatio: 'xMidYMid slice' }}
+          />
+        </div>
+
+        {/* Top bar */}
+        <div className="absolute inset-x-0 top-0 z-10 flex items-center gap-2 px-3 pt-[calc(0.75rem+env(safe-area-inset-top,0px))]">
+          <button
+            type="button"
+            onClick={stopSearching}
+            className="h-11 w-11 rounded-full bg-white border border-gray-200 shadow-sm flex items-center justify-center text-gray-700 hover:bg-gray-50"
+            aria-label="Cancel request and go back"
+          >
+            <ArrowLeft className="h-5 w-5" />
+          </button>
+          {selectedType && (
+            <span className="inline-flex items-center gap-1.5 rounded-sm bg-white border border-gray-200 shadow-sm px-3 h-9 text-sm font-semibold text-gray-800">
+              <TypeIcon className="h-4 w-4 text-indigo-500" aria-hidden="true" /> {selectedType.name}
+            </span>
+          )}
+        </div>
+
+        {/* Bottom panel: offers + cancel */}
+        <div className="absolute inset-x-0 bottom-0 z-10">
+          <div className="mx-auto max-w-2xl rounded-t-lg border-t border-gray-200 bg-white px-4 pt-4 pb-[calc(1rem+env(safe-area-inset-bottom,0px))] shadow-[0_-8px_30px_rgba(15,23,42,0.08)]">
+            {offers.length > 0 ? (
+              <>
+                <div className="flex items-baseline justify-between gap-3 mb-3" aria-live="polite">
+                  <h2 className="text-lg font-bold tracking-wide text-gray-900">Professionals available</h2>
+                  <span className="text-sm text-gray-500">
+                    {offers.length} offer{offers.length === 1 ? '' : 's'}
+                  </span>
+                </div>
+                <ul className="max-h-[55vh] overflow-y-auto space-y-3 -mx-1 px-1 pb-1">
+                  <AnimatePresence initial={false}>
+                    {offers.map((offer) => (
+                      <motion.li
+                        key={offer.id}
+                        layout
+                        initial={{ opacity: 0, y: 12 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, x: -30 }}
+                        transition={{ duration: 0.2 }}
+                        className="rounded-md border border-gray-200 bg-white p-4"
+                      >
+                        <div className="flex items-start gap-3">
+                          <Avatar name={offer.provider?.name || 'Provider'} size="h-12 w-12" />
+                          <div className="flex-1 min-w-0">
+                            <p className="font-semibold text-gray-900 truncate">{offer.provider?.name || 'Service provider'}</p>
+                            <Rating value={offer.provider?.rating} />
+                            <p className="text-sm text-gray-500 truncate">{offer.service?.name || selectedType?.name}</p>
+                          </div>
+                          <div className="text-right">
+                            <p className="text-xl font-bold text-gray-900">{formatPrice(offer.price)}</p>
+                            <p className="text-xs text-gray-500">visiting charge</p>
+                          </div>
+                        </div>
+                        <div className="mt-3 flex items-center gap-2 rounded-sm bg-gray-50 px-3 py-2 text-sm text-gray-700">
+                          <Clock className="h-4 w-4 text-indigo-500" aria-hidden="true" />
+                          Arrives in <span className="font-semibold">{offer.estimatedArrival || 'about 30 min'}</span>
+                        </div>
+                        <div className="mt-3 flex gap-2">
+                          <Button variant="secondary" className="flex-1" onClick={() => handleDeclineOffer(offer)}>
+                            Decline
+                          </Button>
+                          <Button className="flex-[2]" onClick={() => setSelectedOffer(offer)}>
+                            Accept
+                          </Button>
+                        </div>
+                      </motion.li>
+                    ))}
+                  </AnimatePresence>
+                </ul>
+                <p className="mt-2 text-center text-xs text-gray-400">More offers may still arrive.</p>
+              </>
+            ) : (
+              <div role="status" aria-live="polite">
+                <div className="mx-auto mb-3 h-1 w-24 overflow-hidden rounded-full bg-indigo-100" aria-hidden="true">
+                  <div className="h-full w-1/3 rounded-full bg-indigo-500 animate-[ez-search_1.4s_ease-in-out_infinite]" />
+                </div>
+                <h2 className="text-lg font-bold tracking-wide text-gray-900 text-center">Finding professionals near you…</h2>
+                <p className="mt-1 text-sm text-gray-600 text-center">
+                  We&apos;ve sent your request to available {selectedType?.name?.toLowerCase() || ''} professionals. Offers will appear here.
+                </p>
+                <p className="mt-2 flex items-center justify-center gap-1.5 text-xs text-gray-500">
+                  <Clock className="h-3.5 w-3.5" aria-hidden="true" />
+                  {searchStartedAt ? `Request sent at ${searchStartedAt.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })} · ` : ''}Keep this page open
+                </p>
               </div>
             )}
-
-            <form onSubmit={handleSubmit} className='tracking-wide'>
-              <div className="mb-4 relative">
-                <label className="absolute left-3 flex -top-3 bg-white px-1 text-sm font-medium text-indigo-500"><Wrench className="mr-1" size={18} />Select Service Type</label>
-                <select
-                  name="serviceType"
-                  value={formData.serviceType}
-                  onChange={handleChange}
-                  className="block w-full pl-3 pr-3 py-3 text-lg md:text-sm text-gray-800 border border-gray-300 rounded-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" required>
-                  <option value="">Select a service type</option>
-                  {serviceTypes.map(type => (
-                    <option key={type.id} value={type.id}>{type.name}</option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="mb-4 relative">
-                <label className="absolute left-3 flex -top-3 bg-white px-1 text-sm font-medium text-indigo-500"><MapPin className="mr-1" size={18} />Residential Address</label>
-                <textarea
-                  rows={3}
-                  placeholder="Enter your address"
-                  type="text"
-                  name="address"
-                  value={formData.address}
-                  onChange={handleChange}
-                  className="block w-full pl-4 pr-3 py-3 text-lg md:text-sm text-gray-800 border border-gray-300 rounded-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" required
-                />
-              </div>
-
-              <div className='sm:flex gap-2'>
-                <div className="mb-4 relative w-full">
-                  <label className="absolute left-3 -top-3 bg-white px-1 text-sm font-medium text-indigo-500">City / Town</label>
-                  <input
-                    type="text"
-                    name="country"
-                    className="block w-full pl-4 pr-3 py-3 text-lg md:text-sm text-gray-800 border border-gray-300 rounded-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                  />
-                </div>
-                <div className="mb-4 relative w-full">
-                  <label className="absolute left-3 -top-3 bg-white px-1 text-sm font-medium text-indigo-500">State</label>
-                  <input
-                    type="text"
-                    name="state"
-                    className="block w-full pl-4 pr-3 py-3 text-lg md:text-sm text-gray-800 border border-gray-300 rounded-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                  />
-                </div>
-                <div className="mb-4 relative w-full">
-                  <label className="absolute left-3 -top-3 bg-white px-1 text-sm font-medium text-indigo-500">Country</label>
-                  <input
-                    type="text"
-                    name="country"
-                    className="block w-full pl-4 pr-3 py-3 text-lg md:text-sm text-gray-800 border border-gray-300 rounded-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                  />
-                </div>
-              </div>
-
-              <div className="mb-4 relative">
-                <label className="absolute left-3 flex -top-3 bg-white px-1 text-sm font-medium text-indigo-500"><Info className="mr-1" size={18} />Describe Your Issue</label>
-                <textarea
-                  rows={4}
-                  name="description"
-                  value={formData.description}
-                  onChange={handleChange}
-                  placeholder='You want to find the service for your issue, like "AC not cooling" or "plumbing issue"'
-                  className="block w-full pl-4 pr-3 py-3 text-lg md:text-sm text-gray-800 border border-gray-300 rounded-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" required
-                />
-              </div>
-
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full bg-indigo-500 text-white py-3 px-4 rounded-sm hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 flex items-center justify-center"
-              >
-                {loading ? (
-                  <>
-                    <Loader2 className="animate-spin h-5 w-5 mr-2" />
-                    Processing...
-                  </>
-                ) : (
-                  <>
-                    <Send className="h-5 w-5 mr-2" />
-                    Submit Request
-                  </>
-                )}
-              </button>
-            </form>
-            <section className="text-gray-800 py-5 px-auto">
-              <h5 className='font-bold'>How process goes</h5>
-              <ul className='list-disc pl-3 space-y-2 mt-2 text-sm'>
-                <li className=''><span className='font-semibold'>Tell Us What You Need - </span>Choose a service, enter your address, and describe your issue.</li>
-                <li className=''><span className='font-semibold'>We Find Nearby Experts - </span>Our system searches for available service providers in your area.</li>
-                <li className=''><span className='font-semibold'>Wait for Provider Acceptance - </span>A nearby provider reviews your request and accepts the job.</li>
-                <li className=''><span className='font-semibold'>You Confirm the Provider - </span>Once a provider accepts, you review their details and confirm.
-                </li>
-                <li className=''><span className='font-semibold'>Service Request Placed! - </span>Your request is confirmed, the provider will be come as soon as possible!</li>
-              </ul>
-            </section>
-
+            <Button variant="danger-outline" block onClick={stopSearching} className="mt-3">
+              Cancel request
+            </Button>
           </div>
-        ) : (
-          <div className="text-center">
-            <div className="absolute inset-0 z-0 h-full w-full sm:items-center sm:justify-center overflow-hidden left-0 right-0 mx-auto bottom-0 z-0">
+        </div>
 
-              <div className="text-gray-500 overflow-hidden z-0 opacity-40 hidden md:block">
-                <Plug className="absolute top-24 left-60 rotate-[330deg] z-0" />
-                <Car className="absolute top-[400px] left-[30vw] rotate-[330deg] z-0" />
-                <LibraryBig className="absolute top-[500px] right-20 z-0" />
-                <Wrench className="absolute top-[500px] left-40 rotate-[10deg] z-0" />
-                <PartyPopper className="absolute top-[150px] right-[20%] z-0" />
-              </div>
-
-              <Lottie animationData={providerFindAnimation} loop={true} className='opacity-100 sm:opacity-30' />
+        <BottomSheet
+          open={!!selectedOffer}
+          onClose={() => !confirmLoading && setSelectedOffer(null)}
+          title="Confirm professional"
+          footer={
+            <div className="flex gap-2">
+              <Button variant="secondary" className="flex-1" onClick={() => setSelectedOffer(null)} disabled={confirmLoading}>
+                Back
+              </Button>
+              <Button className="flex-[2]" onClick={handleConfirmOrder} loading={confirmLoading}>
+                Confirm · {formatPrice(selectedOffer?.price)}
+              </Button>
             </div>
-
-            <div className='relative z-50 tracking-wide'>
-              <MapPinned className='text-indigo-500 mt-1 mr-2 h-10 w-full justify-center items-center' />
-              <h2 className="text-2xl sm:text-4xl text-gray-800 font-bold mb-4">Finding Service Providers...</h2>
-              <p className="text-gray-700 mb-6 text-lg">
-                We're connecting you with available service providers in your area.
-                This usually takes 1-3 minutes.
-              </p>
-
-              <div className="flex items-center justify-center mb-6">
-                <Clock className="h-5 w-5 text-indigo-600 mr-2" />
-                <span className="text-gray-600">Request sent at {new Date().toLocaleTimeString()}</span>
-              </div>
-
-              <button
-                onClick={() => {
-                  // Disconnect socket
-                  if (socket.current) {
-                    socket.current.disconnect();
-                    socket.current = null;
-                  }
-                  // Redirect to home page
-                  navigate('/');
-                }}
-                className="px-6 py-3 bg-red-50 border border-red-500 text-red-600 hover:text-white tracking-wide rounded-md hover:bg-red-500 transition-colors z-30"
-              >
-                Stop Find Request
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* Offer popup */}
-        {offers.length > 0 && !showConfirmation && (
-          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-sm shadow-xl p-6 w-full max-w-md m-1">
-              
-              <div className='flex justify-between'>
-              <h3 className="text-xl font-semibold mb-2">Service Offer Received!</h3>{currentRequestId && offers[0].provider?.id && offers[0].service?.id && (
-                  <p className="text-xs text-gray-500 mt-2 ml-4">
-                    {(offerAttempts[currentRequestId]?.[`${offers[0].provider.id}_${offers[0].service.id}`] || 0) + 1}/3
-                  </p>
-                )}
-                </div>
-
-              <div className="mb-4 pt-3 border border-gray-200 rounded-md">
-                <div className="flex items-center mb-2 ml-4">
-                  <img
-                    src={offers[0].provider?.avatar || "https://via.placeholder.com/40"}
-                    alt="Provider"
-                    className="h-10 w-10 rounded-full mr-3"
-                  />
-                  <div>
-                    <h4 className="font-medium -mb-1">{offers[0].provider?.name || "Service Provider"}</h4>
-                    <div className="flex items-center">
-                      <span className="text-indigo-500">★★★★☆</span>
-                      <span className="text-sm text-gray-500 ml-1">{offers[0].provider?.rating || "4.0"}</span>
-                    </div>
-                  </div>
-                </div>
-
-                <table className="w-full text-sm text-left text-gray-700">
-                  <tbody>
-                    <tr className="border-b border-t border-gray-300">
-                      <th className="px-3 py-2 font-medium text-gray-900 bg-gray-100 w-1/3">Service</th>
-                      <td className="px-3 py-2">{offers[0].service?.name || "Instant Service"}</td>
-                    </tr>
-                    <tr className="border-b border-gray-300">
-                      <th className="px-3 py-2 font-medium text-gray-900 bg-gray-100">Visiting Charge</th>
-                      <td className="px-3 py-2">₹{offers[0].price || "0"}</td>
-                    </tr>
-                    <tr>
-                      <th className="px-3 py-2 font-medium text-gray-900 bg-gray-100">Estimated Arrival</th>
-                      <td className="px-3 py-2">{offers[0].estimatedArrival || "Unknown"}</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-
-              <div className="flex space-x-3">
-                <button
-                  onClick={() => handleDeclineOffer(offers[0].id, offers[0].provider?.id, offers[0].service?.id)}
-                  className="flex-1 py-2 px-4 border border-gray-300 rounded-sm text-gray-700 hover:bg-gray-50"
-                >
-                  Decline
-                </button>
-                <button
-                  onClick={() => handleAcceptOffer(offers[0])}
-                  className="flex-1 py-2 px-4 bg-indigo-500 text-white rounded-sm hover:bg-indigo-600"
-                >
-                  Accept
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Order confirmation popup */}
-        {showConfirmation && selectedOffer && (
-          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-sm px-1 py-6 w-full max-w-md overflow-y-auto max-h-[95vh]">
-              <h3 className="text-xl text-indigo-500 font-bold mb-4 ml-5">Confirm Your Order</h3>
-
-              <div className="mb-4">
-                <h4 className="font-medium text-gray-700 mb-2 ml-3">Service Details</h4>
-                <div className="pt-3 bg-gray-50">
-                  <div className="flex items-center mb-2 ml-4">
-                    <img
-                      src={selectedOffer.provider?.avatar || "https://via.placeholder.com/40"}
-                      alt="Provider"
-                      className="h-12 w-12 rounded-full mr-3"
-                    />
-                    <div>
-                      <p className="font-medium">{selectedOffer.provider?.name || "Service Provider"}</p>
-                      <div className="flex items-center">
-                        <span className="text-yellow-500 -mt-1">★★★★☆</span>
-                        <span className="text-sm text-gray-500 ml-1">{selectedOffer.provider?.rating || "4.0"}</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <table className="w-full text-sm text-left text-gray-700">
-                  <tbody>
-                    <tr className="border-b border-t border-gray-300">
-                      <th className="px-3 py-2 font-medium text-gray-900 bg-gray-100 w-1/3">Service</th>
-                      <td className="px-3 py-2">{selectedOffer.service?.name || "Instant Service"}</td>
-                    </tr>
-                    <tr className="border-b border-gray-300">
-                      <th className="px-3 py-2 font-medium text-gray-900 bg-gray-100">Visiting Charge</th>
-                      <td className="px-3 py-2">₹{selectedOffer.price || "0"}</td>
-                    </tr>
-                    <tr className='border-b border-gray-300'>
-                      <th className="px-3 py-2 font-medium text-gray-900 bg-gray-100">Estimated Arrival</th>
-                      <td className="px-3 py-2">{selectedOffer.estimatedArrival || "Unknown"}</td>
-                    </tr>
-                  </tbody>
-                </table>
+          }
+        >
+          {selectedOffer && (
+            <div className="space-y-4">
+              <div className="flex items-center gap-3">
+                <Avatar name={selectedOffer.provider?.name || 'Provider'} size="h-12 w-12" />
+                <div>
+                  <p className="font-semibold text-gray-900">{selectedOffer.provider?.name}</p>
+                  <p className="text-sm text-gray-500">Arrives in {selectedOffer.estimatedArrival || 'about 30 min'}</p>
                 </div>
               </div>
-
-              <div className="mb-4">
-                <h4 className="font-medium text-gray-700 mb-2 ml-3">Order Summary</h4>
-                <table className="w-full text-sm text-left text-gray-700 bg-gray-50">
-                  <tbody>
-                    <tr className="border-b border-t border-gray-300">
-                      <th className="px-3 py-2 font-medium text-gray-900 bg-gray-100 w-1/3">Address</th>
-                      <td className="px-3 py-2">{formData.address}</td>
-                    </tr>
-                    <tr className="border-b border-gray-300">
-                      <th className="px-3 py-2 font-medium text-gray-900 bg-gray-100">Issue</th>
-                      <td className="px-3 py-2">{formData.description}</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-
-              <ArrowDownFromLine  className='justify-center w-full text-indigo-500'/>
-
-              <div className="my-4">
-                <div className="p-3 border-t border-b border-gray-200">
-                  <div className="flex justify-between font-semibold text-gray-800">
-                    <span>Total Amount</span>
-                    <span className='text-xl'>₹{selectedOffer.price || "0"}</span>
-                  </div>
-                  <p className="text-xs text-gray-500 -mt-1">Payment will be collected after service completion</p>
+              <dl className="rounded-sm border border-gray-200 divide-y divide-gray-100 text-sm">
+                <div className="p-3">
+                  <dt className="text-xs text-gray-500">Address</dt>
+                  <dd className="text-gray-900">{formData.address}</dd>
                 </div>
-              </div>
-
-              <div className="flex space-x-2 tracking-wide px-2">
-                <button
-                  onClick={() => setShowConfirmation(false)}
-                  className="flex-1 py-2 px-4 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
-                >
-                  Back
-                </button>
-                <button
-                  onClick={handleConfirmOrder}
-                  disabled={confirmLoading}
-                  className="flex-1 py-2 px-4 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 disabled:opacity-50"
-                >
-                  {confirmLoading ? (
-                    <>
-                      <Loader2 className="animate-spin h-5 w-5 mr-2 inline" />
-                      Processing...
-                    </>
-                  ) : (
-                    'Confirm Order'
-                  )}
-                </button>
-              </div>
+                <div className="p-3">
+                  <dt className="text-xs text-gray-500">Problem</dt>
+                  <dd className="text-gray-900">{formData.description}</dd>
+                </div>
+                <div className="p-3 flex justify-between font-semibold text-gray-900">
+                  <dt>Visiting charge</dt>
+                  <dd>{formatPrice(selectedOffer.price)}</dd>
+                </div>
+              </dl>
+              <p className="text-xs text-gray-500">Pay the professional after the service.</p>
+              <InlineError>{error}</InlineError>
             </div>
-          </div>
-        )}
+          )}
+        </BottomSheet>
+      </div>
+    );
+  }
+
+  /* ---------- Request form ---------- */
+  const visibleTypes = showAllTypes ? serviceTypes : serviceTypes.slice(0, 6);
+  const typesToShow = selectedType && !visibleTypes.includes(selectedType) ? [selectedType, ...visibleTypes.slice(0, 5)] : visibleTypes;
+
+  return (
+    <div className="min-h-screen md:min-h-0 pb-28">
+      <PageHeader title="Instant Service" subtitle="Get a professional at your door, fast" />
+      <form id="instant-form" onSubmit={handleSubmit} className="max-w-2xl mx-auto px-4 pt-5 space-y-7">
+        <section aria-labelledby="need-title">
+          <h2 id="need-title" className="text-lg font-bold tracking-wide text-gray-900 mb-3">
+            What do you need help with?
+          </h2>
+          {typesLoading ? (
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <Skeleton key={i} className="h-14 rounded-sm" />
+              ))}
+            </div>
+          ) : (
+            <>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2" role="radiogroup" aria-label="Service">
+                {typesToShow.map((type) => {
+                  const Icon = getCategoryIcon(type.name);
+                  const active = String(type.id) === String(formData.serviceType);
+                  return (
+                    <button
+                      key={type.id}
+                      type="button"
+                      role="radio"
+                      aria-checked={active}
+                      onClick={() => setFormData((p) => ({ ...p, serviceType: String(type.id) }))}
+                      className={`h-14 px-3 rounded-sm border flex items-center gap-2 text-left text-sm font-semibold ${
+                        active ? 'border-indigo-500 bg-indigo-50 text-indigo-700' : 'border-gray-200 bg-white text-gray-700 hover:border-gray-300'
+                      }`}
+                    >
+                      <Icon className={`h-5 w-5 shrink-0 ${active ? 'text-indigo-600' : 'text-gray-400'}`} aria-hidden="true" />
+                      <span className="leading-tight">{type.name}</span>
+                    </button>
+                  );
+                })}
+              </div>
+              {serviceTypes.length > 6 && (
+                <button type="button" onClick={() => setShowAllTypes((v) => !v)} className="mt-2 inline-flex items-center gap-1 text-sm font-semibold text-indigo-600 py-2">
+                  {showAllTypes ? 'Show fewer' : 'Select another service'}
+                  <ChevronDown className={`h-4 w-4 transition-transform ${showAllTypes ? 'rotate-180' : ''}`} aria-hidden="true" />
+                </button>
+              )}
+            </>
+          )}
+        </section>
+
+        <section aria-labelledby="where-title">
+          <h2 id="where-title" className="text-lg font-bold tracking-wide text-gray-900 mb-3">
+            Where do you need the service?
+          </h2>
+          <OutlinedField as="textarea" rows={2} label="Address" icon={MapPin} name="address" value={formData.address} onChange={handleChange} placeholder="House / flat, street, area, city" autoComplete="street-address" />
+        </section>
+
+        <section aria-labelledby="problem-title">
+          <h2 id="problem-title" className="text-lg font-bold tracking-wide text-gray-900 mb-3">
+            What's the problem?
+          </h2>
+          <OutlinedField
+            as="textarea"
+            rows={3}
+            label="Describe the problem"
+            icon={FileText}
+            name="description"
+            value={formData.description}
+            onChange={handleChange}
+            placeholder='For example: "AC not cooling" or "Bathroom pipe leaking"'
+          />
+        </section>
+
+        <div className="flex items-start gap-3 rounded-md bg-white border border-gray-200 p-4 text-sm text-gray-600">
+          <BadgeIndianRupee className="h-5 w-5 text-indigo-500 shrink-0" aria-hidden="true" />
+          <p>Available professionals send you an offer with their price and arrival time. You choose who to accept. Nothing is charged now.</p>
+        </div>
+
+        <InlineError>{error}</InlineError>
+      </form>
+
+      <div className="fixed inset-x-0 bottom-0 z-30 border-t border-gray-200 bg-white bottom-safe">
+        <div className="max-w-2xl mx-auto px-4 py-3">
+          <Button type="submit" form="instant-form" block size="lg" icon={Zap} loading={loading}>
+            Find a Professional
+          </Button>
+        </div>
       </div>
     </div>
   );

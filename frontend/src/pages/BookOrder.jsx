@@ -1,791 +1,396 @@
-"use client"
+import { useEffect, useMemo, useState } from 'react';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { addDays, format, isToday, setHours, setMinutes, startOfHour, addHours } from 'date-fns';
+import { Zap, CalendarDays, MapPin, Plus, Check, Clock, FileText, LogIn } from 'lucide-react';
+import api from '../config/axios-config';
+import authApi from '../config/auth-config';
+import PageHeader from '../components/ui/PageHeader';
+import Button from '../components/ui/Button';
+import OutlinedField from '../components/ui/OutlinedField';
+import ServiceImage from '../components/ui/ServiceImage';
+import { EmptyState, ErrorState, InlineError } from '../components/ui/States';
+import { PageSkeleton } from '../components/ui/Skeleton';
+import { formatPrice, formatDateTime } from '../lib/format';
+import { getAuthUser } from '../lib/auth';
+import { getSavedAddress, getDeviceAddresses, saveDeviceAddress } from '../lib/location';
 
-import { useState, useRef, useEffect } from "react"
-import { useSearchParams } from "react-router-dom"
-import { ChevronLeft, ChevronRight, Plus, Check, CalendarIcon, ChevronDown, Info, Plug, PartyPopper, Wrench, Cake, Dumbbell, ScanFaceIcon, CircleCheckBigIcon } from "lucide-react"
-import api from "../config/axios-config"
-import { format } from "date-fns"
-
+const STEPS = ['Service', 'Time', 'Location', 'Confirm'];
+const SLOT_HOURS = [9, 10, 11, 12, 14, 15, 16, 17, 18, 19];
 
 const BookOrderPage = () => {
-  const [step, setStep] = useState(1)
-  const [date, setDate] = useState()
-  const [time, setTime] = useState("")
-  const [addressOption, setAddressOption] = useState("existing-1")
-  const [showNewAddressForm, setShowNewAddressForm] = useState(false)
-  const [paymentMethod, setPaymentMethod] = useState("credit-card")
-  const [isOrderConfirmed, setIsOrderConfirmed] = useState(false)
-  const [showCalendar, setShowCalendar] = useState(false)
-  const [showTimeDropdown, setShowTimeDropdown] = useState(false)
-  const calendarRef = useRef(null)
-  const timeDropdownRef = useRef(null)
-  const [paymentOnCash, setPaymentOnCash] = useState(true)
-  const [orderSuccessCount, setOrderSucccessCount] = useState(true)
-  const [serviceData, setServiceData] = useState(null)
-  const [searchParams] = useSearchParams()
-  const serviceId = searchParams.get("serviceId")
-  
-  useEffect(() => {
-    // Fetch service data if serviceId is available
-    if (serviceId) {
-      api.get(`/services/${serviceId}`)
-        .then(response => {
-          setServiceData(response.data)
-        })
-        .catch(err => {
-          console.error("Error fetching service data:", err)
-        })
+  const [searchParams] = useSearchParams();
+  const serviceId = searchParams.get('serviceId');
+  const navigate = useNavigate();
+  const location = useLocation();
+  const user = getAuthUser();
+
+  const [service, setService] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
+  const [step, setStep] = useState(0);
+  const [issue, setIssue] = useState('');
+  const [when, setWhen] = useState(null); // 'now' | 'later'
+  const [day, setDay] = useState(0); // offset from today
+  const [hour, setHour] = useState(null);
+  const [addresses, setAddresses] = useState(() => {
+    const saved = getSavedAddress();
+    const device = getDeviceAddresses();
+    const list = saved ? [{ label: 'Home', text: saved }, ...device.filter((a) => a.text !== saved)] : device;
+    return list;
+  });
+  const [address, setAddress] = useState(() => addresses[0]?.text || '');
+  const [adding, setAdding] = useState(addresses.length === 0);
+  const [newAddress, setNewAddress] = useState({ label: 'Home', text: '' });
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState('');
+
+  const load = () => {
+    if (!serviceId) {
+      setLoading(false);
+      return;
     }
-  }, [serviceId])
+    setLoading(true);
+    setLoadError(false);
+    api
+      .get(`/services/${serviceId}`)
+      .then((res) => setService(res.data))
+      .catch(() => setLoadError(true))
+      .finally(() => setLoading(false));
+  };
+  useEffect(load, [serviceId]);
 
-  // Close dropdowns when clicking outside
-  useEffect(() => {
-    function handleClickOutside(event) {
-      if (calendarRef.current && !calendarRef.current.contains(event.target)) {
-        setShowCalendar(false)
-      }
-      if (timeDropdownRef.current && !timeDropdownRef.current.contains(event.target)) {
-        setShowTimeDropdown(false)
-      }
-    }
+  const days = useMemo(() => Array.from({ length: 7 }, (_, i) => addDays(new Date(), i)), []);
+  const earliest = addHours(startOfHour(new Date()), 2);
+  const slotsForDay = SLOT_HOURS.map((h) => setMinutes(setHours(days[day], h), 0)).filter((d) => !isToday(d) || d >= earliest);
 
-    document.addEventListener("mousedown", handleClickOutside)
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside)
-    }
-  }, [])
+  const visitDate = when === 'now' ? new Date() : hour !== null ? setMinutes(setHours(days[day], hour), 0) : null;
 
-  const existingAddresses = [
-    {
-      id: 1,
-      name: "Home",
-      street: "123 Main Street",
-      city: "New York",
-      state: "NY",
-      zip: "10001",
-      country: "USA",
-      isDefault: true,
-    },
-    {
-      id: 2,
-      name: "Office",
-      street: "456 Business Ave",
-      city: "New York",
-      state: "NY",
-      zip: "10002",
-      country: "USA",
-      isDefault: false,
-    },
-  ]
+  const canContinue = [issue.trim().length >= 5, when === 'now' || (when === 'later' && visitDate), !!address.trim(), true][step];
 
-  // Use fetched service data if available, otherwise use default
-  const bookDetails = serviceData ? {
-    title: serviceData.name,
-    author: serviceData.ProviderInfo?.name || "Service Provider",
-    cover: serviceData.cover_image || "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQsptzDjvtAQGO2VhhxrjCeh8hAZ-Q2182Lqw&s",
-    price: serviceData.visiting_charge || 500,
-    quantity: 1,
-    id: serviceData.id
-  } : {
-    title: "Service",
-    author: "Service Provider",
-    cover: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQsptzDjvtAQGO2VhhxrjCeh8hAZ-Q2182Lqw&s",
-    price: 500,
-    quantity: 1,
-  }
+  const next = () => {
+    setError('');
+    if (step < STEPS.length - 1) setStep(step + 1);
+  };
+  const back = () => (step === 0 ? navigate(-1) : setStep(step - 1));
 
-  const handleNext = () => {
-    if (step < 4) {
-      setStep(step + 1)
-    } else {
-      // Here you could submit the order with the service ID
-      console.log("Submitting order for service ID:", serviceId)
-      setIsOrderConfirmed(true)
-    }
-  }
+  const addAddress = () => {
+    const text = newAddress.text.trim();
+    if (!text) return;
+    const entry = { label: newAddress.label.trim() || 'Address', text };
+    const deviceList = saveDeviceAddress(entry);
+    const saved = getSavedAddress();
+    setAddresses(saved ? [...deviceList.filter((a) => a.text !== saved), { label: 'Home', text: saved }] : deviceList);
+    setAddress(text);
+    setAdding(false);
+    setNewAddress({ label: 'Home', text: '' });
+  };
 
-  const handleBack = () => {
-    if (step > 1) {
-      setStep(step - 1)
-    }
-  }
-
-  const handleAddNewAddress = () => {
-    setShowNewAddressForm(true)
-  }
-
-  const handleCancelNewAddress = () => {
-    setShowNewAddressForm(false)
-    setAddressOption("existing-1")
-  }
-
-  const timeSlots = [
-    "9:00 AM - 11:00 AM",
-    "11:00 AM - 1:00 PM",
-    "1:00 PM - 3:00 PM",
-    "3:00 PM - 5:00 PM",
-    "5:00 PM - 7:00 PM",
-  ]
-
-  // Simple calendar implementation
-  const generateCalendarDays = () => {
-    const today = new Date()
-    today.setHours(0, 0, 0, 0)
-
-    const days = []
-    const currentMonth = today.getMonth()
-    const currentYear = today.getFullYear()
-
-    // Get first day of month
-    const firstDay = new Date(currentYear, currentMonth, 1)
-    const startingDay = firstDay.getDay() // 0 = Sunday, 1 = Monday, etc.
-
-    // Get number of days in month
-    const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate()
-
-    // Fill in days
-    for (let i = 0; i < startingDay; i++) {
-      days.push(null) // Empty cells for days before the 1st
-    }
-
-    for (let i = 1; i <= daysInMonth; i++) {
-      const dayDate = new Date(currentYear, currentMonth, i)
-      days.push({
-        date: dayDate,
-        day: i,
-        disabled: dayDate < today,
+  const confirm = () => {
+    setSubmitting(true);
+    setError('');
+    authApi
+      .post('/orders', {
+        service_id: service.id,
+        provider_id: service.ProviderInfo?.id || service.provider_id,
+        date: visitDate.toISOString(),
+        estimated_charge: service.visiting_charge,
+        status: 'PENDING',
+        issue: issue.trim(),
+        location: address.trim(),
       })
-    }
+      .then((res) => navigate(`/orders/${res.data.order_id}/view`, { replace: true, state: { justBooked: true } }))
+      .catch((err) => {
+        setError(err.response?.data?.message || "We couldn't place your booking. Please try again.");
+        setSubmitting(false);
+      });
+  };
 
-    return days
+  if (!user || user.role !== 'customer') {
+    return (
+      <>
+        <PageHeader title="Book a service" />
+        <EmptyState
+          icon={LogIn}
+          title="Log in to book"
+          description="You need a customer account to book a professional. It only takes a minute."
+          actionLabel="Log in"
+          onAction={() => navigate('/login', { state: { from: `${location.pathname}${location.search}` } })}
+        />
+      </>
+    );
   }
+  if (loading) return <PageSkeleton />;
+  if (!serviceId || loadError || !service) {
+    return (
+      <>
+        <PageHeader title="Book a service" />
+        <ErrorState title="Service not found" description="Please pick a service to book." onRetry={serviceId ? load : undefined} />
+        <div className="flex justify-center">
+          <Button variant="secondary" to="/services">
+            Browse services
+          </Button>
+        </div>
+      </>
+    );
+  }
+
+  const category = service.category?.name || '';
 
   return (
-    <div className="bg-gray-50">
-    <div className="max-w-4xl px-2 py-5 md:mx-auto">
+    <div className="min-h-screen md:min-h-0 pb-28">
+      <PageHeader title={`Book ${service.name}`} subtitle={`Step ${step + 1} of ${STEPS.length} · ${STEPS[step]}`} onBack={back} />
 
-      {!isOrderConfirmed ? (
-        <>
-        {/* 1 to 4 process steps */}
-          <div className="mx-5 mb-3">
-            <div className="flex justify-between items-center mb-2">
-              {[1, 2, 3, 4].map((i) => (
-                <div key={i} className={`flex items-center ${i < 4 ? "flex-1" : ""}`}>
-                  <div
-                    className={`rounded-full h-10 w-10 flex items-center justify-center border-2 ${
-                      i <= step ? "bg-indigo-500 text-white border-indigo-500" : "bg-gray-100 border-gray-300"
-                    }`}
-                  >
-                    {i < step ? <Check className="h-5 w-5" /> : i}
-                  </div>
-                  {i < 4 && <div className={`h-1 flex-1 ${i < step ? "bg-indigo-500" : "bg-gray-300"}`}></div>}
-                </div>
-              ))}
-            </div>
-            <div className="flex justify-between text-sm -mt-1">
-              <span>Delivery</span>
-              <span>Address</span>
-              <span>Payment</span>
-              <span>Confirm</span>
-            </div>
-          </div>
+      <div className="max-w-2xl mx-auto px-4 pt-4">
+        {/* Progress */}
+        <ol className="grid grid-cols-4 gap-1.5 mb-5" aria-label="Booking progress">
+          {STEPS.map((label, i) => (
+            <li key={label} aria-current={i === step ? 'step' : undefined}>
+              <span className={`block h-1.5 rounded-full ${i <= step ? 'bg-indigo-500' : 'bg-gray-200'}`} />
+              <span className={`mt-1.5 block text-[11px] font-medium ${i === step ? 'text-indigo-600' : 'text-gray-400'}`}>{label}</span>
+            </li>
+          ))}
+        </ol>
 
-          <div className="bg-white rounded-lg border border-gray-300 mb-6 overflow-hidden">
-            <div className="p-4 border-b border-gray-300">
-              <h2 className="text-xl font-semibold">Selected Service</h2>
-            </div>
-            <div className="p-4">
-              <div className="flex gap-4">
-                <img
-                  src={bookDetails.cover || "/placeholder.svg"}
-                  alt={bookDetails.title}
-                  className="h-[100px] w-[100px] object-cover rounded"
-                />
-                <div className="w-full">
-                  <h3 className="font-bold text-lg">{bookDetails.title}</h3>
-                  <p className="text-gray-600 text-sm -mt-1 mb-2">by {bookDetails.author}</p>
-                      <span className="font-bold text-indigo-500 text-xl">₹{((parseFloat(bookDetails.price || 500)) * bookDetails.quantity).toFixed(2)}</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {step === 1 && (
-            <div className="bg-white rounded-lg border border-gray-300 overflow-hidden">
-              <div className="p-4 border-b border-gray-300">
-                <h2 className="text-xl font-semibold">Delivery Information</h2>
-                <p className="text-gray-600 text-sm">Choose when you'd like your book to be delivered</p>
-              </div>
-
-              <div className="p-4 space-y-4">
-                {/* delivery date */}
-                <div className="space-y-2">
-                  <label className="block text-sm font-medium">Delivery Date</label>
-                  <div className="relative" ref={calendarRef}>
-                    <button
-                      type="button"
-                      onClick={() => setShowCalendar(!showCalendar)}
-                      className="w-full flex justify-between items-center px-3 py-2 border border-gray-300 rounded-md text-left"
-                    >
-                      <span className={date ? "text-black" : "text-gray-500"}>
-                        {date ? format(date, "PPP") : "Select a date"}
-                      </span>
-                      <CalendarIcon className="h-4 w-4 text-gray-500" />
-                    </button>
-                  </div>
-                </div>
-
-                {/* delivery time */}
-                <div className="space-y-2">
-                  <label className="block text-sm font-medium">Delivery Time</label>
-                  <div className="relative" ref={timeDropdownRef}>
-                    <button
-                      type="button"
-                      onClick={() => setShowTimeDropdown(!showTimeDropdown)}
-                      className="w-full flex justify-between items-center px-3 py-2 border border-gray-300 rounded-md text-left"
-                    >
-                      <span className={time ? "text-black" : "text-gray-500"}>{time || "Select a time slot"}</span>
-                      <ChevronDown className="h-4 w-4 text-gray-500" />
-                    </button>
-
-                    {showTimeDropdown && (
-                      <div className="absolute z-10 mt-1 bg-white border border-gray-300 rounded-md shadow-lg w-full">
-                        <ul className="py-1 max-h-60 overflow-auto">
-                          {timeSlots.map((slot) => (
-                            <li key={slot}>
-                              <button
-                                type="button"
-                                className={`w-full text-left px-3 py-2 hover:bg-indigo-50 ${time === slot ? "bg-indigo-50 text-indigo-500" : ""}`}
-                                onClick={() => {
-                                  setTime(slot)
-                                  setShowTimeDropdown(false)
-                                }}
-                              >
-                                {slot}
-                              </button>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-              <div className="p-4 border-t border-gray-300 flex justify-end">
-                <button
-                  onClick={handleNext}
-                  disabled={!time}
-                  className={`flex items-center px-4 py-2 rounded-md ${
-                     !time
-                      ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                      : "bg-indigo-500 text-white hover:bg-indigo-400"
-                  }`}
-                >
-                  Next <ChevronRight className="ml-2 h-4 w-4" />
-                </button>
-              </div>
-            </div>
-          )}
-
-          {step === 2 && (
-            <div className="bg-white rounded-lg border border-gray-300 overflow-hidden">
-              <div className="p-4 border-b border-gray-300">
-                <h2 className="text-xl font-semibold">Shipping Address</h2>
-                <p className="text-gray-600 text-sm">Select a delivery address or add a new one</p>
-              </div>
-              <div className="p-4 space-y-4">
-                {!showNewAddressForm ? (
-                  <>
-                    <div className="space-y-4">
-                      {existingAddresses.map((address) => (
-                        <div key={address.id} className="flex items-start space-x-2">
-                          <input
-                            type="radio"
-                            id={`address-${address.id}`}
-                            name="address"
-                            value={`existing-${address.id}`}
-                            checked={addressOption === `existing-${address.id}`}
-                            onChange={(e) => setAddressOption(e.target.value)}
-                            className="mt-1"
-                          />
-                          <div className="grid gap-1.5 leading-none">
-                            <label htmlFor={`address-${address.id}`} className="font-medium">
-                              {address.name}{" "}
-                              {address.isDefault && <span className="text-xs text-gray-500">(Default)</span>}
-                            </label>
-                            <p className="text-sm text-gray-600">
-                              {address.street}, {address.city}, {address.state} {address.zip}, {address.country}
-                            </p>
-                          </div>
-                        </div>
-                      ))}
-                      <div className="flex items-start space-x-2">
-                        <input
-                          type="radio"
-                          id="new-address"
-                          name="address"
-                          value="new"
-                          checked={addressOption === "new"}
-                          onChange={(e) => setAddressOption(e.target.value)}
-                          className="mt-1"
-                        />
-                        <label htmlFor="new-address" className="font-medium">
-                          Add a new address
-                        </label>
-                      </div>
-                    </div>
-
-                    {addressOption === "new" && (
-                      <button
-                        type="button"
-                        onClick={handleAddNewAddress}
-                        className="flex items-center px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50 mt-2"
-                      >
-                        <Plus className="mr-2 h-4 w-4" /> Add New Address
-                      </button>
-                    )}
-                  </>
-                ) : (
-                  <div className="space-y-4">
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <label htmlFor="full-name" className="block text-sm font-medium">
-                          Full Name
-                        </label>
-                        <input
-                          id="full-name"
-                          type="text"
-                          placeholder="John Doe"
-                          className="w-full px-3 py-2 border border-gray-300 focus:border-indigo-500 outline-none rounded-md"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <label htmlFor="phone" className="block text-sm font-medium">
-                          Phone Number
-                        </label>
-                        <input
-                          id="phone"
-                          type="text"
-                          placeholder="(123) 456-7890"
-                          className="w-full px-3 py-2 border border-gray-300 focus:border-indigo-500 outline-none rounded-md"
-                        />
-                      </div>
-                    </div>
-                    <div className="space-y-2">
-                      <label htmlFor="street" className="block text-sm font-medium">
-                        Street Address
-                      </label>
-                      <input
-                        id="street"
-                        type="text"
-                        placeholder="123 Main St"
-                        className="w-full px-3 py-2 border border-gray-300 focus:border-indigo-500 outline-none rounded-md"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <label htmlFor="apt" className="block text-sm font-medium">
-                        Apartment, suite, etc. (optional)
-                      </label>
-                      <input
-                        id="apt"
-                        type="text"
-                        placeholder="Apt #42"
-                        className="w-full px-3 py-2 border border-gray-300 focus:border-indigo-500 outline-none rounded-md"
-                      />
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <label htmlFor="city" className="block text-sm font-medium">
-                          City
-                        </label>
-                        <input
-                          id="city"
-                          type="text"
-                          placeholder="New York"
-                          className="w-full px-3 py-2 border border-gray-300 focus:border-indigo-500 outline-none rounded-md"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <label htmlFor="state" className="block text-sm font-medium">
-                          State
-                        </label>
-                        <input id="state" type="text" placeholder="NY" className="w-full px-3 py-2 border border-gray-300 focus:border-indigo-500 outline-none rounded-md" />
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <label htmlFor="zip" className="block text-sm font-medium">
-                          ZIP Code
-                        </label>
-                        <input
-                          id="zip"
-                          type="text"
-                          placeholder="10001"
-                          className="w-full px-3 py-2 border border-gray-300 focus:border-indigo-500 outline-none rounded-md"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <label htmlFor="country" className="block text-sm font-medium">
-                          Country
-                        </label>
-                        <input
-                          id="country"
-                          type="text"
-                          placeholder="United States"
-                          className="w-full px-3 py-2 border border-gray-300 focus:border-indigo-500 outline-none rounded-md"
-                        />
-                      </div>
-                    </div>
-                    <div className="flex space-x-2 pt-2">
-                      <button
-                        type="button"
-                        onClick={handleCancelNewAddress}
-                        className="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50"
-                      >
-                        Cancel
-                      </button>
-                      <button type="button" className="px-4 py-2 bg-indigo-500 text-white rounded-md hover:bg-indigo-400">
-                        Save Address
-                      </button>
-                    </div>
-                  </div>
-                )}
-              </div>
-              <div className="p-4 border-t border-gray-300 flex justify-between">
-                <button
-                  type="button"
-                  onClick={handleBack}
-                  className="flex items-center px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50"
-                >
-                  <ChevronLeft className="mr-2 h-4 w-4" /> Back
-                </button>
-                <button
-                  type="button"
-                  onClick={handleNext}
-                  disabled={addressOption === "new" && !showNewAddressForm}
-                  className={`flex items-center px-4 py-2 rounded-md ${
-                    addressOption === "new" && !showNewAddressForm
-                      ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                      : "bg-indigo-500 text-white hover:bg-indigo-400"
-                  }`}
-                >
-                  Next <ChevronRight className="ml-2 h-4 w-4" />
-                </button>
-              </div>
-            </div>
-          )}
-
-          {step === 3 && (
-            <div className="bg-white rounded-lg border border-gray-300 overflow-hidden">
-              <div className="p-4 border-b border-gray-300">
-                <h2 className="text-xl font-semibold">Payment Method</h2>
-                <p className="text-gray-600 text-sm">Choose how you'd like to pay</p>
-              </div>
-              <label className={`flex gap-2 px-5 py-3 rounded-sm border border-gray-300 hover:border-gray-500 m-2 ${paymentOnCash ? 'bg-indigo-500 text-white border border-indigo-500' : 'bg-transperent'}`} onClick={() => setPaymentOnCash(true)}>
-                <input type="radio" name="cashonservicetime" defaultChecked className="h-4 w-4 mt-1" />
-                Cash on Service Time
-              </label> 
-              <label className={`flex gap-2 px-5 py-3 rounded-sm border border-gray-300 hover:border-gray-500 m-2 ${!paymentOnCash ? 'bg-indigo-500 text-white  border border-indigo-500' : 'bg-transperent'}`} onClick={() => setPaymentOnCash(false)}>
-                <input type="radio" name="cashonservicetime" className="h-4 w-4 mt-1" />
-                Others
-              </label> 
-              {!paymentOnCash && ( 
-              <div className="p-4 space-y-4">
-                <div className="">
-                  <div className="flex">
-                    <button
-                      type="button"
-                      onClick={() => setPaymentMethod("credit-card")}
-                      className={`px-4 py-2 text-center flex-1 ${
-                        paymentMethod === "credit-card" ? "border-b-2 border-indigo-500 text-indigo-500" : "text-gray-500"
-                      }`}
-                    >
-                      Credit Card
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setPaymentMethod("paypal")}
-                      className={`px-4 py-2 text-center flex-1 ${
-                        paymentMethod === "paypal" ? "border-b-2 border-indigo-500 text-indigo-500" : "text-gray-500"
-                      }`}
-                    >
-                      UPI
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setPaymentMethod("bank-transfer")}
-                      className={`px-4 py-2 text-center flex-1 ${
-                        paymentMethod === "bank-transfer" ? "border-b-2 border-indigo-500 text-indigo-500" : "text-gray-500"
-                      }`}
-                    >
-                      Bank Transfer
-                    </button>
-                  </div>
-                </div>
-
-                {paymentMethod === "credit-card" && (
-                  <div className="space-y-4 pt-4">
-                    <div className="space-y-2">
-                      <label htmlFor="card-name" className="block text-sm font-medium">
-                        Name on Card
-                      </label>
-                      <input
-                        id="card-name"
-                        type="text"
-                        placeholder="John Doe"
-                        className="w-full px-3 py-2 border border-gray-300 focus:border-indigo-500 outline-none rounded-md"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <label htmlFor="card-number" className="block text-sm font-medium">
-                        Card Number
-                      </label>
-                      <input
-                        id="card-number"
-                        type="text"
-                        placeholder="1234 5678 9012 3456"
-                        className="w-full px-3 py-2 border border-gray-300 focus:border-indigo-500 outline-none rounded-md"
-                      />
-                    </div>
-                    <div className="grid grid-cols-3 gap-4">
-                      <div className="space-y-2 col-span-1">
-                        <label htmlFor="expiry" className="block text-sm font-medium">
-                          Expiry Date
-                        </label>
-                        <input
-                          id="expiry"
-                          type="text"
-                          placeholder="MM/YY"
-                          className="w-full px-3 py-2 border border-gray-300 focus:border-indigo-500 outline-none rounded-md"
-                        />
-                      </div>
-                      <div className="space-y-2 col-span-1">
-                        <label htmlFor="cvc" className="block text-sm font-medium">
-                          CVC
-                        </label>
-                        <input id="cvc" type="text" placeholder="123" className="w-full px-3 py-2 border border-gray-300 focus:border-indigo-500 outline-none rounded-md" />
-                      </div>
-                      <div className="space-y-2 col-span-1">
-                        <label htmlFor="zip-code" className="block text-sm font-medium">
-                          ZIP Code
-                        </label>
-                        <input
-                          id="zip-code"
-                          type="text"
-                          placeholder="10001"
-                          className="w-full px-3 py-2 border border-gray-300 focus:border-indigo-500 outline-none rounded-md"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {paymentMethod === "paypal" && (
-                  <div className="text-center p-4">
-                    <p className="mb-4">You'll be redirected to PayPal to complete your payment.</p>
-                    <button
-                      type="button"
-                      className="w-full px-4 py-2 bg-indigo-500 text-white rounded-md hover:bg-indigo-400"
-                    >
-                      Continue to PayPal
-                    </button>
-                  </div>
-                )}
-
-                {paymentMethod === "bank-transfer" && (
-                  <div className="space-y-4 pt-4">
-                    <div className="p-4 bg-gray-100 rounded-md">
-                      <p className="font-medium">Bank Account Details:</p>
-                      <p className="text-sm">Bank: National Bank</p>
-                      <p className="text-sm">Account Name: Book Store Inc.</p>
-                      <p className="text-sm">Account Number: 1234567890</p>
-                      <p className="text-sm">Routing Number: 987654321</p>
-                    </div>
-                    <div className="space-y-2">
-                      <label htmlFor="transfer-reference" className="block text-sm font-medium">
-                        Transfer Reference
-                      </label>
-                      <input
-                        id="transfer-reference"
-                        type="text"
-                        placeholder="Order #12345"
-                        className="w-full px-3 py-2 border border-gray-300 focus:border-indigo-500 outline-none rounded-md"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <label htmlFor="transfer-date" className="block text-sm font-medium">
-                        Transfer Date
-                      </label>
-                      <input id="transfer-date" type="date" className="w-full px-3 py-2 border border-gray-300 focus:border-indigo-500 outline-none rounded-md" />
-                    </div>
-                  </div>
-                )}
-              </div>
-              )}
-              <div className="p-4 border-t border-gray-300 flex justify-between">
-                <button
-                  type="button"
-                  onClick={handleBack}
-                  className="flex items-center px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50"
-                >
-                  <ChevronLeft className="mr-2 h-4 w-4" /> Back
-                </button>
-                <button
-                  type="button"
-                  onClick={handleNext}
-                  className="flex items-center px-4 py-2 bg-indigo-500 text-white rounded-md hover:bg-indigo-400"
-                >
-                  Next <ChevronRight className="ml-2 h-4 w-4" />
-                </button>
-              </div>
-            </div>
-          )}
-
-          {step === 4 && (
-            <div className="bg-white rounded-lg border border-gray-300 overflow-hidden">
-              <div className="p-4 border-b border-gray-300">
-                <h2 className="text-xl font-semibold">Order Confirmation</h2>
-                <p className="text-gray-600 text-sm">Review your order details before confirming</p>
-              </div>
-              <div className="p-4 space-y-4">
-                <div className="space-y-2">
-                  <h3 className="font-medium">Delivery Information</h3>
-                  <div className="bg-gray-100 p-3 md:p-5 rounded-sm">
-                    <p>Date: {date ? date : "Not selected"}</p>
-                    <p>Time: {time || "Not selected"}</p>
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <h3 className="font-medium">Shipping Address</h3>
-                  <div className="bg-gray-100 p-3 md:p-5 rounded-sm">
-                    {addressOption.startsWith("existing") ? (
-                      (() => {
-                        const addressId = Number.parseInt(addressOption.split("-")[1])
-                        const address = existingAddresses.find((a) => a.id === addressId)
-                        return address ? (
-                          <>
-                            <p>{address.name} {address.street} {address.city}, {address.state} {address.zip} {address.country}</p>
-                          </>
-                        ) : (
-                          <p>No address selected</p>
-                        )
-                      })()
-                    ) : (
-                      <p>New address will be used</p>
-                    )}
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <h3 className="font-medium">Payment Method</h3>
-                  <div className="bg-gray-100 p-3 md:p-5 rounded-sm">
-                    <p>
-                      {paymentMethod === "credit-card" && "Credit Card"}
-                      {paymentMethod === "paypal" && "PayPal"}
-                      {paymentMethod === "bank-transfer" && "Bank Transfer"}
+          <motion.div key={step} initial={{ opacity: 0.4, x: 8 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.15 }}>
+            {step === 0 && (
+              <section className="space-y-5">
+                <div className="flex gap-3 rounded-md bg-white border border-gray-200 p-3">
+                  <ServiceImage src={service.cover_image} alt={service.name} category={category} className="h-16 w-16 rounded-sm shrink-0" />
+                  <div className="min-w-0">
+                    <p className="text-xs font-medium text-indigo-600">{category}</p>
+                    <h2 className="font-semibold text-gray-900 truncate">{service.name}</h2>
+                    <p className="text-sm text-gray-600 truncate">{service.ProviderInfo?.name}</p>
+                    <p className="text-sm text-gray-600">
+                      Starting from <span className="font-semibold text-gray-900">{formatPrice(service.visiting_charge)}</span>
                     </p>
                   </div>
                 </div>
+                <div>
+                  <h2 className="text-lg font-bold tracking-wide text-gray-900 mb-3">What do you need done?</h2>
+                  <OutlinedField
+                    as="textarea"
+                    rows={4}
+                    label="Describe the problem"
+                    icon={FileText}
+                    name="issue"
+                    value={issue}
+                    onChange={(e) => setIssue(e.target.value)}
+                    placeholder='For example: "Kitchen tap is leaking" or "AC not cooling"'
+                    hint="This helps the professional come prepared."
+                  />
+                </div>
+              </section>
+            )}
 
-                <div className="space-y-2">
-                  <h3 className="font-medium">Order Summary</h3>
-                  <div className="bg-gray-100 p-3 md:p-5 rounded-sm">
-                    <div className="flex justify-between">
-                      <span>Provider Service Charge</span>
-                      <span>₹{(parseFloat(bookDetails.price || 500)).toFixed(2)}</span>
+            {step === 1 && (
+              <section>
+                <h2 className="text-lg font-bold tracking-wide text-gray-900 mb-3">When do you need it?</h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <ChoiceCard active={when === 'now'} onClick={() => setWhen('now')} icon={Zap} title="As soon as possible" text="The provider confirms and comes today." />
+                  <ChoiceCard active={when === 'later'} onClick={() => setWhen('later')} icon={CalendarDays} title="Schedule for later" text="Pick a day and time that suits you." />
+                </div>
+
+                {when === 'later' && (
+                  <div className="mt-6 space-y-5">
+                    <div>
+                      <h3 className="text-sm font-semibold text-gray-900 mb-2">Select date</h3>
+                      <div className="flex gap-2 overflow-x-auto no-scrollbar -mx-4 px-4">
+                        {days.map((d, i) => (
+                          <button
+                            key={i}
+                            type="button"
+                            aria-pressed={day === i}
+                            onClick={() => {
+                              setDay(i);
+                              setHour(null);
+                            }}
+                            className={`shrink-0 w-[72px] rounded-sm border py-2 text-center ${day === i ? 'border-indigo-500 bg-indigo-50 text-indigo-700' : 'border-gray-200 bg-white text-gray-700'}`}
+                          >
+                            <span className="block text-xs font-medium">{i === 0 ? 'Today' : i === 1 ? 'Tomorrow' : format(d, 'EEE')}</span>
+                            <span className="block text-lg font-semibold">{format(d, 'd')}</span>
+                            <span className="block text-[11px] text-gray-500">{format(d, 'MMM')}</span>
+                          </button>
+                        ))}
+                      </div>
                     </div>
-                    <div className="flex justify-between">
-                      <span>Platform Charge</span>
-                      <span>₹4.99</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Tex</span>
-                      <span>₹8.64</span>
-                    </div>
-                    <div className="flex justify-between font-bold mt-2 pt-2 border-t">
-                      <span>Total</span>
-                      <span>₹{((parseFloat(bookDetails.price || 500)) + 4.99 + 8.64).toFixed(2)}</span>
+                    <div>
+                      <h3 className="text-sm font-semibold text-gray-900 mb-2">Select time</h3>
+                      {slotsForDay.length === 0 ? (
+                        <p className="text-sm text-gray-500">No more slots today. Please pick another day.</p>
+                      ) : (
+                        <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
+                          {slotsForDay.map((d) => {
+                            const h = d.getHours();
+                            return (
+                              <button
+                                key={h}
+                                type="button"
+                                aria-pressed={hour === h}
+                                onClick={() => setHour(h)}
+                                className={`h-11 rounded-sm border text-sm font-medium ${hour === h ? 'border-indigo-500 bg-indigo-500 text-white' : 'border-gray-200 bg-white text-gray-700 hover:border-gray-300'}`}
+                              >
+                                {format(d, 'h a')}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      )}
                     </div>
                   </div>
-                </div>
+                )}
+              </section>
+            )}
 
-                <div className="space-y-2">
-                  <label htmlFor="order-notes" className="block text-sm font-medium">
-                    Order Notes (Optional)
-                  </label>
-                  <textarea
-                    id="order-notes"
-                    placeholder="Any special instructions for delivery?"
-                    className="w-full px-3 py-2 border border-gray-300 focus:border-indigo-500 outline-none rounded-sm min-h-[100px]"
-                  ></textarea>
+            {step === 2 && (
+              <section>
+                <h2 className="text-lg font-bold tracking-wide text-gray-900 mb-3">Where should we come?</h2>
+                {addresses.length > 0 && (
+                  <ul className="space-y-2" role="radiogroup" aria-label="Saved addresses">
+                    {addresses.map((a) => (
+                      <li key={a.text}>
+                        <button
+                          type="button"
+                          role="radio"
+                          aria-checked={address === a.text}
+                          onClick={() => setAddress(a.text)}
+                          className={`w-full text-left flex items-start gap-3 rounded-md border p-4 ${address === a.text ? 'border-indigo-500 bg-indigo-50/50' : 'border-gray-200 bg-white'}`}
+                        >
+                          <MapPin className={`h-5 w-5 mt-0.5 shrink-0 ${address === a.text ? 'text-indigo-500' : 'text-gray-400'}`} aria-hidden="true" />
+                          <span className="flex-1">
+                            <span className="block font-semibold text-gray-900">{a.label}</span>
+                            <span className="block text-sm text-gray-600">{a.text}</span>
+                          </span>
+                          {address === a.text && <Check className="h-5 w-5 text-indigo-500" aria-hidden="true" />}
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+
+                {adding ? (
+                  <div className="mt-4 space-y-4 rounded-md border border-gray-200 bg-white p-4">
+                    <OutlinedField label="Label" name="address-label" value={newAddress.label} onChange={(e) => setNewAddress((p) => ({ ...p, label: e.target.value }))} placeholder="Home, Office…" />
+                    <OutlinedField
+                      as="textarea"
+                      rows={3}
+                      label="Full address"
+                      name="address-text"
+                      value={newAddress.text}
+                      onChange={(e) => setNewAddress((p) => ({ ...p, text: e.target.value }))}
+                      placeholder="House / flat, street, area, city, PIN"
+                      autoComplete="street-address"
+                    />
+                    <div className="flex gap-2">
+                      {addresses.length > 0 && (
+                        <Button variant="secondary" className="flex-1" onClick={() => setAdding(false)}>
+                          Cancel
+                        </Button>
+                      )}
+                      <Button className="flex-1" onClick={addAddress} disabled={!newAddress.text.trim()}>
+                        Use this address
+                      </Button>
+                    </div>
+                    <p className="text-xs text-gray-500">Saved on this device for next time.</p>
+                  </div>
+                ) : (
+                  <Button variant="secondary" icon={Plus} block className="mt-3" onClick={() => setAdding(true)}>
+                    Add new address
+                  </Button>
+                )}
+              </section>
+            )}
+
+            {step === 3 && (
+              <section>
+                <h2 className="text-lg font-bold tracking-wide text-gray-900 mb-3">Confirm booking</h2>
+                <div className="rounded-md border border-gray-200 bg-white divide-y divide-gray-100">
+                  <div className="p-4 flex gap-3">
+                    <ServiceImage src={service.cover_image} alt={service.name} category={category} className="h-12 w-12 rounded-sm shrink-0" iconClassName="h-6 w-6" />
+                    <div>
+                      <p className="font-semibold text-gray-900">{service.name}</p>
+                      <p className="text-sm text-gray-600">{service.ProviderInfo?.name}</p>
+                    </div>
+                  </div>
+                  <SummaryRow icon={Clock} label="When" value={when === 'now' ? 'As soon as possible (today)' : formatDateTime(visitDate)} onEdit={() => setStep(1)} />
+                  <SummaryRow icon={MapPin} label="Where" value={address} onEdit={() => setStep(2)} />
+                  <SummaryRow icon={FileText} label="Problem" value={issue} onEdit={() => setStep(0)} />
+                  <div className="p-4 space-y-1.5">
+                    <div className="flex justify-between text-sm text-gray-600">
+                      <span>Visiting charge</span>
+                      <span>{formatPrice(service.visiting_charge)}</span>
+                    </div>
+                    <div className="flex justify-between font-semibold text-gray-900">
+                      <span>To pay now</span>
+                      <span>₹0</span>
+                    </div>
+                    <p className="text-xs text-gray-500">Pay the professional after the visit. The final amount depends on the work needed.</p>
+                  </div>
                 </div>
-              </div>
-              <div className="p-4 border-t border-gray-300 flex justify-between">
-                <button
-                  type="button"
-                  onClick={handleBack}
-                  className="flex items-center px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50"
-                >
-                  <ChevronLeft className="mr-2 h-4 w-4" /> Back
-                </button>
-                <button
-                  type="button"
-                  onClick={handleNext}
-                  className="flex items-center px-4 py-2 bg-indigo-500 text-white rounded-md hover:bg-indigo-400"
-                >
-                  Confirm Order
-                </button>
-              </div>
-            </div>
+                <p className="mt-3 text-sm text-gray-500">The provider will confirm your booking. You can track it from Bookings.</p>
+                <div className="mt-3">
+                  <InlineError>{error}</InlineError>
+                </div>
+              </section>
+            )}
+          </motion.div>
+      </div>
+
+      {/* Sticky action bar */}
+      <div className="fixed inset-x-0 bottom-0 z-30 border-t border-gray-200 bg-white bottom-safe">
+        <div className="max-w-2xl mx-auto px-4 py-3 flex gap-2">
+          {step > 0 && (
+            <Button variant="secondary" onClick={back} className="px-5">
+              Back
+            </Button>
           )}
-        </>
-      ) : (
-          <main className="text-center flex justify-center items-center w-full h-[85vh] p-3">
-            {/* icons */}
-            <div className="text-gray-400 overflow-hidden">
-              <Plug className="absolute top-[5%] left-60 rotate-[330deg] z-0" />
-              <PartyPopper className="absolute top-[40%] right-20 z-0" />
-              <Wrench className="absolute top-[90%] right-60 rotate-[10deg] z-0" />
-              <Cake className="absolute top-[15%] right-[25vw] rotate-[330deg] z-0" />
-              <Dumbbell className="absolute top-[77%] left-20 rotate-[330deg] z-0" />
-              <ScanFaceIcon className="absolute top-[30%] left-10 rotate-[330deg] z-0" />
-            </div>
-            <div className="p-4 sm:p-10 z-10">
-              <CircleCheckBigIcon className="mx-auto mb-2 h-16 w-16 text-indigo-500" />
-              <h1 className="text-3xl font-extrabold text-indigo-500 tracking-wide">
-                Service Request Sent
-              </h1>
-              <p className="text-gray-600 mt-1">
-                Your service request has been sent successfully. Service provider will
-                give there answer soon. you'le be ready to take your service
-              </p>
-              <div className="gap-2 sm:space-x-2 mt-10 flex flex-col sm:block">
-                <a
-                  href="index.html"
-                  className="text-white bg-indigo-500 px-5 py-3 font-semibold rounded border border-indigo-500"
-                >Go Back to Home</a>
-                <a
-                  href="user_servicelist.html"
-                  className="border border-indigo-500 text-indigo-500 px-5 py-3 font-semibold rounded"
-                > Orders</a>
-              </div>
-              <p className="mt-5 text-gray-500">
-                You will be redirected to main page in{" "}
-                <span
-                  id="secondCounter"
-                  className="border border-red-500 text-red-500 tracking-tight font-bold"
-                >
-                  15
-                </span>{" "}
-                seconds
-              </p>
-            </div>
-          </main>
-      )}
+          {step < STEPS.length - 1 ? (
+            <Button block onClick={next} disabled={!canContinue}>
+              Continue
+            </Button>
+          ) : (
+            <Button block onClick={confirm} loading={submitting}>
+              Confirm Booking
+            </Button>
+          )}
+        </div>
+      </div>
     </div>
-    </div>
-  )
+  );
+};
+
+function ChoiceCard({ active, onClick, icon: Icon, title, text }) {
+  return (
+    <button
+      type="button"
+      aria-pressed={active}
+      onClick={onClick}
+      className={`flex items-start gap-3 rounded-md border p-4 text-left transition-colors ${active ? 'border-indigo-500 bg-indigo-50/60' : 'border-gray-200 bg-white hover:border-gray-300'}`}
+    >
+      <span className={`h-10 w-10 shrink-0 rounded-sm flex items-center justify-center ${active ? 'bg-indigo-500 text-white' : 'bg-gray-100 text-gray-600'}`}>
+        <Icon className="h-5 w-5" aria-hidden="true" />
+      </span>
+      <span>
+        <span className="block font-semibold text-gray-900">{title}</span>
+        <span className="block text-sm text-gray-500">{text}</span>
+      </span>
+    </button>
+  );
 }
 
-export default BookOrderPage
+function SummaryRow({ icon: Icon, label, value, onEdit }) {
+  return (
+    <div className="p-4 flex items-start gap-3">
+      <Icon className="h-5 w-5 mt-0.5 text-gray-400 shrink-0" aria-hidden="true" />
+      <div className="flex-1 min-w-0">
+        <p className="text-xs font-medium text-gray-500">{label}</p>
+        <p className="text-sm text-gray-900 break-words">{value}</p>
+      </div>
+      <button type="button" onClick={onEdit} className="text-sm font-semibold text-indigo-600 px-2 py-1 rounded-sm hover:bg-indigo-50">
+        Change
+      </button>
+    </div>
+  );
+}
+
+export default BookOrderPage;

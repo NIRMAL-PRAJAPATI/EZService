@@ -3,6 +3,7 @@ import Profileinfo from "../components/Profile/user/Profileinfo";
 import Updateinfo from "../components/Profile/user/Updateinfo";
 import LogoutDelete from "../components/Profile/user/Logoutdelete";
 import ProfileNav from '../components/Profile/user/ProfileNav';
+import Appearance from "../components/Profile/user/Appearance";
 
 export default function ProfilePage() {
   return (
@@ -18,6 +19,12 @@ export default function ProfilePage() {
           </div>
         </div>
         <Updateinfo />
+        <div className="hidden sm:block">
+          <div className="py-8">
+            <div className="border-t border-gray-200" />
+          </div>
+        </div>
+        <Appearance />
         <div className="hidden sm:block">
           <div className="py-8">
             <div className="border-t border-gray-200" />

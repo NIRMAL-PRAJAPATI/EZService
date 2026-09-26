@@ -11,6 +11,29 @@ const CustomerInfo = require('../models/customerInfo');
 const Service = require('../models/service');
 const ServiceCategory = require('../models/serviceCategory');
 
+const searchProviders = async (req, res) => {
+    try {
+        const { q } = req.query;
+        if (!q || !q.trim()) {
+            return res.status(200).json([]);
+        }
+
+        const providers = await Provider.findAll({
+            where: {
+                name: { [Op.iLike]: `%${q.trim()}%` }
+            },
+            attributes: ['id', 'name', 'city'],
+            limit: 10,
+            order: [['name', 'ASC']]
+        });
+
+        res.status(200).json(providers);
+    } catch (e) {
+        console.error('Error searching providers:', e);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
 const getProviderProfile = async (req, res) => {
     try{
         const providerId = req.userId;
@@ -22,7 +45,7 @@ const getProviderProfile = async (req, res) => {
         if (!providerId) {
             return res.status(400).json({ message: 'Provider ID is required' });
         }
-        const provider = await Provider.findByPk(providerId);
+        const provider = await Provider.findByPk(providerId, { attributes: { exclude: ['password'] } });
         if (!provider) {
             return res.status(404).json({ message: 'Provider not found' });
         }
@@ -331,25 +354,51 @@ const updateOnlineStatus = async (req, res) => {
     const providerId = req.userId;
     const { isOnline } = req.body;
     const role = req.role;
-    
+
     if (role !== 'provider') {
       return res.status(403).json({ message: 'Access denied' });
     }
-    
+
     if (!providerId) {
       return res.status(400).json({ message: 'Provider ID is required' });
     }
-    
+
+    if (typeof isOnline !== 'boolean') {
+      return res.status(400).json({ message: 'isOnline (boolean) is required' });
+    }
+
     const provider = await Provider.findByPk(providerId);
     if (!provider) {
       return res.status(404).json({ message: 'Provider not found' });
     }
-    
+
     await provider.update({ is_online: isOnline });
-    
-    res.status(200).json({ 
-      message: `Provider is now ${isOnline ? 'online' : 'offline'}`,
-      isOnline 
+
+    // Reflect the change immediately on any socket connections this provider
+    // already has open (e.g. the instant-requests page), instead of waiting
+    // for the next reconnect/page load.
+    const io = req.app.get('io');
+    if (io) {
+      const providerServices = await Service.findAll({
+        where: { provider_id: providerId },
+        attributes: ['category_id']
+      });
+      const rooms = [...new Set(
+        providerServices.map(s => s.category_id).filter(id => id != null)
+      )].map(id => `service-${id}`);
+
+      if (rooms.length) {
+        if (isOnline) {
+          io.in(`provider-${providerId}`).socketsJoin(rooms);
+        } else {
+          io.in(`provider-${providerId}`).socketsLeave(rooms);
+        }
+      }
+    }
+
+    res.status(200).json({
+      message: `Instant service status is now ${isOnline ? 'ON' : 'OFF'}`,
+      isOnline
     });
   } catch (e) {
     console.error('Error updating online status:', e);
@@ -513,4 +562,67 @@ const getDashboardStats = async (req, res) => {
   }
 };
 
-module.exports = {getProviderProfile, getProviderWithServices, getProviderStats, getDashboardStats, registerProvider, loginProvider, getProviderOrders, getProviderServices, getProviderBank}
+// Provider edits their business details (email and mobile stay fixed).
+const updateProviderInfo = async (req, res) => {
+    try {
+        if (req.role !== 'provider') {
+            return res.status(403).json({ message: 'Access denied' });
+        }
+        const provider = await Provider.findByPk(req.userId);
+        if (!provider) {
+            return res.status(404).json({ message: 'Provider not found' });
+        }
+        const { name, address, city, state, country } = req.body;
+        await provider.update({ name, address, city, state, country });
+        const data = provider.toJSON();
+        delete data.password;
+        res.status(200).json(data);
+    } catch (e) {
+        console.error('Error updating provider info:', e);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+const updateProviderPassword = async (req, res) => {
+    try {
+        if (req.role !== 'provider') {
+            return res.status(403).json({ message: 'Access denied' });
+        }
+        const { currentPassword, newPassword } = req.body;
+        if (!currentPassword || !newPassword || newPassword.length < 6) {
+            return res.status(400).json({ message: 'New password must be at least 6 characters' });
+        }
+        const provider = await Provider.findByPk(req.userId);
+        if (!provider) {
+            return res.status(404).json({ message: 'Provider not found' });
+        }
+        if (!(await provider.validPassword(currentPassword))) {
+            return res.status(400).json({ message: 'Current password is incorrect' });
+        }
+        await provider.update({ password: newPassword }); // hashed by the model hook
+        res.status(200).json({ message: 'Password updated' });
+    } catch (e) {
+        console.error('Error updating provider password:', e);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+// Create or update the provider's bank details.
+const updateProviderBank = async (req, res) => {
+    try {
+        if (req.role !== 'provider') {
+            return res.status(403).json({ message: 'Access denied' });
+        }
+        const { holder_name, account_number, account_type, ifsc_code, bank_name, branch } = req.body;
+        const [bank] = await provider_bank.upsert({
+            provider_id: req.userId,
+            holder_name, account_number, account_type, ifsc_code, bank_name, branch
+        });
+        res.status(200).json(bank);
+    } catch (e) {
+        console.error('Error updating provider bank:', e);
+        res.status(500).json({ message: 'Could not save bank details. Please check the values and try again.' });
+    }
+};
+
+module.exports = {updateProviderInfo, updateProviderPassword, updateProviderBank, getProviderProfile, getProviderWithServices, getProviderStats, getDashboardStats, registerProvider, loginProvider, getProviderOrders, getProviderServices, getProviderBank, updateOnlineStatus, getOnlineStatus, searchProviders}

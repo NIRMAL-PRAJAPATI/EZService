@@ -1,218 +1,23 @@
-import { useState, useEffect, use } from 'react';
+import { useState, useEffect } from 'react';
 import {
-  List,
   CircleFadingPlus,
-  Filter,
-  Edit2,
   Trash,
   X,
-  Check,
   AlertTriangle,
 } from 'lucide-react';
-import DashboardHeader from '../components/provider/Header';
+import { ProviderPage } from '../components/layout/ProviderLayout';
+import ServiceImage from '../components/ui/ServiceImage';
+import ServiceForm from '../components/provider/ServiceForm';
 
 import authApi from '../config/auth-config';
 import api from "../config/axios-config"
-
-function EditServiceModal({ isOpen, onClose, service, onSave, categories }) {
-  const [name, setName] = useState('');
-  const [categoryId, setCategoryId] = useState('');
-  const [visitingCharge, setVisitingCharge] = useState(0);
-  const [instantVisitingCharge, setInstantVisitingCharge] = useState(0);
-  const [locations, setLocations] = useState('');
-  const [experience, setExperience] = useState('');
-  const [specifications, setSpecifications] = useState('');
-  const [workingImages, setWorkingImages] = useState([]);
-  const [description, setDescription] = useState('');
-  const [coverImage, setCoverImage] = useState(null);
-  const [serviceType, setServiceType] = useState('HOME');
-
-  useEffect(() => {
-    if (isOpen) {
-      if (service) {
-        console.log(service);
-        setName(service.name || '');
-        setCategoryId(service.category_id || '');
-        setVisitingCharge(service.visitingCharge || 0);
-        setInstantVisitingCharge(service.instantServiceCharge || 0);
-        setLocations(Array.isArray(service.serviceLocations) ? service.serviceLocations.join(', ') : '');
-        setExperience(service.experience || '');
-        setSpecifications(Array.isArray(service.providedServices) ? service.providedServices.join(', ') : '');
-        setDescription(service.description || '');
-        setServiceType(service.service_type || 'HOME');
-        setWorkingImages([]);
-        setCoverImage(null);
-      } else {
-        // Reset form for new service
-        setName('');
-        setCategoryId('');
-        setVisitingCharge(0);
-        setInstantVisitingCharge(0);
-        setLocations('');
-        setExperience('');
-        setSpecifications('');
-        setDescription('');
-        setServiceType('regular');
-        setWorkingImages([]);
-        setCoverImage(null);
-      }
-    }
-  }, [service, isOpen]);
-
-  const handleSave = (e) => {
-    e.preventDefault();
-    onSave({
-      id: service?.id, // Will be undefined for new services
-      name,
-      category_id: categoryId,
-      visiting_charge: parseFloat(visitingCharge),
-      instant_visiting_charge: parseFloat(instantVisitingCharge),
-      locations: locations.split(',').map((loc) => loc.trim()),
-      experience,
-      specifications: specifications.split(',').map((s) => s.trim()),
-      working_images: workingImages,
-      cover_image: coverImage,
-      description,
-      service_type: serviceType,
-      badge_status: service?.badgeStatus || false,
-      city: service?.city || '',
-      state: service?.state || '',
-      country: service?.country || '',
-    });
-    onClose();
-  };
-
-  const handleImageChange = (e) => {
-    const files = Array.from(e.target.files);
-    console.log("Selected working images:", files);
-    setWorkingImages(files);
-  };
-
-  const handleCoverImageChange = (e) => {
-    setCoverImage(e.target.files[0]);
-  };
-
-  if (!isOpen) return null;
-
-  return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-2xl">
-        <div className="flex justify-between items-center mb-4">
-          <div className="flex items-center">
-            <Edit2 className="w-5 h-5 mr-2 text-primary" />
-            <h3 className="text-xl font-semibold">
-              {service?.id ? 'Edit Service' : 'Add New Service'}
-            </h3>
-          </div>
-          <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
-            <X className="w-6 h-6" />
-          </button>
-        </div>
-        <form onSubmit={handleSave}>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium mb-1">Service Name</label>
-              <input type="text" value={name} onChange={(e) => setName(e.target.value)} required className="w-full border px-3 py-2 rounded" />
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-1">Category</label>
-              <select value={categoryId} onChange={(e) => setCategoryId(e.target.value)} required className="w-full border px-3 py-2 rounded">
-                <option value="">Select Category</option>
-                {categories?.map((cat) => {
-                  console.log(cat, categoryId)
-                  if(categoryId == cat.id)
-                    return <option key={cat.id} value={cat.id} selected={true}>{cat.name}</option>  
-                  else
-                    return <option key={cat.id} value={cat.id}>{cat.name}</option>
-                })}
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-1">Visiting Charge (₹)</label>
-              <input type="number" value={visitingCharge} onChange={(e) => setVisitingCharge(e.target.value)} min="0" required className="w-full border px-3 py-2 rounded" />
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-1">Instant Visiting Charge (₹)</label>
-              <input type="number" value={instantVisitingCharge} onChange={(e) => setInstantVisitingCharge(e.target.value)} min="0" required className="w-full border px-3 py-2 rounded" />
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-1">Locations (comma-separated)</label>
-              <input type="text" value={locations} onChange={(e) => setLocations(e.target.value)} required className="w-full border px-3 py-2 rounded" />
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-1">Experience (Years)</label>
-              <select value={experience} onChange={(e) => setExperience(e.target.value)} required className="w-full border px-3 py-2 rounded">
-                <option value="">Select</option>
-                <option value="1">1</option>
-                <option value="3">3</option>
-                <option value="5">5</option>
-                <option value="10">10</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-1">Specifications (comma-separated)</label>
-              <input type="text" value={specifications} onChange={(e) => setSpecifications(e.target.value)} required className="w-full border px-3 py-2 rounded" />
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-1">Service Type</label>
-              <select value={serviceType} onChange={(e) => setServiceType(e.target.value)} required className="w-full border px-3 py-2 rounded">
-                <option value="HOME">Regular</option>
-                <option value="INSTANT">Instant</option>
-              </select>
-            </div>
-            <div className="md:col-span-2">
-              <label className="block text-sm font-medium mb-1">Cover Image</label>
-              <input type="file" accept="image/*" onChange={handleCoverImageChange} className="w-full border px-3 py-2 rounded" />
-              {coverImage && (
-                <div className="mt-2 text-sm text-gray-700">{coverImage.name}</div>
-              )}
-              {service && service.coverImage && !coverImage && (
-                <div className="mt-2">
-                  <img src={service.coverImage} alt="Cover" className="h-24 w-auto object-cover rounded mt-2" />
-                </div>
-              )}
-            </div>
-            <div className="md:col-span-2">
-              <label className="block text-sm font-medium mb-1">Working Images</label>
-              <input type="file" multiple accept="image/*" onChange={handleImageChange} className="w-full border px-3 py-2 rounded" />
-              <div className="mt-2">
-                {workingImages.length > 0 && Array.from(workingImages).map((file, idx) => (
-                  <span key={idx} className="inline-block bg-gray-200 text-xs px-2 py-1 rounded mr-2">{file.name}</span>
-                ))}
-              </div>
-              {service && Array.isArray(service.workingImages) && service.workingImages.length > 0 && (
-                <div className="mt-2 flex flex-wrap gap-2">
-                  {service.workingImages.map((img, idx) => (
-                    <img key={idx} src={img} alt={`Work ${idx + 1}`} className="h-20 w-20 object-cover rounded" />
-                  ))}
-                </div>
-              )}
-            </div>
-            <div className="md:col-span-2">
-              <label className="block text-sm font-medium mb-1">Description</label>
-              <textarea value={description} onChange={(e) => setDescription(e.target.value)} rows="4" required className="w-full border px-3 py-2 rounded"></textarea>
-            </div>
-          </div>
-          <div className="mt-6 flex justify-end space-x-3">
-            <button type="button" onClick={onClose} className="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300">
-              <X className="w-4 h-4 mr-1 inline" /> Cancel
-            </button>
-            <button type="submit" className="px-4 py-2 bg-indigo-500 text-white rounded hover:bg-indigo-600">
-              <Check className="w-4 h-4 mr-1 inline" /> Save Changes
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-  );
-}
 
 function DeleteConfirmationModal({ isOpen, onClose, onConfirm }) {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
+    <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-[60]">
+      <div className="bg-white rounded-t-lg sm:rounded-md shadow-xl p-6 w-full max-w-md">
         <div className="flex items-center mb-4">
           <AlertTriangle className="w-6 h-6 text-red-500 mr-2" />
           <h3 className="text-xl font-semibold">Confirm Deletion</h3>
@@ -249,6 +54,11 @@ function ServiceList() {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [serviceToEdit, setServiceToEdit] = useState(null);
   const [serviceToDeleteId, setServiceToDeleteId] = useState(null);
+  const [providerProfile, setProviderProfile] = useState(null);
+
+  useEffect(() => {
+    authApi.get('/provider/profile').then((res) => setProviderProfile(res.data)).catch(() => {});
+  }, []);
 
   useEffect(() => {
     localStorage.setItem('services', JSON.stringify(services));
@@ -331,7 +141,6 @@ function ServiceList() {
   };
 
   const saveEditedService = (editedService) => {
-    console.log(editedService)
     
     // Create FormData object for file uploads
     const formData = new FormData();
@@ -373,9 +182,9 @@ function ServiceList() {
     
     // Add other fields
     formData.append('badge_status', editedService.badge_status || false);
-    formData.append('city', editedService.city || '');
-    formData.append('state', editedService.state || '');
-    formData.append('country', editedService.country || '');
+    formData.append('city', editedService.city || providerProfile?.city || '');
+    formData.append('state', editedService.state || providerProfile?.state || '');
+    formData.append('country', editedService.country || providerProfile?.country || '');
     
     // Determine if this is a create or update operation
     const isNewService = !editedService.id;
@@ -384,8 +193,7 @@ function ServiceList() {
       ? authApi.post('/services', formData, { headers: { 'Content-Type': 'multipart/form-data' } })
       : authApi.put(`/services/${editedService.id}`, formData, { headers: { 'Content-Type': 'multipart/form-data' } });
     
-    apiCall.then((response) => {
-      console.log(`Service ${isNewService ? 'created' : 'updated'} successfully:`, response.data);
+    return apiCall.then((response) => {
       
       if (isNewService) {
         // Add the new service to the list
@@ -432,140 +240,87 @@ function ServiceList() {
         );
         setServices(updatedServices);
       }
-    }).catch((error) => {
-      console.error(`Error ${isNewService ? 'creating' : 'updating'} service:`, error);
     });
-    
-    setEditModalOpen(false);
   };
 
   return (
-    <div className="bg-gray-50">
-      <div className="flex justify-between items-center mb-6">
-        <div className="items-center hidden sm:flex">
-          <List className="w-6 h-6 mr-2 text-primary" />
-          <h2 className="text-1xl md:text-2xl font-semibold">
-            Registered Services
-          </h2>
+    <div>
+      <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-extrabold tracking-wide text-gray-900">My services</h1>
+          <p className="text-sm text-gray-500">What customers can book from you, with your prices.</p>
         </div>
-        <div className="flex space-x-2">
-          <button
-            onClick={() => {
-              setServiceToEdit(null);
-              setEditModalOpen(true);
-            }}
-            className="flex bg-indigo-500 text-white px-3 py-2 rounded whitespace-nowrap"
-          >
-            <CircleFadingPlus className="h-4 w-4 mt-1 mr-1" />
-            Add Service
-          </button>
-          <div className="relative">
-            <Filter className="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-            <select
-              id="filterCategory"
-              className="pl-8 px-3 py-2 border bg-white border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-primary"
-              value={filterCategory}
-              onChange={(e) => setFilterCategory(e.target.value)}
+        <button
+          type="button"
+          onClick={() => {
+            setServiceToEdit(null);
+            setEditModalOpen(true);
+          }}
+          className="inline-flex items-center gap-1.5 h-11 px-4 rounded-sm bg-indigo-500 text-white font-semibold hover:bg-indigo-600"
+        >
+          <CircleFadingPlus className="h-4 w-4" aria-hidden="true" />
+          Add service
+        </button>
+      </div>
+
+      {categories?.length > 0 && services.length > 0 && (
+        <div className="mb-4 flex gap-2 overflow-x-auto no-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0" role="tablist" aria-label="Filter by category">
+          {[{ id: '', name: 'All' }, ...categories.filter((c) => services.some((s) => String(s.category_id) === String(c.id)))].map((c) => (
+            <button
+              key={c.id || 'all'}
+              type="button"
+              role="tab"
+              aria-selected={String(filterCategory) === String(c.id)}
+              onClick={() => setFilterCategory(c.id)}
+              className={`shrink-0 h-9 px-3.5 rounded-sm border text-sm font-medium ${String(filterCategory) === String(c.id) ? 'bg-indigo-500 border-indigo-500 text-white' : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'}`}
             >
-              <option value="">All Categories</option>
-              {categories?.map((category) => (
-                <option key={category.id} value={category.id}>{category.name}</option>
-              ))}
-            </select>
-          </div>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-        {filteredServices.map((service) => (
-          <div
-  key={service.id}
-  className="bg-white border border-gray-200 rounded-lg relative"
->
-  {/* Image */}
-  <div className="relative z-0">
-    <img
-      src={
-        service.coverImage ||
-        'https://images.pexels.com/photos/264636/pexels-photo-264636.jpeg?cs=srgb&dl=pexels-pixabay-264636.jpg&fm=jpg'
-      }
-      alt={service.name}
-      className="w-full h-40 object-cover rounded-t-lg"
-    />
-    {service.badge_status && (
-      <span className="absolute top-2 right-2 bg-green-500 text-white px-2 py-1 rounded-full text-xs z-20">
-        Verified
-      </span>
-    )}
-  </div>
-
-  {/* Content with slight overlap (≈10% of image height) */}
-  <div className="relative z-0 -mt-16 p-4 bg-gradient-to-b from-white/10 via-white to-white rounded-b-lg">
-    <div className="items-start mb-2 mt-14">
-      <div className='flex justify-end'>
-      <p className="text-sm text-indigo-600 bg-indigo-50 px-2 -mt-5 py-1 rounded">
-        {service.category}
-      </p>
-      </div>
-      <h3 className="text-lg font-semibold text-gray-900 truncate -mt-1">{service.name}</h3>
-    </div>
-
-    <p className="text-gray-600 text-sm mb-3 line-clamp-2">{service.description}</p>    
-              <div className="space-y-2 mb-4">
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-500">Visiting Charge</span>
-                  <span className="font-medium">₹{service.visitingCharge}</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-500">Instant Service</span>
-                  <span className="font-medium">₹{service.instantServiceCharge}</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-500">Experience</span>
-                  <span className="font-medium">{service.experience} years</span>
-                </div>
-              </div>
-              
-              <div className="mb-3 flex">
-                <p className="text-xs text-gray-500 mb-1 mr-2">Locations </p>
-                <div className="flex flex-wrap gap-1">
-                  {service.serviceLocations?.slice(0, 2).map((location, index) => (
-                    <span key={index} className="text-xs rounded">
-                      {location} | 
-                    </span>
-                  ))}
-                  {service.serviceLocations?.length > 2 && (
-                    <span className="text-xs text-gray-500">+{service.serviceLocations.length - 2} more</span>
-                  )}
-                </div>
-              </div>
-              
-              <div className="flex space-x-2">
-                <button
-                  onClick={() => handleEdit(service)}
-                  className="flex-1 bg-indigo-500 text-white px-3 py-2 rounded text-sm hover:bg-indigo-600 transition-colors"
-                >
-                  Edit
-                </button>
-                <button
-                  onClick={() => handleDelete(service.id)}
-                  className="flex-1 bg-red-500 text-white px-3 py-2 rounded text-sm hover:bg-red-600 transition-colors"
-                >
-                  Delete
-                </button>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-      {filteredServices.length === 0 && (
-        <div id="noServices" className="text-center py-4 text-gray-500">
-          No services found. Add a service to get started.
+              {c.name}
+            </button>
+          ))}
         </div>
       )}
 
-      <EditServiceModal
-        isOpen={editModalOpen}
+      <ul className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+        {filteredServices.map((service) => (
+          <li key={service.id} className="rounded-md border border-gray-200 bg-white p-4">
+            <div className="flex gap-3">
+              <ServiceImage src={service.coverImage} alt={service.name} category={service.category} className="h-20 w-20 shrink-0 rounded-sm" />
+              <div className="min-w-0 flex-1">
+                <div className="flex items-start justify-between gap-2">
+                  <h3 className="font-semibold text-gray-900 leading-snug line-clamp-2">{service.name}</h3>
+                  <span className="shrink-0 inline-flex items-center gap-1 rounded-sm bg-green-50 px-2 py-0.5 text-xs font-semibold text-green-700">
+                    <span className="h-1.5 w-1.5 rounded-full bg-green-500" aria-hidden="true" /> Active
+                  </span>
+                </div>
+                <p className="text-sm text-indigo-600">{service.category}</p>
+                <p className="mt-1 text-sm text-gray-700">
+                  <span className="font-semibold text-gray-900">₹{service.visitingCharge}</span> visit
+                  {service.instantServiceCharge ? <> · <span className="font-semibold text-gray-900">₹{service.instantServiceCharge}</span> instant</> : null}
+                </p>
+                {service.badgeStatus && <p className="text-xs font-semibold text-green-700 mt-0.5">Verified</p>}
+              </div>
+            </div>
+            {service.description && <p className="mt-3 text-sm text-gray-600 line-clamp-2">{service.description}</p>}
+            <div className="mt-4 flex gap-2">
+              <button type="button" onClick={() => handleEdit(service.id)} className="flex-1 h-10 rounded-sm border border-gray-300 bg-white text-sm font-semibold text-gray-800 hover:bg-gray-50">
+                Edit
+              </button>
+              <button type="button" onClick={() => handleDelete(service.id)} className="h-10 px-4 rounded-sm border border-red-200 bg-white text-sm font-semibold text-red-600 hover:bg-red-50">
+                Delete
+              </button>
+            </div>
+          </li>
+        ))}
+      </ul>
+      {filteredServices.length === 0 && (
+        <div id="noServices" className="rounded-md border border-dashed border-gray-300 bg-white p-8 text-center">
+          <p className="font-semibold text-gray-900">{services.length ? 'No services in this category' : 'No services yet'}</p>
+          <p className="text-sm text-gray-500">Add a service so customers can book you.</p>
+        </div>
+      )}
+
+      <ServiceForm
+        open={editModalOpen}
         onClose={() => setEditModalOpen(false)}
         service={serviceToEdit}
         onSave={saveEditedService}
@@ -583,13 +338,9 @@ function ServiceList() {
 
 function ProviderServices() {
   return (
-    <>
-    <DashboardHeader />
-    <main className='bg-gray-50 mx-auto py-4 px-3 sm:px-6 lg:px-8 pt-20 z-0 overflow-x-scroll'>
+    <ProviderPage>
       <ServiceList />
-    </main>
-    
-    </>
+    </ProviderPage>
   );
 }
 

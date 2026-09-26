@@ -1,5 +1,5 @@
 import OrderPage from "../components/Order/orders"
 
-export default function orders() {
+export default function Orders() {
   return <OrderPage />
 }

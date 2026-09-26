@@ -1,11 +1,17 @@
-import React, { useState } from 'react';
-import { Mail, Lock, LogIn, UserPlus, User } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
-import api from '../../config/axios-config'; 
+import { useState } from 'react';
+import { Briefcase, Wrench, IndianRupee, CalendarCheck, Zap } from 'lucide-react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import api from '../../config/axios-config';
 
+// Provider login: same layout and outlined inputs as the customer login page,
+// with provider-focused wording and icons.
 const LoginForm = () => {
   const [formData, setFormData] = useState({ email: '', password: '' });
-  const navigate = useNavigate()
+  const [errorMessage, setErrorMessage] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
+  const returnTo = location.state?.from;
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -14,107 +20,89 @@ const LoginForm = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    
+    setErrorMessage('');
+    setSubmitting(true);
+
     api.post('/provider/login', formData, {
       headers: {
         'Content-Type': 'application/json',
       },
     }).then((response) => {
-      console.log('Login successful:', response.data);
-
       localStorage.setItem('token', response.data.token)
       localStorage.setItem('user', JSON.stringify(response.data.provider))
-      navigate('/provider/dashboard')
+      navigate(returnTo || '/provider/dashboard', { replace: true })
     }).catch((error) => {
-      alert('Login error:', error.response.data.message);
-      console.error(error);
-    });
-
-    console.log('Login data:', formData);
+      setErrorMessage(error.response?.data?.message || "We couldn't log you in. Please try again.");
+    }).finally(() => setSubmitting(false));
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-      <div className="w-full max-w-md">
-        <h2 className="text-2xl sm:text-3xl font-extrabold tracking-wide text-center mb-6">Login as Provider</h2>
-        <form onSubmit={handleSubmit} className="space-y-2">
-
-          {/* Email */}
-          <div>
-            <label className="block text-indigo-600 tracking-wide">Email</label>
-            <div className="flex items-center border border-gray-300 hover:border-indigo-500 rounded-sm px-3 py-3">
-              <Mail className="w-4 h-4 text-gray-400 mr-2" />
-              <input
-                type="email"
-                name="email"
-                required
-                value={formData.email}
-                onChange={handleChange}
-                placeholder="user@example.com"
-                className="w-full outline-none"
-              />
-            </div>
+    <div className="md:bg-gray-50 h-[100vh] flex justify-center">
+      <div className="text-gray-500 overflow-hidden z-0 hidden md:block">
+        <Briefcase className="absolute top-24 left-60 rotate-[330deg] z-0" />
+        <IndianRupee className="absolute top-[400px] left-[30vw] rotate-[330deg] z-0" />
+        <CalendarCheck className="absolute top-[500px] right-20 z-0" />
+        <Wrench className="absolute top-[500px] left-40 rotate-[10deg] z-0" />
+        <Zap className="absolute top-[250px] left-[50%] z-0" />
+      </div>
+      <div className="flex items-center justify-center w-full max-w-7xl">
+        <main className="relative z-10 flex items-center justify-center md:justify-between border-dashed w-full border-indigo-500 md:border-2 md:m-10 md:p-10 lg:m-10 lg:p-20 rounded-lg bg-white">
+          <div className="mx-2 mt-10 w-[550px] hidden md:block">
+            <span className="inline-block mb-4 rounded-full bg-indigo-50 px-3 py-1 text-sm font-semibold text-indigo-600">EZService Partner</span>
+            <h1 className="text-5xl font-bold tracking-wide">Grow Your Service <span className="bg-indigo-500 text-white">Business</span></h1>
+            <p className="text-gray-500 mt-4 mr-10">Welcome back, partner. Log in to accept new bookings, go online for instant requests, manage your services and track your earnings, all in one place.</p>
           </div>
-
-          {/* Password */}
-          <div>
-            <label className="block text-indigo-600 tracking-wide">Password</label>
-            <div className="flex items-center border border-gray-300 hover:border-indigo-500 rounded-sm px-3 py-3">
-              <Lock className="w-4 h-4 text-gray-400 mr-2" />
-              <input
-                type="password"
-                name="password"
-                required
-                value={formData.password}
-                onChange={handleChange}
-                placeholder="User@123"
-                className="w-full outline-none"
-              />
+          <div className="max-w-md w-full">
+            <div className="text-center">
+              <span className="md:hidden inline-block mb-2 rounded-full bg-indigo-50 px-3 py-1 text-xs font-semibold text-indigo-600">EZService Partner</span>
+              <h2 className="mt-2 text-3xl font-extrabold">
+                Login as Provider
+              </h2>
+              <p className="mt-1 text-sm text-gray-500">Manage your bookings and services</p>
             </div>
+            <form onSubmit={handleSubmit} className="mt-3 space-y-2 text-sm p-5">
+              <div className="rounded-md">
+                <p className="text-red-600 -mt-3" role="alert">{errorMessage}</p>
+                <div className="mt-4 relative">
+                  <label htmlFor="provider-email" className="absolute left-3 -top-3 bg-white px-1 text-sm font-medium text-indigo-500">Business Email</label>
+                  <input
+                    id="provider-email"
+                    type="email"
+                    name="email"
+                    autoComplete="email"
+                    className="block w-full pl-4 pr-3 py-4 md:py-3 border border-gray-300 bg-white rounded-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-lg md:text-sm"
+                    value={formData.email}
+                    onChange={handleChange}
+                    required />
+                </div><br />
+                <div className="relative">
+                  <label htmlFor="provider-password" className="absolute left-3 -top-3 bg-white px-1 text-sm font-medium text-indigo-500">Password</label>
+                  <input
+                    id="provider-password"
+                    type="password"
+                    name="password"
+                    autoComplete="current-password"
+                    className="block w-full pl-4 pr-3 py-4 md:py-3 border border-gray-300 bg-white rounded-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-lg md:text-sm"
+                    value={formData.password}
+                    onChange={handleChange}
+                    required />
+                </div>
+              </div>
+              <div className="pt-3">
+                <button type="submit" disabled={submitting} className="group relative w-full flex justify-center py-4 md:py-3 px-4 border border-transparent font-medium rounded-sm text-white bg-indigo-500 hover:bg-indigo-600 disabled:opacity-60 text-lg md:text-sm cursor-pointer focus:outline-none mt-1">
+                  {submitting ? 'Logging in…' : 'LogIn Now'}
+                </button>
+              </div>
+            </form>
+            <div className='w-full flex'>
+              <Link to='/provider/register' className='-mt-3 mx-auto text-gray-600 tracking-wide font-semibold cursor-pointer'>Register your business?</Link>
+            </div>
+            <p className='mt-4 px-5 pb-2 text-center text-sm text-gray-500'>
+              Looking to book a service?{' '}
+              <Link to='/login' className='text-indigo-500 hover:text-indigo-600 font-medium'>Login as customer</Link>
+            </p>
           </div>
-
-          {/* Login Button */}
-          <button
-            type="submit"
-            className="w-full flex items-center mt-4 justify-center gap-2 bg-indigo-500 text-white py-3 rounded-sm hover:bg-indigo-600 transition"
-          >Login
-            <LogIn className="w-4 h-4 mt-0.5" />
-          </button>
-        </form>
-
-        {/* Divider */}
-        <div className="my-4">
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-300"></div>
-            </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-gray-50 text-gray-500">OR</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Sign in as Provider */}
-        {/* <div className="text-center">
-          <Link
-            to="/login"
-            className="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-100 transition"
-          >
-            <User className="w-4 h-4" />
-            Sign in as Customer
-          </Link>
-        </div> */}
-
-        {/* Link to Register */}
-        <p className="mt-2 text-center tracking-wide text-sm text-gray-600 flex justify-center gap-1">
-          Don't have an account?{' '}
-          <Link
-            to="/provider/register"
-            className="text-blue-600 hover:underline flex items-center justify-center gap-1"
-          >
-            Register
-          </Link>
-        </p>
+        </main>
       </div>
     </div>
   );

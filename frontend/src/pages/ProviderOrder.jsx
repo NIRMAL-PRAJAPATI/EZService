@@ -1,262 +1,92 @@
-import { FileDigit, MapPin, Calendar, Eye, Wrench } from 'lucide-react';
-import DashboardHeader from '../components/provider/Header';
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useMemo, useState } from 'react';
+import { ClipboardList, RefreshCw } from 'lucide-react';
 import authApi from '../config/auth-config';
-import Loading from '../components/Loading';
+import { ProviderPage } from '../components/layout/ProviderLayout';
+import ProviderOrderCard from '../components/provider/ProviderOrderCard';
+import Button from '../components/ui/Button';
+import Tabs from '../components/ui/Tabs';
+import { CardListSkeleton } from '../components/ui/Skeleton';
+import { EmptyState, ErrorState } from '../components/ui/States';
+import { normalizeStatus } from '../components/ui/StatusBadge';
 
-function OrderItem({ order, onStatusUpdate }) {
-  const [isUpdating, setIsUpdating] = useState(false);
-  const navigate = useNavigate();
-  
-  console.log("Order in OrderItem:", order);
-  
-  const handleStatusUpdate = (status) => {
-    setIsUpdating(true);
-    authApi.put(`/orders/${order.orderNo}/status`, { status })
-      .then(response => {
-        console.log(`Order ${order.orderNo} status updated to ${status}`);
-        // Call the parent component's update handler
-        onStatusUpdate(order.orderNo, status);
-      })
-      .catch(error => {
-        console.error(`Error ${status === 'accepted' ? 'accepting' : 'declining'} order:`, error);
-        alert(`Failed to ${status === 'accepted' ? 'accept' : 'decline'} order. Please try again.`);
-      })
-      .finally(() => {
-        setIsUpdating(false);
-      });
-  };
-  
-  // Render status badge
-  const renderStatusBadge = () => {
-    const status = order.status || "PENDING";
-    
-    switch(status.toLowerCase()) {
-      case 'pending' || 'PENDING':
-        return <span className="">Pending</span>;
-      case 'confirmed':
-        return <span className="">Accepted</span>;
-      case 'rejected':
-        return <span className="">Declined</span>;
-      case 'fulfilled':
-        return <span className="">Completed</span>;
-      case 'completed':
-        return <span className="">Completed</span>;
-      default:
-        return <span className="">{status}</span>;
-    }
-  };
-  
-  return (
-    <li className='hover:bg-gray-50/30 hover:border hover:border-indigo-200 overflow-hidden'>
-      <div className="px-4 py-4 sm:px-6">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center">
-            <p className="font-bold text-primary tracking-wide text-xl capitalize">
-              {order.customerName}
-            </p>
-          </div>
-          <div className="ml-2 flex-shrink-0 flex items-center space-x-2">
-            <p className='bg-indigo-500 text-white -mt-8 -mr-6 px-2 rounded-bl-md text-xs py-1.5'>{renderStatusBadge()}</p>
-          </div>
-        </div>
-        <div className="mt-2 sm:flex sm:justify-between">
-          <div className="sm:flex">
-            <p className="flex items-center text-sm text-gray-500 font-medium">
-              <Wrench className="flex-shrink-0 mr-1.5 h-4 w-4 text-indigo-500" />
-              <span>{order.serviceType}</span>
-            </p>
-            <p className="mt-2 flex items-center text-sm text-gray-500 sm:mt-0 sm:ml-6">
-              <MapPin className="flex-shrink-0 mr-1.5 h-4 w-4 text-indigo-500" />
-              <span className="w-full sm:w-[25vw] truncate">{order.address}</span>
-            </p>
-          </div>
-          <div className="mt-2 flex items-center text-sm text-gray-500 sm:mt-0">
-            <Calendar className="flex-shrink-0 mr-1.5 h-4 w-4 text-indigo-500" />
-            <p>{order.serviceTime}</p>
-          </div>
-        </div>
-        <div className="mt-2 flex justify-between items-center w-full justify-end">
-          <button 
-            onClick={() => navigate(`/provider/orders/${order.orderNo}/view`)}
-            className="inline-flex items-center px-3 py-1 mt-2 border border-gray-300 font-medium rounded text-gray-700 hover:bg-gray-50"
-          >
-            <Eye className="h-4 w-4 mr-1" />
-            View Details
-          </button>
-          {(!order.status || order.status === 'PENDING' || order.status.toUpperCase() === 'PENDING') && (
-            <div className="flex space-x-2">
-              <button 
-                onClick={() => handleStatusUpdate('rejected')}
-                disabled={isUpdating}
-                className="inline-flex items-center px-4 py-2 border border-red-500 font-medium rounded text-red-500 hover:bg-red-50 disabled:opacity-50"
-              >
-                {isUpdating ? 'Processing...' : 'Decline'}
-              </button>
-              <button 
-                onClick={() => handleStatusUpdate('accepted')}
-                disabled={isUpdating}
-                className="inline-flex items-center px-4 py-2 border border-transparent font-medium rounded text-white bg-indigo-500 hover:bg-indigo-600 disabled:opacity-50"
-              >
-                {isUpdating ? 'Processing...' : 'Accept order'}
-              </button>
-            </div>
-          )}
-        </div>
-      </div>
-    </li>
-  );
-}
-
-function OrderList({ orders, onStatusUpdate }) {
-  return (
-    <div className="mt-3">
-      <h2 className="text-lg leading-6 font-medium text-gray-900">Orders</h2>
-      <div className="mt-4 bg-white shadow overflow-hidden sm:rounded-md">
-        {orders.length === 0 ? (
-          <div className="p-6 text-center text-gray-500">No orders found</div>
-        ) : (
-          <ul role="list" className="divide-y divide-gray-200">
-            {orders.map((order) => (
-              <OrderItem 
-                key={order.orderNo} 
-                order={order} 
-                onStatusUpdate={onStatusUpdate} 
-              />
-            ))}
-          </ul>
-        )}
-      </div>
-    </div>
-  );
-}
-
-
+const TABS = [
+  { id: 'PENDING', label: 'New' },
+  { id: 'CONFIRMED', label: 'Accepted' },
+  { id: 'COMPLETED', label: 'Completed' },
+  { id: 'CANCELLED', label: 'Cancelled' },
+  { id: 'ALL', label: 'All' },
+];
 
 function ProviderOrder() {
-  const [ordersData, setOrdersData] = useState([]);
-  const [filter, setFilter] = useState("All");
-  const navigate = useNavigate();
-  console.log("Orders data:", ordersData);
-  const filteredOrders =
-    filter === "All"
-      ? ordersData
-      : ordersData.filter((order) => {
-          const orderStatus = (order.status || "").toUpperCase();
-          return orderStatus === filter;
-        });
-
-  const statusFilters = ["All", "PENDING", "CONFIRMED", "REJECTED", "COMPLETED"];
+  const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+  const [tab, setTab] = useState('PENDING');
 
   const fetchOrders = () => {
     setLoading(true);
-    
-    // Try both possible API endpoints
+    setError(false);
     authApi
-      .get("/orders/provider")
-      .then((response) => {
-        console.log("API response from /orders/provider:", response.data);
-        processOrdersData(response.data);
-      })
-      .catch((error) => {
-        console.error("Error fetching from /orders/provider:", error);
-        
-        // Try alternative endpoint
-        authApi
-          .get("/provider/orders")
-          .then((response) => {
-            console.log("API response from /provider/orders:", response.data);
-            
-            // Check if response has orders property
-            const ordersData = response.data.orders || response.data;
-            processOrdersData(ordersData);
-          })
-          .catch((secondError) => {
-            console.error("Error fetching from /provider/orders:", secondError);
-            setLoading(false);
-          });
-      });
-  };
-  
-  const processOrdersData = (data) => {
-    try {
-      const orders = data.map((order) => ({
-        orderNo: order.order_id,
-        customerName: order.CustomerInfo?.name || "Customer",
-        serviceType: order.Service?.name || "Service",
-        address: order.location || "",
-        serviceTime: order.date ? new Date(order.date).toLocaleDateString() : "Not specified",
-        issue: order.issue || "No issue specified",
-        status: order.status || "PENDING"
-      }));
-      
-      console.log("Processed orders:", orders);
-      setOrdersData(orders);
-    } catch (err) {
-      console.error("Error processing orders data:", err);
-    } finally {
-      setLoading(false);
-    }
+      .get('/orders/provider')
+      .then((res) => setOrders(Array.isArray(res.data) ? res.data : []))
+      .catch(() => setError(true))
+      .finally(() => setLoading(false));
   };
 
-  useEffect(() => {
-    fetchOrders();
-  }, []);
-  
-  const handleStatusUpdate = (orderId, newStatus) => {
-    // Update the local state to reflect the status change
-    setOrdersData(prevOrders => 
-      prevOrders.map(order => 
-        order.orderNo === orderId 
-          ? { ...order, status: newStatus } 
-          : order
-      )
-    );
-    
-    // Reload data after a short delay to ensure backend has updated
-    setTimeout(() => {
-      fetchOrders();
-    }, 500);
-  };
+  useEffect(fetchOrders, []);
+
+  const counts = useMemo(() => {
+    const c = { ALL: orders.length };
+    orders.forEach((o) => {
+      const s = normalizeStatus(o.status);
+      c[s] = (c[s] || 0) + 1;
+    });
+    return c;
+  }, [orders]);
+
+  const list = tab === 'ALL' ? orders : orders.filter((o) => normalizeStatus(o.status) === tab);
+  const onUpdated = (orderId, status) => setOrders((prev) => prev.map((o) => (o.order_id === orderId ? { ...o, status } : o)));
 
   return (
-    <div className='bg-gray-50'>
-    <DashboardHeader />
-    <div className="bg-white shadow overflow-hidden sm:rounded-md max-w-7xl mx-auto pt-18">
-    <div className="px-4 py-3 sm:px-6">
-        <div className="flex justify-between items-center mb-4">
-          <div className="flex space-x-2">
-            {statusFilters.map((status) => (
-              <button
-                key={status}
-                onClick={() => setFilter(status)}
-                className={
-                  filter === status
-                    ? "px-4 py-2 rounded-md text-sm font-medium border bg-indigo-50 text-indigo-700 border-indigo-300"
-                    : "px-4 py-2 rounded-md text-sm font-medium border bg-white text-gray-700 border-gray-300 hover:bg-gray-100"
-                }
-              >
-                {status === "All" ? "All" : status.charAt(0) + status.slice(1).toLowerCase()}
-              </button>
-            ))}
-          </div>
-          <button 
-            onClick={fetchOrders}
-            disabled={loading}
-            className="px-4 py-2 rounded-md text-sm font-medium border bg-indigo-500 text-white hover:bg-indigo-600 disabled:opacity-50"
-          >
-            {loading ? "Refreshing..." : "Refresh Orders"}
-          </button>
+    <ProviderPage
+      title="Orders"
+      subtitle="Accept new bookings and keep track of your jobs."
+      actions={
+        <Button variant="secondary" size="sm" icon={RefreshCw} onClick={fetchOrders} loading={loading}>
+          Refresh
+        </Button>
+      }
+    >
+      <Tabs
+        className="mb-4"
+        label="Order status"
+        value={tab}
+        onChange={setTab}
+        tabs={TABS.map((t) => ({ id: t.id, label: t.label, count: counts[t.id] || 0 }))}
+      />
+
+      {loading ? (
+        <CardListSkeleton count={3} />
+      ) : error ? (
+        <div className="rounded-md border border-gray-200 bg-white">
+          <ErrorState description="We couldn't load your orders." onRetry={fetchOrders} />
         </div>
-      </div>
-      </div>
-      
-    <main className="max-w-7xl mx-auto z-0">
-      {loading ? <Loading /> : <OrderList orders={filteredOrders} onStatusUpdate={handleStatusUpdate} />}
-    </main>
-    </div>
+      ) : list.length === 0 ? (
+        <div className="rounded-md border border-gray-200 bg-white">
+          <EmptyState
+            icon={ClipboardList}
+            title={tab === 'PENDING' ? 'No new orders' : 'Nothing here'}
+            description={tab === 'PENDING' ? 'New bookings from customers will appear here.' : 'Orders with this status will appear here.'}
+          />
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+          {list.map((o) => (
+            <ProviderOrderCard key={o.order_id} order={o} onUpdated={onUpdated} />
+          ))}
+        </div>
+      )}
+    </ProviderPage>
   );
 }
 

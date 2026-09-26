@@ -12,7 +12,7 @@ router.post('/existancecheck', Controller.existanceCheck);
 router.post('/register', Controller.registerCustomer);
 router.post('/varifyemailmobile', Controller.varifyEmailMobile);
 router.put('/profile/update', verifyToken, Controller.updateCustomer);
-router.delete('/delete', Controller.deleteCustomer);
+router.delete('/delete', verifyToken, Controller.deleteCustomer);
 router.put('/password', verifyToken, Controller.updatePassword);
 
 // 1. Trigger Google OAuth
@@ -27,7 +27,7 @@ router.get(
 
     // Redirect to frontend with user info in query string (encoded)
     const query = querystring.stringify({ name, email });
-    res.redirect(`http://localhost:5173/authtransfer?${query}`);
+    res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:5173'}/authtransfer?${query}`);
   }
 );
 

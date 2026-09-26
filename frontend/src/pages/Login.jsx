@@ -1,10 +1,11 @@
 import { Plug, LibraryBig, Car, Wrench, PartyPopper } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import api from '../config/axios-config'
 
 function Login() {
     const location = useLocation();
+    const returnTo = location.state?.from;
     const navigate = useNavigate();
     const [formData, setFormData] = useState({emailmobile: location.state?.emailmobile || '',
     password: location.state?.password || '',})
@@ -34,10 +35,11 @@ function Login() {
             localStorage.setItem('token', response.data.token)
             const location = response.data.data.city + ", " + response.data.data.state + ", " + response.data.data.country + ", " + response.data.data.pincode;
             localStorage.setItem('location', location)
-            navigate('/')
+            // Go back to the page that asked for login (e.g. booking), otherwise home
+            navigate(returnTo || '/', { replace: true })
         }).catch((error) => {
             console.error(error);
-            setErrorMessage(error.response.data.message);
+            setErrorMessage(error.response?.data?.message || "We couldn't log you in. Please try again.");
 
         });
     }
@@ -51,7 +53,7 @@ function Login() {
                 <Wrench className="absolute top-[500px] left-40 rotate-[10deg] z-0" />
                 <PartyPopper className="absolute top-[250px] left-[50%] z-0" />
             </div>
-            <div className="flex items-center justify-center w-7xl">
+            <div className="flex items-center justify-center w-full max-w-7xl">
                 <main className="flex items-center justify-center md:justify-between border-dashed w-full border-indigo-500 md:border-2 md:m-10 md:p-10 lg:m-10 lg:p-20 rounded-lg bg-white">
                     <div className="mx-2 mt-10 w-[550px] hidden md:block">
                         <h1 className="text-5xl font-bold tracking-wide">Get Any Service at Your<span className="bg-indigo-500 text-white"> Doorsteps</span></h1>
@@ -96,6 +98,10 @@ function Login() {
                         <div className='w-full flex'>
                             <a href='/register' className='-mt-3 mx-auto text-gray-600 tracking-wide font-semibold cursor-pointer'>Create a new account?</a>
                         </div>
+                        <p className='mt-4 px-5 pb-2 text-center text-sm text-gray-500'>
+                            Are you a service provider?{' '}
+                            <Link to='/provider/login' className='text-indigo-500 hover:text-indigo-600 font-medium'>Login as provider</Link>
+                        </p>
                     </div>
                 </main>
             </div>

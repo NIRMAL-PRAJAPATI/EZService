@@ -16,6 +16,9 @@ const io = new Server(server, {
     methods: ["GET", "POST"]
   }
 });
+// Expose io to route controllers (req.app.get('io')) so REST endpoints
+// can push live updates to already-connected sockets.
+app.set('io', io);
 
 // middlewares
 app.use(express.json());
@@ -35,6 +38,7 @@ app.use("/orders",require("./routes/orderRoutes"))
 app.use("/provider",require("./routes/providerInfoRoutes"))
 app.use("/complaints",require("./routes/customerComplaintRoutes"))
 app.use("/service-requests", require("./routes/serviceRequestRoutes"))
+app.use("/explore-posts", require("./routes/explorePostRoutes"))
 
 // Utility
 app.get("/user/city/get", require("./utilities/userLocation"))
@@ -44,21 +48,23 @@ app.use('/otp', require("./routes/otpRoutes"));
 app.use(passport.initialize());
 app.use("/auth", require("./routes/customerInfoRoutes"));
 
-const userSockets = [];
+// Maps a service request's ID to the socket ID of the customer who created it,
+// so offers can be routed directly to that customer instead of being broadcast.
+const activeRequestSockets = new Map();
 
 // Socket.io event handlers
 io.on('connection', (socket) => {
     console.log('A user connected:', socket.id);
-    
+
     // Store user type and ID for routing messages
     let userType = null;
     let userId = null;
-    
+
     // User identification
     socket.on('identify', (data) => {
         userType = data.userType; // 'customer' or 'provider'
         userId = data.userId;
-        
+
 
         // Join room based on user type and ID
         socket.join(`${userType}-${userId}`);
@@ -74,41 +80,33 @@ io.on('connection', (socket) => {
             socket.join(`service-${service}`);
         })
     })
-    
+
     // Handle new service requests from customers
     socket.on('newServiceRequest', (requestData) => {
         console.log('New service request received:', requestData);
-        
+
         // Store the socket ID that created this request for direct communication
         const requesterId = socket.id;
         requestData.requesterId = requesterId;
-        userSockets.push({
-            requestId: requestData.requestId,
-            socketId: requesterId
-        });
+        activeRequestSockets.set(requestData.requestId, requesterId);
         // Broadcast to all providers
         io.to(`service-${requestData.serviceType}`).emit('newServiceRequest', requestData);
     });
-    
+
     // Handle service offers from providers
     socket.on('serviceOffer', (data) => {
         console.log('Service offer received:', data);
-        
-        // If we have the requester's socket ID, send directly to them
-        if (data.requestId) {
-            // Find the customer's socket and send the offer
-            io.to(`customer-${data.requestId}`).emit('serviceOffer', data.offer);
-            
-            // Fallback: also broadcast to all sockets as a safety measure
-            // This ensures the customer receives the offer even if room-based messaging fails
-            socket.broadcast.emit('serviceOffer', data.offer);
+
+        // Route the offer only to the customer who owns this request.
+        const requesterSocketId = data.requestId != null
+            ? activeRequestSockets.get(data.requestId)
+            : null;
+
+        if (requesterSocketId) {
+            io.to(requesterSocketId).emit('serviceOffer', data.offer);
         } else {
-            // Fallback: broadcast to all sockets
-            socket.broadcast.emit('serviceOffer', data.offer);
+            console.warn(`No active requester found for request ${data.requestId}; offer dropped`);
         }
-        
-        // Debug: log all connected sockets and rooms
-        console.log('Active rooms:', io.sockets.adapter.rooms);
     });
     
     // Handle offer acceptance/rejection
@@ -124,51 +122,26 @@ io.on('connection', (socket) => {
         io.to(`provider-${data.providerId}`).emit('offerDeclined', data);
     });
     
-    // socket.on('disconnect', () => {
-    //     userSockets.forEach(async (userSocket, index) => {
-    //         if (userSocket.socketId === socket.id) {
-    //             const serviceReq = await ServiceRequest.findOne({
-    //                 where: { id: userSocket.requestId }}
-    //             )
-
-    //             if(serviceReq)
-    //                 serviceReq.destroy()
-    //             userSockets.splice(index, 1); // Remove the disconnected user
-    //         }
-    //     });
-    //     console.log(userSockets)
-    //     console.log('User disconnected:', socket.id);
-    // });
-
     socket.on('disconnect', async () => {
-    console.log('User disconnected:', socket.id);
-    
-    // Find all user sockets that match the disconnected socket ID
-    const disconnectedSockets = userSockets.filter(userSocket => userSocket.socketId === socket.id);
-    
-    // Delete each service request associated with the disconnected socket
-    for (const userSocket of disconnectedSockets) {
-        try {
-            if (userSocket.requestId) {
-                console.log(`Deleting service request: ${userSocket.requestId}`);
-                const serviceReq = await ServiceRequest.findByPk(userSocket.requestId);
-                if (serviceReq) {
-                    await serviceReq.destroy();
-                    console.log(`Service request ${userSocket.requestId} deleted successfully`);
+        console.log('User disconnected:', socket.id);
+
+        // Find all service requests created by this socket and clean them up
+        for (const [requestId, socketId] of activeRequestSockets.entries()) {
+            if (socketId === socket.id) {
+                try {
+                    console.log(`Deleting service request: ${requestId}`);
+                    const serviceReq = await ServiceRequest.findByPk(requestId);
+                    if (serviceReq) {
+                        await serviceReq.destroy();
+                        console.log(`Service request ${requestId} deleted successfully`);
+                    }
+                } catch (error) {
+                    console.error(`Error deleting service request ${requestId}:`, error);
                 }
+                activeRequestSockets.delete(requestId);
             }
-        } catch (error) {
-            console.error(`Error deleting service request ${userSocket.requestId}:`, error);
         }
-    }
-    
-    // Remove all disconnected sockets from the array
-    const remainingSockets = userSockets.filter(userSocket => userSocket.socketId !== socket.id);
-    userSockets.length = 0; // Clear the array
-    userSockets.push(...remainingSockets); // Add remaining sockets back
-    
-    console.log('Remaining sockets:', userSockets);
-});
+    });
 
 });
 

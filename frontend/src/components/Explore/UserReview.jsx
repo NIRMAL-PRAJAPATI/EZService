@@ -1,61 +1,46 @@
-import { Star } from 'lucide-react'
-import React from 'react'
+import { Star } from 'lucide-react';
+import { formatDistanceToNow } from 'date-fns';
+import { Avatar } from '../ui/ServiceImage';
 
-function UserReview() {
+function UserReview({ post }) {
+  const customerName = post.CustomerInfo?.name || 'Customer';
+  const providerName = post.ProviderInfo?.name || 'Provider';
+  const rating = Math.round(post.rating || 0);
+
   return (
-    <div className="bg-white rounded-lg shadow-sm overflow-hidden break-inside-avoid mb-4">
-          <div className="p-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
-                <img
-                  className="h-10 w-10 rounded-lg object-cover"
-                  src="https://images.unsplash.com/photo-1520813792240-56fc4a3765a7"
-                  alt=""
-                />
-                <div className="ml-3">
-                  <h3 className="text-sm font-medium text-gray-900 truncate">
-                    Emily Chen
-                  </h3>
-                  <div className="flex items-center text-indigo-500 space-x-0.5">
-                    {[...Array(5)].map((_, i) => (
-                      <Star key={i} className="h-3 w-3 fill-current" />
-                    ))}
-                  </div>
-                </div>
-              </div>
-              <span className="text-xs text-gray-500">2 days ago</span>
-            </div>
-            <p className="mt-2 text-sm text-gray-600 line-clamp-4">
-              David was exceptional! He delivered the logo design ahead of
-              schedule and was very responsive to my feedback.
-            </p>
-            <div className="mt-1 flex flex-wrap gap-1">
-              {[
-                "#goodservice",
-                "#trusted",
-                "#honestman",
-                "#good",
-                "#verified",
-                "#nice",
-                "#service",
-              ].map((tag) => (
-                <p key={tag} className="text-indigo-500 text-xs">
-                  {tag}
-                </p>
+    <article className="break-inside-avoid mb-3 rounded-md border border-gray-200 bg-white p-4">
+      <header className="flex items-center gap-3">
+        <Avatar name={customerName} size="h-10 w-10" className="text-sm" />
+        <div className="min-w-0 flex-1">
+          <h3 className="text-sm font-semibold text-gray-900 truncate">{customerName}</h3>
+          {rating > 0 ? (
+            <div className="flex items-center gap-0.5" aria-label={`${rating} out of 5 stars`}>
+              {[...Array(5)].map((_, i) => (
+                <Star key={i} className={`h-3.5 w-3.5 ${i < rating ? 'fill-amber-400 text-amber-400' : 'text-gray-300'}`} aria-hidden="true" />
               ))}
             </div>
-            <div className="mt-2 flex items-center">
-              <span className="text-xs text-gray-500">Review for:</span>
-              <a
-                href="#"
-                className="ml-1 text-xs font-medium text-indigo-500 hover:text-indigo-500 truncate"
-              >
-                Ananta Service Provider
-              </a>
-            </div>
-          </div>
+          ) : (
+            <p className="text-xs text-gray-500">Review</p>
+          )}
         </div>
-  )
+        <span className="text-xs text-gray-400 shrink-0">{post.created ? formatDistanceToNow(new Date(post.created), { addSuffix: true }) : ''}</span>
+      </header>
+      <p className="mt-3 text-sm text-gray-700">{post.message}</p>
+      {post.image && <img src={post.image} alt="Attached by the customer" loading="lazy" className="mt-3 w-full max-h-56 object-cover rounded-sm" />}
+      {post.hashtags?.length > 0 && (
+        <div className="mt-2 flex flex-wrap gap-1.5">
+          {post.hashtags.map((tag) => (
+            <span key={tag} className="text-xs font-medium text-indigo-600">
+              {tag}
+            </span>
+          ))}
+        </div>
+      )}
+      <p className="mt-3 text-xs text-gray-500">
+        About <span className="font-semibold text-gray-800">{providerName}</span>
+      </p>
+    </article>
+  );
 }
 
-export default UserReview
+export default UserReview;

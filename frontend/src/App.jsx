@@ -1,16 +1,20 @@
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom'
+import { Routes, Route, Navigate } from 'react-router-dom'
 import './App.css'
-import Navbar from './components/Navbar'
 import { lazy, Suspense } from 'react'
+import CustomerLayout from './components/layout/CustomerLayout'
+import ProviderLayout from './components/layout/ProviderLayout'
+import { PageSkeleton } from './components/ui/Skeleton'
+
+// Customer pages
 const UserHome = lazy(() => import('./pages/UserHome'));
-const Footer = lazy(() => import('./components/Footer'));
 const ProfilePage = lazy(() => import('./pages/Pofile'));
+const Notifications = lazy(() => import('./pages/Notifications'));
 const ServicePage = lazy(() => import('./pages/ServicesPage'));
 const About = lazy(() => import('./pages/About'));
 const Explore = lazy(() => import('./pages/Explore'));
 const Complaint = lazy(() => import('./pages/Complaint'));
 const Order = lazy(() => import('./pages/Order'));
-const Rankings = lazy(()=> import('./pages/Rankings'))
+const Rankings = lazy(() => import('./pages/Rankings'));
 const ServiceProfilePage = lazy(() => import('./pages/ServiceProfilePage'));
 const Templates = lazy(() => import('./pages/Templates'));
 const HomeRenovation = lazy(() => import('./components/Templates/home-renovation'));
@@ -18,81 +22,86 @@ const WeddingRequisites = lazy(() => import('./components/Templates/wedding-requ
 const HomeAppliance = lazy(() => import('./components/Templates/HomeAppliance'));
 const BeautySpa = lazy(() => import('./components/Templates/BeautySpa'));
 const Party = lazy(() => import('./components/Templates/Party'));
-import Loading from './components/Loading'
-import OrderDetails from './pages/OrderDetails';
-import BookOrderPage from './pages/BookOrder';
-import Login from './pages/Login';
-import MobileVarification from './pages/MobileVarification';
+const OrderDetails = lazy(() => import('./pages/OrderDetails'));
+const BookOrderPage = lazy(() => import('./pages/BookOrder'));
+const InstantService = lazy(() => import('./pages/InstantService'));
+const BookInstantOrder = lazy(() => import('./pages/BookInstantOrder'));
 const ErrorPage = lazy(() => import('./pages/ErrorPage'));
-const Register = lazy(() => import('./pages/Register'));
-import Dashboard  from './pages/ProviderDashboard';
-import RegistrationForm from './components/Register/ProviderRegistration'
-import LoginForm from './components/Register/ProviderLogin';
-import ProviderProfile from './pages/ProviderProfile';
-import ProviderReview from './pages/ProviderReview';
-import ProviderOrder from './pages/ProviderOrder';
-import ProviderOrderView from './pages/ProviderOrderView';
-import ProviderComplaint from './pages/ProviderComplaint';
-import ProviderServices from './pages/ProviderServices';
-import ProviderInstantRequests from './pages/ProviderInstantRequests';
-import InstantService from './pages/InstantService';
-import BookInstantOrder from './pages/BookInstantOrder';
-import OAuthTransfer from './config/authTransfer';
 
+// Auth
+const Login = lazy(() => import('./pages/Login'));
+const Register = lazy(() => import('./pages/Register'));
+const MobileVarification = lazy(() => import('./pages/MobileVarification'));
+const OAuthTransfer = lazy(() => import('./config/authTransfer'));
+const RegistrationForm = lazy(() => import('./components/Register/ProviderRegistration'));
+const LoginForm = lazy(() => import('./components/Register/ProviderLogin'));
+
+// Provider pages
+const Dashboard = lazy(() => import('./pages/ProviderDashboard'));
+const ProviderProfile = lazy(() => import('./pages/ProviderProfile'));
+const ProviderReview = lazy(() => import('./pages/ProviderReview'));
+const ProviderOrder = lazy(() => import('./pages/ProviderOrder'));
+const ProviderOrderView = lazy(() => import('./pages/ProviderOrderView'));
+const ProviderComplaint = lazy(() => import('./pages/ProviderComplaint'));
+const ProviderServices = lazy(() => import('./pages/ProviderServices'));
+const ProviderInstantRequests = lazy(() => import('./pages/ProviderInstantRequests'));
 
 function App() {
-  const location = useLocation();
-  const hideHeaderFooter = (location.pathname === '/login') || (location.pathname === '/errorpage') || (location.pathname === '/register') || (location.pathname === '/register/mobilevarification' || location.pathname?.startsWith('/provider/')) || (location.pathname === '/authtransfer') || (location.pathname === '/book-instant-order') || (location.pathname === '/book') || (location.pathname === '/instant-service');
-
   return (
-      <div className="">
-        {!hideHeaderFooter && <Navbar />}
-        <Suspense fallback={<Loading />}>
-        <Routes>
+    <Suspense fallback={<PageSkeleton />}>
+      <Routes>
+        {/* Customer app */}
+        <Route element={<CustomerLayout />}>
           <Route index element={<UserHome />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/explore" element={<Explore />} />
-          <Route path="/services/" element={<ServicePage />} >
-            <Route path=":category" element={<ServicePage />} />
-          </Route>
-          <Route path="/profile" element={<ProfilePage />} />
-          <Route path="/complaint" element={<Complaint />} />
-          <Route path='/Rankings' element={<Rankings />} />
+          <Route path="/services" element={<ServicePage />} />
+          <Route path="/services/:category" element={<ServicePage />} />
           <Route path="/service/:id" element={<ServiceProfilePage />} />
+          <Route path="/book" element={<BookOrderPage />} />
+          <Route path="/instant-service" element={<InstantService />} />
+          <Route path="/order" element={<Order />} />
+          <Route path="/bookings" element={<Order />} />
+          <Route path="/orders" element={<Navigate to="/order" replace />} />
+          <Route path="/orders/:id/view" element={<OrderDetails />} />
+          <Route path="/explore" element={<Explore />} />
+          <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/notifications" element={<Notifications />} />
+          <Route path="/complaint" element={<Complaint />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/rankings" element={<Rankings />} />
           <Route path="/templates" element={<Templates />} />
           <Route path="/home-renovation" element={<HomeRenovation />} />
           <Route path="/wedding-requisites" element={<WeddingRequisites />} />
           <Route path="/HomeAppliance" element={<HomeAppliance />} />
           <Route path="/BeautySpa" element={<BeautySpa />} />
-          <Route path="/Party" element={<Party/>} />
-          <Route path="/order" element={<Order />} />
-          <Route path='/authtransfer' element={<OAuthTransfer/>} />
-          <Route path="/errorpage" element={<ErrorPage />} />
-          <Route path="/orders/" element={<OrderDetails />} >
-            <Route path=":id/view" element={<OrderDetails />} />
-          </Route>
-          <Route path="/provider/" >
-            <Route path="dashboard" element={<Dashboard />} />
-            <Route path='register' element={<RegistrationForm />} />
-            <Route path='login' element={<LoginForm />} />
-            <Route path='profile' element={<ProviderProfile />} />
-            <Route path='complaints' element={<ProviderComplaint />} />
-            <Route path='orders' element={<ProviderOrder />} />
-            <Route path='orders/:orderId/view' element={<ProviderOrderView />} />
-            {/* <Route path='complaints' element={<Complaint />} /> */}
-            <Route path='services' element={<ProviderServices />} />
-            <Route path='instant-requests' element={<ProviderInstantRequests />} />
-          </Route>
-          <Route path='/book' element={<BookOrderPage />} />
-          <Route path='/instant-service' element={<InstantService />} />
-          <Route path='/book-instant-order' element={<BookInstantOrder />} />
-          <Route path='/login' element={<Login />}/>
-          <Route path='/register' element={<Register />} />
-          <Route path='/register/mobilevarification' element={<MobileVarification />} />
-        </Routes>
-        </Suspense>
-        {!hideHeaderFooter && <Footer/>}
-      </div>
+          <Route path="/Party" element={<Party />} />
+        </Route>
+
+        {/* Stand-alone pages */}
+        <Route path="/book-instant-order" element={<BookInstantOrder />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/register/mobilevarification" element={<MobileVarification />} />
+        <Route path="/authtransfer" element={<OAuthTransfer />} />
+        <Route path="/provider/login" element={<LoginForm />} />
+        <Route path="/provider/register" element={<RegistrationForm />} />
+
+        {/* Provider app */}
+        <Route path="/provider" element={<ProviderLayout />}>
+          <Route index element={<Navigate to="/provider/dashboard" replace />} />
+          <Route path="dashboard" element={<Dashboard />} />
+          <Route path="orders" element={<ProviderOrder />} />
+          <Route path="orders/:orderId/view" element={<ProviderOrderView />} />
+          <Route path="instant-requests" element={<ProviderInstantRequests />} />
+          <Route path="services" element={<ProviderServices />} />
+          <Route path="complaints" element={<ProviderComplaint />} />
+          <Route path="reviews" element={<ProviderReview />} />
+          <Route path="profile" element={<ProviderProfile />} />
+        </Route>
+
+        <Route path="/errorpage" element={<ErrorPage />} />
+        <Route path="*" element={<ErrorPage />} />
+      </Routes>
+    </Suspense>
   )
 }
 

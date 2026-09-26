@@ -6,5 +6,7 @@ const router = express.Router();
 
 router.get('/provider', verifyToken, pagination, Controller.getProviderComplaints);
 router.put('/:complaintId/status', verifyToken, Controller.updateComplaintStatus);
+router.get('/customer', verifyToken, Controller.getCustomerComplaints);
+router.post('/', verifyToken, Controller.createComplaint);
 
 module.exports = router;

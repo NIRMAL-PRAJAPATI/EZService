@@ -1,134 +1,111 @@
-import { useEffect, useState } from "react"
-import { ChevronRight, ClockArrowDown, MapPin, Package, Wrench } from "lucide-react"
-import { Link } from "react-router-dom"
-import api from "../../config/axios-config"
-import Loading from "../../components/Loading"
-import authApi from "../../config/auth-config"
+import { useEffect, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { ClipboardList, LogIn } from 'lucide-react';
+import authApi from '../../config/auth-config';
+import BookingCard from '../booking/BookingCard';
+import Tabs from '../ui/Tabs';
+import { CardListSkeleton } from '../ui/Skeleton';
+import { EmptyState, ErrorState } from '../ui/States';
+import { normalizeStatus } from '../ui/StatusBadge';
+import { getAuthUser } from '../../lib/auth';
 
-const OrderItem = ({ order }) => {
+const TABS = [
+  { id: 'upcoming', label: 'Upcoming', match: ['PENDING', 'CONFIRMED'], empty: 'Your upcoming services will appear here.' },
+  { id: 'completed', label: 'Completed', match: ['COMPLETED'], empty: 'Completed services will appear here.' },
+  { id: 'cancelled', label: 'Cancelled', match: ['CANCELLED'], empty: 'Cancelled bookings will appear here.' },
+];
 
-   return (
-    <div className="border rounded-sm p-4 mb-4 bg-white border-gray-300 text-gray-800 hover:border-indigo-500">
-      <div className="sm:flex items-center justify-between">
-        <div className="flex items-center space-x-4">
-          <img src={order.image || "/placeholder.svg"} alt={order.Service?.name} className="sm:w-25 w-22 sm:h-25 h-22 object-cover rounded-sm" />
-          <div>
-  <h3 className="font-medium text-lg md:text-xl">
-    {order?.Service?.name}
-  </h3>
-
-  <p className="text-xs text-gray-600 mt-0.5 line-clamp-2">
-    {order?.issue}
-  </p>
-
-  <p className="text-indigo-500 font-bold mt-1">
-    ₹{parseFloat(order?.Service?.visiting_charge).toFixed(2)}
-  </p>
-
-  <div className="lg:flex lg:gap-4">
-    <div className="flex items-center text-sm text-gray-500 mt-1 text-xs sm:text-sm">
-      <ClockArrowDown className="w-4 h-4 mr-1 text-indigo-500" />
-      <span>{order.created}</span>
-    </div>
-
-    <div className="flex items-center text-xs sm:text-sm text-gray-500 mt-1">
-      <MapPin className="w-4 h-4 mr-1 text-indigo-500" />
-      <span className="">{order.location}</span>
-    </div>
-  </div>
-</div>
-
-        </div>
-        <button
-          className="flex items-center text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors mx-auto sm:mx-0 mt-3"
-        >
-              More Details
-              <ChevronRight className="ml-1 w-4 h-4" />
-        </button>
-      </div>
-    </div>
-  )
-}
-
-const NoOrders = () => {
-  
-  return (
-  <div className="flex flex-col items-center justify-center py-8 bg-gray-50 rounded-lg border border-dashed border-gray-300">
-    <Wrench className="w-15 h-15 text-gray-400 mb-2" />
-    <h3 className="text-xl font-bold text-gray-700">No Services Booked Yet</h3>
-    <p className="text-gray-500 mt-2 text-center max-w-lg">
-      You don't have any active service orders at the moment. Browse our services and book the service to see it here.
-    </p>
-    <button className="mt-6 px-5 py-2 bg-gray-800 text-white rounded-sm hover:bg-gray-700 transition-colors">
-      Start Shopping
-    </button>
-  </div>
-)}
-
+/** Customer "Bookings" page (route /order). */
 const OrderPage = () => {
-  const [currentOrders, setCurrentOrders] = useState([])
-  const [pastOrders, setPastOrders] = useState([])
-  const [loading, setLoading] = useState(true)
+  const navigate = useNavigate();
+  const user = getAuthUser();
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+  const [tab, setTab] = useState('upcoming');
 
-  useEffect(()=>{
-    const cOrder = [];
-    const pOrder = [];
-
-    authApi.get('/orders/customer/').then((response) => {
-      response.data.map((order) => {
-        if (order.status === "pending") {
-          cOrder.push(order)
-        } else {
-          pOrder.push(order)
-        }
+  const load = () => {
+    setLoading(true);
+    setError(false);
+    authApi
+      .get('/orders/customer/')
+      .then((res) => setOrders(Array.isArray(res.data) ? res.data : []))
+      .catch((err) => {
+        // The API answers 404 when there are no orders yet.
+        if (err.response?.status === 404) setOrders([]);
+        else setError(true);
       })
-      }).catch((error) => {
-        console.error("Error fetching orders:", error);
-      }
-    ).finally(() => {
-      setCurrentOrders(cOrder)
-      setPastOrders(pOrder)
-      setLoading(false)
-    })
-  },[])
+      .finally(() => setLoading(false));
+  };
 
-  if (loading) {
-    return <Loading />
+  useEffect(() => {
+    if (user?.role === 'customer') load();
+    else setLoading(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const counts = useMemo(() => {
+    const c = {};
+    TABS.forEach((t) => {
+      c[t.id] = orders.filter((o) => t.match.includes(normalizeStatus(o.status))).length;
+    });
+    return c;
+  }, [orders]);
+
+  const activeTab = TABS.find((t) => t.id === tab);
+  const list = orders.filter((o) => activeTab.match.includes(normalizeStatus(o.status)));
+
+  if (user?.role !== 'customer') {
+    return (
+      <div className="max-w-2xl mx-auto px-4 py-6">
+        <h1 className="text-2xl font-extrabold tracking-wide text-gray-900">Bookings</h1>
+        <EmptyState icon={LogIn} title="Log in to see your bookings" description="Track upcoming visits and past services in one place." actionLabel="Log in" onAction={() => navigate('/login', { state: { from: '/order' } })} />
+      </div>
+    );
   }
 
   return (
-   
-    <div className="max-w-5xl mx-auto px-4 py-4">
-  {(currentOrders.length === 0 && pastOrders.length === 0) ? (
-    <NoOrders />
-  ) : (
-    <>
-      {currentOrders.length > 0 && (
-        <section>
-          <h2 className="text-xl font-semibold mb-4">Current Orders</h2>
-          {currentOrders.map((order) => (
-            <Link key={order.id} to={`/orders/${order?.order_id}/view`}>
-              <OrderItem order={order} />
-            </Link>
-          ))}
-        </section>
-      )}
+    <div className="max-w-2xl mx-auto px-4 md:px-0 py-5 md:py-8">
+      <h1 className="text-2xl md:text-3xl font-extrabold tracking-wide text-gray-900">Bookings</h1>
 
-      {pastOrders.length > 0 && (
-        <section>
-          <h2 className="text-xl font-semibold mb-4">Past Orders</h2>
-          {pastOrders.map((order) => (
-            <Link key={order.id} to={`/orders/${order?.order_id}/view`}>
-              <OrderItem order={order} />
-            </Link>
-          ))}
-        </section>
-      )}
-    </>
-  )}
-</div>
+      <Tabs
+        className="mt-4"
+        label="Booking status"
+        stretch
+        value={tab}
+        onChange={setTab}
+        tabs={TABS.map((t) => ({ id: t.id, label: t.label, count: loading ? 0 : counts[t.id] }))}
+      />
 
-  )
-}
+      <div className="mt-4" role="tabpanel">
+        {loading ? (
+          <CardListSkeleton count={3} />
+        ) : error ? (
+          <div className="rounded-md border border-gray-200 bg-white">
+            <ErrorState description="We couldn't load your bookings. Please try again." onRetry={load} />
+          </div>
+        ) : list.length === 0 ? (
+          <div className="rounded-md border border-gray-200 bg-white">
+            <EmptyState
+              icon={ClipboardList}
+              title={tab === 'upcoming' ? 'No upcoming bookings' : `No ${activeTab.label.toLowerCase()} bookings`}
+              description={activeTab.empty}
+              actionLabel={tab === 'upcoming' ? 'Browse services' : undefined}
+              actionTo={tab === 'upcoming' ? '/services' : undefined}
+            />
+          </div>
+        ) : (
+          <ul className="space-y-3">
+            {list.map((order) => (
+              <li key={order.order_id}>
+                <BookingCard order={order} />
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+    </div>
+  );
+};
 
-export default OrderPage
+export default OrderPage;

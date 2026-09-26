@@ -31,7 +31,8 @@ function Logoutdelete() {
 
   const handleDelete = async () => {
     try {
-    await authApi.delete('/logout');
+    await authApi.delete('/customer/delete');
+    localStorage.removeItem('token');
     window.location.href = "/";
     } catch (error) {
       alert("something gone wrong, try again letter !");

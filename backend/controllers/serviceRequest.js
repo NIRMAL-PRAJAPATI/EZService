@@ -95,7 +95,7 @@ const getActiveServiceRequests = async (req, res) => {
     const serviceRequests = await ServiceRequest.findAll({
       where: {
         status: 'PENDING',
-        service_type_id: services.map(service => service.id),
+        service_type_id: services.map(service => service.category_id),
         expires_at: {
           [Op.gt]: now
         }

@@ -1,11 +1,10 @@
 import axios from "axios";
 
-// create axios instance
+// Authenticated API client: same backend URL as the public client (from .env),
+// with the JWT attached to every request.
 const authApi = axios.create(
     {
-        // baseURL: import.meta.env.VITE_API_BACKEND_API,
-        // baseURL: "https://ezservice.duckdns.org",
-        baseURL: 'http://localhost:3000',
+        baseURL: import.meta.env.VITE_API_BACKEND_API || 'http://localhost:3000',
         headers: {
             'Content-Type':'application/json'
         }
@@ -25,10 +24,12 @@ authApi.interceptors.response.use(
         return response
     },
     (error) => {
-        if(error.response.status === 401){
+        // Session expired or invalid: clear it and send the user to the right login page.
+        if(error.response?.status === 401){
             localStorage.removeItem('token')
             localStorage.removeItem('user')
-            window.location.href = '/'
+            const isProviderArea = window.location.pathname.startsWith('/provider')
+            window.location.href = isProviderArea ? '/provider/login' : '/login'
         }
         return Promise.reject(error)
     }

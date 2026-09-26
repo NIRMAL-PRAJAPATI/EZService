@@ -1,7 +1,7 @@
 import { useForm } from 'react-hook-form';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import api from '../../config/axios-config';
 
 function Registration () {
@@ -140,6 +140,12 @@ function Registration () {
             <a href="/login" className="text-indigo-500 hover:text-indigo-600">
               Log in
             </a>
+          </p>
+          <p className="text-sm text-gray-500 mt-2">
+            Are you a service provider?{" "}
+            <Link to="/provider/register" className="text-indigo-500 hover:text-indigo-600 font-medium">
+              Register as provider
+            </Link>
           </p>
         </div>
         </>

@@ -12,7 +12,8 @@ const ProviderInfo = sequelize3.define('ProviderInfo', {
   city: DataTypes.STRING,
   state: DataTypes.STRING,
   country: DataTypes.STRING,
-  created: DataTypes.DATE
+  created: DataTypes.DATE,
+  is_online: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false }
 }, {
   tableName: 'provider_info',
   timestamps: false,

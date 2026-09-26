@@ -1,218 +1,101 @@
-import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import { UserRound , AlignRight, LucideShoppingBag, X, ArrowUpRightFromCircle, Watch, Webhook} from "lucide-react";
-import resources from "../resource";
+import { Link, NavLink } from 'react-router-dom';
+import { UserRound, Zap } from 'lucide-react';
+import resources from '../resource';
+import LocationSelector from './LocationSelector';
+import { getAuthUser } from '../lib/auth';
 
-const Navbar = () => {
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [searchBoxOpen, setSearchBoxOpen] = useState(false);
-  const [tokenCheck, setTokenCheck] = useState(!!localStorage.getItem("token"));
+export const Logo = ({ className = '' }) => (
+  <Link to="/" className={`flex items-center gap-2 shrink-0 ${className}`} aria-label="EZService home">
+    <img src={resources.Logo.src} className="h-7 w-7" alt="" />
+    <span className="text-lg font-bold tracking-tight text-gray-900">EZService</span>
+  </Link>
+);
 
-  const toggleDropdown = () => {
-    setDropdownOpen(!dropdownOpen);
-  };
-  const toggleSearchBox = () => {
-    setSearchBoxOpen(!searchBoxOpen);
-    console.log("hdfvh")
-  }
+const NAV = [
+  { to: '/', label: 'Home', end: true },
+  { to: '/services', label: 'Services' },
+  { to: '/order', label: 'Bookings' },
+  { to: '/explore', label: 'Explore' },
+];
 
-  const toggleMenu = () => {
-    setMenuOpen(!menuOpen);
-  };
-
-   useEffect(() => {
-    const token = localStorage.getItem("token");
-    setTokenCheck(!!token);
-  }, []);
+/**
+ * Customer header.
+ *  - Desktop: logo · main links · location · instant service · account
+ *  - Mobile (main tabs only): logo + account on top, location underneath
+ */
+const Navbar = ({ showMobile = true }) => {
+  const user = getAuthUser();
+  const loggedIn = user?.role === 'customer';
 
   return (
-    <nav className="bg-white shadow-sm top-0 left-0 w-full z-50 text-black border-b border-gray-200">
-      <div className="mx-auto py-2 px-3">
-        <div className="flex items-center justify-between">
-          {/* Logo and Brand */}
-          <div className="flex items-center">
-            <img
-              src={resources.Logo.src}
-              className="h-6 w-6 mr-2"
-              alt="Logo"
-            />
-            <span className="font-bold text-xl">EZService</span>
-          </div>
-
-          {/* Hamburger Icon */}
-          <AlignRight className="md:hidden h-8 w-8 text-gray-800 hover:text-primary cursor-pointer" onClick={toggleMenu} id="navMenuBtn"/>
-
-          {/* Navigation Menu */}
-          <div
-            className={`md:flex items-center justify-between absolute md:w-full md:relative z-10 top-12 md:top-0 w-[70vw] sm:w-[50vw] ${
-              menuOpen ? "right-0" : "right-[100vw]"
-            } md:right-0 bg-white text-left md:bg-transparent p-6 md:p-0 z-20 border-none transition-all duration-100`}
+    <header className="bg-white border-b border-gray-200">
+      {/* Desktop */}
+      <div className="hidden md:flex max-w-6xl mx-auto h-16 px-6 items-center gap-8">
+        <Logo />
+        <nav aria-label="Main" className="flex items-center gap-1">
+          {NAV.map((item) => (
+            <NavLink
+              key={item.to}
+              to={item.to}
+              end={item.end}
+              className={({ isActive }) =>
+                `px-3 py-2 rounded-sm text-sm font-medium transition-colors ${isActive ? 'text-indigo-600 bg-indigo-50' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'}`
+              }
+            >
+              {item.label}
+            </NavLink>
+          ))}
+        </nav>
+        <div className="ml-auto flex items-center gap-3">
+          <LocationSelector className="text-sm" />
+          <Link
+            to="/instant-service"
+            className="inline-flex items-center gap-1.5 h-10 px-4 rounded-sm border border-indigo-200 bg-indigo-50 text-sm font-semibold text-indigo-700 hover:bg-indigo-100"
           >
-            <div></div>
-            {/* Links */}
-            <div className="flex flex-col md:flex-row md:space-x-6 space-y-4 tracking-wide md:space-y-0">
-              <Link onClick={toggleMenu} to="/" className="text-indigo-600 font-semibold">
-                Home
+            <Zap className="h-4 w-4" aria-hidden="true" /> Instant Service
+          </Link>
+          {loggedIn ? (
+            <NavLink
+              to="/profile"
+              className={({ isActive }) =>
+                `h-10 w-10 rounded-full flex items-center justify-center border ${isActive ? 'border-indigo-500 text-indigo-600' : 'border-gray-200 text-gray-700 hover:bg-gray-50'}`
+              }
+              aria-label="My profile"
+            >
+              <UserRound className="h-5 w-5" />
+            </NavLink>
+          ) : (
+            <div className="flex items-center gap-2">
+              <Link to="/login" className="h-10 px-3 inline-flex items-center text-sm font-semibold text-gray-700 hover:text-gray-900">
+                Log in
               </Link>
-              <Link onClick={toggleMenu}
-                to="/explore"
-                className="text-gray-600 hover:text-black"
-              >
-                Explore
-              </Link>
-              <Link onClick={toggleMenu}
-                to="/services"
-                className="text-gray-600 hover:text-black"
-              >
-                Services
-              </Link>
-
-              {/* Templates Dropdown */}
-              <div
-                id="templateNavBtn"
-                className="relative"
-                onClick={() => setDropdownOpen(true)}
-                onMouseLeave={() => setDropdownOpen(false)}
-              >
-                <Link className="text-gray-600 hover:text-black flex items-center cursor-pointer" to="/templates">
-                  Templates
-                  {/* {dropdownOpen ? (
-                    <ChevronUp className="h-5 w-5 mt-[2px] transition duration-150" />
-                  ) : (
-                    <ChevronDown className="h-5 w-5 mt-[2px] transition duration-150" />
-                  )} */}
-                </Link>
-
-                {/* <ul
-                  className={`px-5 w-max py-3 absolute bg-white space-y-2 text-gray-600 -ml-10 pt-4 ${
-                    dropdownOpen ? "block" : "hidden"
-                  }`}
-                >
-                  <li><Link className="hover:text-black cursor-pointer" to="/errorpage" onClick={toggleMenu}>
-                    Home Renovation
-                  </Link></li>
-                  <li><Link className="hover:text-black cursor-pointer" to="/errorpage" onClick={toggleMenu}>
-                    Wedding Requisites
-                  </Link></li>
-                  <li><Link className="hover:text-black cursor-pointer" to="/errorpage" onClick={toggleMenu}>
-                    Home Appliances
-                  </Link></li>
-                  <li><Link className="hover:text-black cursor-pointer" to="/errorpage" onClick={toggleMenu}>
-                    Beauty & Spa
-                  </Link></li>
-                  <li><Link className="hover:text-black cursor-pointer" to="/errorpage" onClick={toggleMenu}>
-                    Party Things
-                  </Link></li>
-                </ul> */}
-              </div>
-              <Link onClick={toggleMenu}
-                to="/rankings"
-                className="text-gray-600 hover:text-black"
-              >
-                Rankings
-              </Link>
-              {/* <Link onClick={toggleMenu}
-                to="/complaint"
-                className="text-gray-600 hover:text-black"
-              >
-                Complaint
-              </Link> */}
-              <Link onClick={toggleMenu}
-                to="/about"
-                className="text-gray-600 hover:text-black"
-              >
-                About
+              <Link to="/register" className="h-10 px-4 inline-flex items-center rounded-sm bg-indigo-500 text-sm font-semibold text-white hover:bg-indigo-600">
+                Sign up
               </Link>
             </div>
-
-            {/* Account Button */}
-            {tokenCheck ? (<div className="flex md:space-x-1 mt-4 md:mt-0">
-              <Link to="/instant-service"
-                className="py-2 px-4 text-white bg-indigo-500 hover:bg-indigo-600 rounded flex"
-              >
-                <Webhook className="h-5 w-4 transition duration-150" />
-                <span className="-mt-0.5 ml-1">Book Instant</span>
-              </Link>
-            <Link onClick={toggleMenu}
-                to="/order"
-                className="px-2 pt-2.5 text-gray-700"
-              >
-                <LucideShoppingBag className="h-5 w-5 transition duration-150" />
-              </Link>
-              <Link onClick={toggleMenu}
-                to="/profile"
-                className="px-2 pt-2.5 text-gray-700"
-              >
-                <UserRound className="h-5 w-5 transition duration-150" />
-              </Link>
-            </div>) : (
-            
-            <div className="flex mt-4 md:mt-0 gap-2 font-bold text-gray-700">
-              <Link to="/login"
-                className="py-2 hover:text-indigo-500"
-              >Login
-              </Link><span className="py-2">/</span>
-              <Link to="register"
-                className="py-2 hover:text-indigo-500"
-              >Register
-              </Link>
-            </div>)}
-          </div>
-        </div>
-
-        {/* searchBox */}
-        <div className={`h-full w-full bg-black/50 fixed top-0 flex justify-center left-0 md:p-5 z-20 ${searchBoxOpen ? `block` : `hidden`}`}>
-          <div className="max-w-7xl grid grid-cols-7 bg-white h-full w-full shadow-lg">
-            {/* recomandation box */}
-            <div className="hidden sm:block col-span-2 bg-gray-100 p-5 space-y-3 overflow-y-scroll h-full relative">
-              <div className="gap-1 flex flex-wrap">
-            <button
-            type="submit"
-            className="flex cursor-pointer text-sm py-1.5 px-3 bg-white rounded-sm hover:border-indigo-500 border border-gray-200 truncate"            
-            >Plumber</button>
-              </div>
-
-              <hr className="text-gray-300"></hr>
-
-              <div className="gap-1 flex flex-wrap">
-                <button
-            type="submit"
-            className="flex cursor-pointer text-sm py-1.5 px-3 bg-white rounded-sm hover:border-indigo-500 border border-gray-200 truncate"            
-            >Ananta Services</button>
-              </div>
-            </div>
-            {/* search container */}
-            <div className="col-span-7 sm:col-span-5 p-1">
-              <X className="ml-auto align-right m-1 border rounded-xs border-gray-500 cursor-pointer" onClick={toggleSearchBox}></X>
-              <div className="px-2 mx-auto text-black">
-                            <div className="flex gap-2">
-                              <input
-                                type="text"
-                                placeholder="Search for services . . ."
-                                className="w-full px-4 py-2 bg-transparent border border-gray-400 text-gray-800 rounded-sm focus:outline-none"
-                              />
-                              <button className="text-gray-400 border border-indigo-500 px-4 rounded-sm text-white bg-indigo-500">
-                                Search
-                              </button>
-                            </div>
-                          </div>
-                          <div className="overflow-y-scroll h-[85%] relative p-2 space-y-2">
-                            <div className="flex justify-between p-3 bg-gray-50 rounded-sm text-gray-900 font-semibold cursor-pointer">
-                              <p>Plumbing Services</p>
-                              <ArrowUpRightFromCircle className="h-5 w-5 text-indigo-700"></ArrowUpRightFromCircle>
-                            </div>
-                            <div>
-                            <ul className="p-2 text-gray-900">
-                              <li className="py-1.5 pt-3 border-b border-gray-200">Ananta Plumbing Services</li>
-                            </ul>
-                            </div>
-                          </div>
-            </div>
-          </div>
+          )}
         </div>
       </div>
-    </nav>
+
+      {/* Mobile */}
+      {showMobile && (
+        <div className="md:hidden px-4 pt-2 pb-1.5">
+          <div className="flex items-center justify-between h-10">
+            <Logo />
+            {loggedIn ? (
+              <Link to="/profile" className="h-10 w-10 -mr-1 rounded-full flex items-center justify-center text-gray-700 hover:bg-gray-100" aria-label="My profile">
+                <UserRound className="h-6 w-6" />
+              </Link>
+            ) : (
+              <Link to="/login" className="h-10 px-3 -mr-2 inline-flex items-center text-sm font-semibold text-indigo-600">
+                Log in
+              </Link>
+            )}
+          </div>
+          <LocationSelector className="text-sm -ml-0.5" />
+        </div>
+      )}
+    </header>
   );
 };
 

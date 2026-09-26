@@ -1,66 +1,29 @@
-import { AlertTriangle } from 'lucide-react'
-import React from 'react'
+import { AlertTriangle } from 'lucide-react';
+import { formatDistanceToNow } from 'date-fns';
 
-function UserComp() {
+function UserComp({ post }) {
+  const customerName = post.CustomerInfo?.name || 'Customer';
+  const providerName = post.ProviderInfo?.name || 'Provider';
+
   return (
-    <div className="bg-white rounded-lg shadow-sm overflow-hidden break-inside-avoid mb-4">
-          <div className="p-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
-                <div className="flex-shrink-0 bg-indigo-500/10 rounded-md p-2">
-                  <AlertTriangle className="h-5 w-5 text-indigo-500" />
-                </div>
-                <div className="ml-3">
-                  <h3 className="text-sm font-medium text-gray-900 -mb-1 truncate">
-                    Complaint #1082
-                  </h3>
-                  <span className="text-xs text-gray-500">Filed 5 days ago</span>
-                </div>
-              </div>
-            </div>
-            <p className="mt-3 text-sm font-medium line-clamp-2">
-              Lorem ipsum dolor sit amet consectetur, adipisicing elit.
-            </p>
-            <p className="mt-1 text-sm text-gray-600 line-clamp-6">
-              The service was not delivered as described. I paid for a premium
-              package but received the basic service instead.
-            </p>
-            <div className="mt-3 flex items-center">
-              <span className="text-xs text-gray-500">Filed by:</span>
-              <span className="ml-1 text-xs font-medium text-gray-900 truncate">
-                Robert Thompson
-              </span>
-            </div>
-            <div className="mt-1 flex items-center">
-              <span className="text-xs text-gray-500">Against:</span>
-              <span className="ml-1 text-xs font-medium text-gray-900 truncate">
-                Premium Cleaning Services
-              </span>
-            </div>
-            <p className="text-gray-500 text-[10px] mt-3">Replied By</p>
-            <div className="bg-gray-50 p-3 rounded-md">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center">
-                  <img
-                    className="h-8 w-8 rounded-full object-cover"
-                    src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d"
-                    alt=""
-                  />
-                  <div className="ml-2">
-                    <p className="text-xs font-medium text-gray-900 truncate">
-                      Premium Cleaning Services
-                    </p>
-                    <p className="text-xs text-gray-500">3 days ago</p>
-                  </div>
-                </div>
-              </div>
-              <p className="mt-2 text-xs text-gray-600 line-clamp-3">
-                We sincerely apologize for the confusion.
-              </p>
-            </div>
-          </div>
+    <article className="break-inside-avoid mb-3 rounded-md border border-gray-200 bg-white p-4">
+      <header className="flex items-center gap-3">
+        <span className="h-10 w-10 shrink-0 rounded-full bg-red-50 text-red-600 flex items-center justify-center">
+          <AlertTriangle className="h-5 w-5" aria-hidden="true" />
+        </span>
+        <div className="min-w-0 flex-1">
+          <h3 className="text-sm font-semibold text-gray-900 truncate">{post.subject || 'Complaint'}</h3>
+          <p className="text-xs text-gray-500">Complaint by {customerName}</p>
         </div>
-  )
+        <span className="text-xs text-gray-400 shrink-0">{post.created ? formatDistanceToNow(new Date(post.created), { addSuffix: true }) : ''}</span>
+      </header>
+      <p className="mt-3 text-sm text-gray-700">{post.message}</p>
+      {post.image && <img src={post.image} alt="Attached by the customer" loading="lazy" className="mt-3 w-full max-h-56 object-cover rounded-sm" />}
+      <p className="mt-3 text-xs text-gray-500">
+        About <span className="font-semibold text-gray-800">{providerName}</span>
+      </p>
+    </article>
+  );
 }
 
-export default UserComp
+export default UserComp;

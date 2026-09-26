@@ -129,26 +129,33 @@ const updateOrderStatus = async (req, res) => {
         
         const mappedStatus = statusMap[status] || status;
         
-        // Check if user is a provider
-        if (role !== 'provider') {
-            return res.status(403).json({ message: "Only providers can update order status" });
+        // Providers can update any status on their orders; customers may only cancel their own
+        if (role === 'customer') {
+            if (mappedStatus !== 'CANCELLED') {
+                return res.status(403).json({ message: "Customers can only cancel orders" });
+            }
+        } else if (role !== 'provider') {
+            return res.status(403).json({ message: "Access denied" });
         }
         
         // Find the order
         const order = await Order.findOne({ 
             where: { 
                 order_id: orderId,
-                provider_id: userId
+                ...(role === 'provider' ? { provider_id: userId } : { customer_id: userId })
             }
         });
         
-        // Check if order can be updated based on current status
-        if (order && order.status === 'COMPLETED') {
-            return res.status(400).json({ message: "Completed orders cannot be updated" });
-        }
-        
         if (!order) {
             return res.status(404).json({ message: "Order not found or cannot be updated" });
+        }
+        
+        // Check if order can be updated based on current status
+        if (order.status === 'COMPLETED') {
+            return res.status(400).json({ message: "Completed orders cannot be updated" });
+        }
+        if (role === 'customer' && order.status === 'CANCELLED') {
+            return res.status(400).json({ message: "Order is already cancelled" });
         }
         
         // Update the order status
@@ -205,6 +212,9 @@ const createInstantOrder = async (req, res) => {
     try {
         const { service_id, provider_id, date, estimated_charge, status, issue, location, request_id } = req.body;
         const customerId = req.userId;
+        if (req.role !== 'customer') {
+            return res.status(403).json({ message: "Only customers can place bookings" });
+        }
         const visitingDate = date;
         const visitingCharge = estimated_charge;
         
@@ -244,11 +254,18 @@ const createInstantOrder = async (req, res) => {
         });
 
 
-        const service_request = await ServiceRequest.findByPk(request_id)
-        if (!service_request) {
-            return res.status(404).json({ message: "Service Request not found" });
+        // Instant orders come from a live service request, which is consumed here.
+        // Scheduled bookings have no request_id and always start as PENDING so the
+        // provider can accept or decline them.
+        let orderStatus = 'PENDING';
+        if (request_id) {
+            const service_request = await ServiceRequest.findByPk(request_id)
+            if (!service_request) {
+                return res.status(404).json({ message: "Service Request not found" });
+            }
+            service_request.destroy();
+            orderStatus = status;
         }
-        service_request.destroy();
 
         // Create the order
         const order = await Order.create({
@@ -258,8 +275,9 @@ const createInstantOrder = async (req, res) => {
             date,
             issue,
             location,
-            visiting_charge: visitingCharge,
-            status: status
+            estimated_charge: visitingCharge,
+            created: new Date(),
+            status: orderStatus
         });
 
         res.status(201).json(order);

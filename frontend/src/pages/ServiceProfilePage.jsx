@@ -1,316 +1,236 @@
-"use client"
+import { useEffect, useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { BadgeCheck, Briefcase, MapPin, Zap, Star, UserRound, Wrench } from 'lucide-react';
+import api from '../config/axios-config';
+import PageHeader from '../components/ui/PageHeader';
+import ServiceImage, { Avatar } from '../components/ui/ServiceImage';
+import Rating from '../components/ui/Rating';
+import Button from '../components/ui/Button';
+import { ErrorState } from '../components/ui/States';
+import { PageSkeleton } from '../components/ui/Skeleton';
+import { formatPrice, formatDate } from '../lib/format';
 
-import { useEffect, useState } from "react"
-import { useParams, useNavigate } from "react-router-dom"
-import {
-  BadgeCheck,
-  Briefcase,
-  MapPin,
-  CircleAlert,
-  Star,
-  ChevronRight,
-  Check,
-  ShieldUserIcon,
-  ClockArrowUpIcon,
-} from "lucide-react"
-import api from "../config/axios-config"
-import Loading from "../components/Loading"
+const TABS = [
+  { id: 'about', label: 'About' },
+  { id: 'photos', label: 'Photos' },
+  { id: 'reviews', label: 'Reviews' },
+  { id: 'areas', label: 'Service areas' },
+];
 
 const ServiceProfilePage = () => {
-  // This data would typically come from props or an API call
-  const [serviceData, setServiceData] = useState({})
-  const [isLoading, setIsLoading] = useState(true)
-  const { id } = useParams()
-  const [reviews, setReviews] = useState([])
-  const navigate = useNavigate()
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const [service, setService] = useState(null);
+  const [reviews, setReviews] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+  const [tab, setTab] = useState('about');
 
-  useEffect(() => {
-    console.log(id)
+  const load = () => {
+    setLoading(true);
+    setError(false);
     api
       .get(`/services/${id}`)
-      .then((response) => {
-        setServiceData(response.data)
-      })
-      .catch((err) => {
-        console.log(err)
-      })
-      .finally(() => {
-        setIsLoading(false)
-      })
-
+      .then((res) => setService(res.data))
+      .catch(() => setError(true))
+      .finally(() => setLoading(false));
     api
-      .get(`/reviews/service/${id}/`)
-      .then((response) => {
-        setReviews(response.data)
-      })
-      .catch((err) => {
-        console.log(err)
-      })
-  }, [])
+      .get(`/reviews/service/${id}`)
+      .then((res) => setReviews(Array.isArray(res.data) ? res.data : []))
+      .catch(() => setReviews([]));
+  };
 
-  const handleGetService = () => {
-    // Navigate to book order page with service ID
-    navigate(`/book?serviceId=${id}`)
+  useEffect(load, [id]);
+
+  if (loading) return <PageSkeleton />;
+  if (error || !service) {
+    return (
+      <>
+        <PageHeader title="Service" />
+        <ErrorState title="Service not available" description="This service may have been removed. Please browse other professionals." onRetry={load} />
+      </>
+    );
   }
 
-  const handleChat = () => {
-    // Handle chat initiation logic
-    console.log("Chat initiated")
-  }
+  const category = service.category?.name || '';
+  const provider = service.ProviderInfo || {};
+  const verified = !!service.badge_status;
+  const areas = (service.locations || []).filter(Boolean);
+  const place = [service.city, service.state].filter(Boolean).join(', ');
+  const photos = (service.working_images || []).filter(Boolean);
+  const specs = (service.specifications || []).filter(Boolean);
+  const hasInstant = service.instant_visiting_charge !== null && service.instant_visiting_charge !== undefined;
 
-  const handleTermsClick = () => {
-    // Handle terms and conditions click
-    console.log("Terms and conditions clicked")
-  }
-
-  if (isLoading) return <Loading />
+  const book = () => navigate(`/book?serviceId=${service.id}`);
+  const instant = () => navigate(`/instant-service?category=${service.category_id || ''}`);
 
   return (
-    <div className="bg-gray-50 min-h-screen pb-10">
-      {/* Hero Section */}
-      <div className="bg-gradient-to-r from-indigo-900 to-indigo-700 text-white py-5">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center space-x-2 text-sm text-white mb-7">
-            <span>Services</span>
-            <ChevronRight className="h-4 w-4" />
-            <span>{serviceData?.ServiceCategory?.name}</span>
-            <ChevronRight className="h-4 w-4" />
-            <span className="font-medium">{serviceData?.name}</span>
-          </div>
-        </div>
-      </div>
+    <div className="pb-28 md:pb-10">
+      <PageHeader title={service.name} subtitle={category} backTo={service.category_id ? `/services/${service.category_id}` : '/services'} />
 
-      {/* Main Content */}
-      <div className="max-w-7xl mx-auto sm:px-6 lg:px-8 -mt-10">
-        <div className="sm:rounded-sm overflow-hidden">
-          {/* Service Header */}
-          <div className="p-5 md:p-8 border mb-2 bg-white sm:rounded-md border-gray-200">
-            <div className="flex flex-col sm:flex-row gap-5">
-              <div className="flex-shrink-0 mx-auto">
-                <div className="relative">
-                  <img
-                    src={serviceData?.cover_image || "/placeholder.svg?height=240&width=240"}
-                    alt={serviceData?.name}
-                    className="w-60 h-60 object-cover rounded-lg border border-gray-200"
-                  />
-                  {serviceData?.badge_status && (
-                    <div className="absolute top-3 right-3 bg-indigo-500 text-white px-2 py-1 rounded-full text-xs flex items-center gap-1">
-                      <BadgeCheck className="h-3 w-3" />
-                      Verified
-                    </div>
-                  )}
-                </div>
+      <div className="max-w-5xl mx-auto md:px-6 md:pt-6 md:grid md:grid-cols-[1fr_320px] md:gap-6">
+        <div>
+          {/* Trust header */}
+          <section className="bg-white md:rounded-md md:border md:border-gray-200 overflow-hidden">
+            <ServiceImage src={service.cover_image} alt={service.name} category={category} className="h-52 md:h-64 w-full" iconClassName="h-14 w-14" />
+            <div className="p-4 md:p-6">
+              <p className="text-sm font-medium text-indigo-600">{category}</p>
+              <h1 className="text-2xl font-extrabold tracking-wide text-gray-900 leading-tight">{service.name}</h1>
+              <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1">
+                <Rating value={service.average_rating} count={reviews.length} />
+                {verified && (
+                  <span className="inline-flex items-center gap-1 text-sm font-semibold text-green-700">
+                    <BadgeCheck className="h-4 w-4" aria-hidden="true" /> Verified professional
+                  </span>
+                )}
               </div>
 
-              <div className="flex-1">
-                <div className="flex flex-wrap items-center gap-2">
-                  <h1 className="text-2xl md:text-4xl font-extrabold text-gray-800">{serviceData?.name}</h1>
-                  {serviceData?.badge_status && (
-                    <span className="hidden sm:flex bg-indigo-100 text-indigo-800 px-2 py-1 rounded-full text-xs items-center gap-1">
-                      <BadgeCheck className="h-3 w-3" />
-                      Verified Service
-                    </span>
-                  )}
-                </div>
-
-                <div className="mt-2 flex justify-between">
-                  <p className="text-indigo-500 font-medium">{serviceData?.ServiceCategory?.name}</p>
-                  <div className="flex gap-2">
-                    <div className="flex items-center text-indigo-500 gap-0.5">
-                      {[...Array(5)].map((_, i) => (
-                        <Star
-                          key={i}
-                          className={`h-4 w-4 ${i < Math.floor(serviceData?.average_rating || 0) ? "fill-indigo-500" : ""}`}
-                        />
-                      ))}
-                    </div>
-                    <span className="text-sm text-gray-500 mt-0.5">{serviceData?.reviews_count || reviews.length} reviews</span>
-                  </div>
-                </div>
-
-                <div className="mt-3 grid grid-cols-1 md:grid-cols-2 gap-2">
-                  <div className="flex items-center gap-2 bg-gray-50 p-3 rounded-sm">
-                    <div className="bg-indigo-100 p-2 rounded-sm">
-                      <ShieldUserIcon className="h-5 w-5 text-indigo-500" />
-                    </div>
-                    <div>
-                      <p className="text-gray-800 font-medium">{serviceData?.ProviderInfo?.name}</p>
-                      <p className="text-xs text-gray-500">Service Provider</p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-2 bg-gray-50 p-3 rounded-sm">
-                    <div className="bg-indigo-100 p-2 rounded-sm">
-                      <ClockArrowUpIcon className="h-5 w-5 text-indigo-500" />
-                    </div>
-                    <div>
-                      <p className="text-gray-800 font-medium">{serviceData?.fulfillments || 0}+ Fullfilled Service Requiests</p>
-                      <p className="text-xs text-gray-500">Successfully Fulfilled</p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-2 bg-gray-50 p-3 rounded-sm">
-                    <div className="bg-indigo-100 p-2 rounded-sm">
-                      <Briefcase className="h-5 w-5 text-indigo-500" />
-                    </div>
-                    <div>
-                      <p className="text-gray-800 font-medium">{serviceData?.experience || 0}+ Years of Experiance</p>
-                      <p className="text-xs text-gray-500">Professional Experience</p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-2 bg-gray-50 p-3 rounded-sm">
-                    <div className="bg-indigo-100 p-2 rounded-sm">
-                      <MapPin className="h-5 w-5 text-indigo-500" />
-                    </div>
-                    <div>
-                      <p className="text-gray-800 font-medium truncate max-w-[200px]">
-                        {serviceData?.locations?.join(", ")}
-                      </p>
-                      <p className="text-xs text-gray-500">Service Locations</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <ul className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm text-gray-700">
+                {provider.name && (
+                  <li className="flex items-center gap-2">
+                    <UserRound className="h-4 w-4 text-gray-400" aria-hidden="true" /> {provider.name}
+                  </li>
+                )}
+                {place && (
+                  <li className="flex items-center gap-2">
+                    <MapPin className="h-4 w-4 text-gray-400" aria-hidden="true" /> {place}
+                  </li>
+                )}
+                {service.experience > 0 && (
+                  <li className="flex items-center gap-2">
+                    <Briefcase className="h-4 w-4 text-gray-400" aria-hidden="true" /> {service.experience} year{service.experience === 1 ? '' : 's'} experience
+                  </li>
+                )}
+                {hasInstant && (
+                  <li className="flex items-center gap-2">
+                    <Zap className="h-4 w-4 text-gray-400" aria-hidden="true" /> Instant visits from {formatPrice(service.instant_visiting_charge)}
+                  </li>
+                )}
+              </ul>
             </div>
-          </div>
+          </section>
 
-          {/* Service Details */}
-          <div className="bg-white rounded-md border border-gray-200 shadow-sm grid grid-cols-1 lg:grid-cols-5 lg:gap-5">
-            <div className="lg:col-span-3 space-y-5 order-2 lg:order-1 p-6">
-              {/* Description */}
-              <section>
-                <p className="text-gray-500">{serviceData?.description}</p>
-              </section>
+          {/* Details */}
+          <section className="mt-2 md:mt-4 bg-white md:rounded-md md:border md:border-gray-200">
+            <div className="flex gap-1 overflow-x-auto no-scrollbar border-b border-gray-100 px-2" role="tablist" aria-label="Service details">
+              {TABS.map((t) => (
+                <button
+                  key={t.id}
+                  type="button"
+                  role="tab"
+                  aria-selected={tab === t.id}
+                  onClick={() => setTab(t.id)}
+                  className={`shrink-0 h-12 px-3 text-sm font-semibold border-b-2 -mb-px ${tab === t.id ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-800'}`}
+                >
+                  {t.label}
+                  {t.id === 'reviews' && reviews.length > 0 ? ` (${reviews.length})` : ''}
+                  {t.id === 'photos' && photos.length > 0 ? ` (${photos.length})` : ''}
+                </button>
+              ))}
+            </div>
 
-              {/* Services Provided */}
-              <section>
-                <h2 className="text-xl font-bold text-gray-800 mb-1">Services Provided</h2>
-                <ul className="">
-                  {serviceData?.specifications?.map((service, index) => (
-                    <li key={index} className="flex items-start gap-2 text-gray-700">
-                      {service}
-                    </li>
-                  ))}
-                </ul>
-              </section>
-
-              {/* Working Images */}
-              <section>
-                <div className="overflow-x-auto">
-                  <div className="gap-4 flex justify-center w-max">
-                    {serviceData?.working_images?.map((image, index) => (
-                      <div
-                        key={index}
-                        className="aspect-square overflow-hidden rounded-lg border border-gray-200 hover:border-indigo-500 h-50 w-50 transition-colors"
-                      >
-                        <img
-                          src={image || "/placeholder.svg?height=200&width=200"}
-                          alt={`Work sample ${index + 1}`}
-                          className="h-full w-full object-cover hover:scale-105 transition-transform"
-                        />
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </section>
-
-              {/* Reviews */}
-              <section>
-                <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-xl font-bold text-gray-800">Customer Reviews</h2>
-                  <div className="flex items-center gap-2">
-                    <div className="flex items-center text-indigo-500">
-                      {[...Array(5)].map((_, i) => (
-                        <Star
-                          key={i}
-                          className={`h-5 w-5 ${i < Math.floor(serviceData?.average_rating || 0) ? "fill-indigo-500" : ""}`}
-                        />
-                      ))}
+            <div className="p-4 md:p-6" role="tabpanel">
+              {tab === 'about' && (
+                <div className="space-y-5">
+                  <p className="text-gray-700 whitespace-pre-line">{service.description || 'The provider has not added a description yet.'}</p>
+                  {specs.length > 0 && (
+                    <div>
+                      <h2 className="font-semibold text-gray-900 mb-2">What's included</h2>
+                      <ul className="space-y-1.5">
+                        {specs.map((s, i) => (
+                          <li key={i} className="flex items-start gap-2 text-gray-700">
+                            <Wrench className="h-4 w-4 mt-1 text-indigo-500 shrink-0" aria-hidden="true" /> {s}
+                          </li>
+                        ))}
+                      </ul>
                     </div>
-                    <span className="text-gray-700 font-medium">
-                      {serviceData?.average_rating ? parseFloat(serviceData?.average_rating)?.toFixed(1) : "0.0"}
-                    </span>
-                  </div>
+                  )}
                 </div>
+              )}
 
-                {reviews?.length > 0 ? (
-                  <div className="space-y-4">
-                    {reviews.map((review, index) => (
-                      <div key={index} className="px-4 py-2 bg-gray-50 rounded-sm border border-gray-100">
-                        <div className="flex justify-between items-start">
-                          <div>
-                            <p className="font-semibold text-gray-800">{review.name}</p>
-                            <div className="flex items-center text-indigo-500">
-                              {[...Array(5)].map((_, i) => (
-                                <Star
-                                  key={i}
-                                  className={`h-3 w-3 mr-0.5 ${i < Math.floor(review.rating || 0) ? "fill-indigo-500" : ""}`}
-                                />
-                              ))}
-                            </div>
-                          </div>
-                          <span className="text-xs text-gray-500">{review.created}</span>
-                        </div>
-                        <p className="text-gray-700">{review.comment}</p>
-                      </div>
+              {tab === 'photos' &&
+                (photos.length ? (
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                    {photos.map((src, i) => (
+                      <a key={i} href={src} target="_blank" rel="noreferrer" className="block aspect-square overflow-hidden rounded-sm bg-gray-100">
+                        <ServiceImage src={src} alt={`Work photo ${i + 1}`} category={category} className="h-full w-full" />
+                      </a>
                     ))}
                   </div>
                 ) : (
-                  <p className="text-gray-500 italic">No reviews yet.</p>
-                )}
-              </section>
+                  <p className="text-sm text-gray-500">No work photos yet.</p>
+                ))}
+
+              {tab === 'reviews' &&
+                (reviews.length ? (
+                  <ul className="divide-y divide-gray-100">
+                    {reviews.map((r, i) => {
+                      const name = r.CustomerInfo?.name || 'Customer';
+                      const comment = Array.isArray(r.comment) ? r.comment.join(' ') : r.comment;
+                      return (
+                        <li key={r.id || i} className="py-3 first:pt-0 flex gap-3">
+                          <Avatar name={name} size="h-9 w-9" className="text-sm" />
+                          <div className="min-w-0">
+                            <div className="flex flex-wrap items-center gap-x-2">
+                              <p className="font-semibold text-gray-900">{name}</p>
+                              <span className="inline-flex items-center gap-0.5 text-sm">
+                                <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" aria-hidden="true" />
+                                {r.rating}
+                              </span>
+                              {r.created && <span className="text-xs text-gray-400">{formatDate(r.created)}</span>}
+                            </div>
+                            {comment && <p className="text-sm text-gray-700 mt-0.5">{comment}</p>}
+                          </div>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                ) : (
+                  <p className="text-sm text-gray-500">No reviews yet. Reviews appear here after customers complete a booking.</p>
+                ))}
+
+              {tab === 'areas' &&
+                (areas.length || place ? (
+                  <ul className="flex flex-wrap gap-2">
+                    {(areas.length ? areas : [place]).map((a) => (
+                      <li key={a} className="inline-flex items-center gap-1 rounded-sm bg-gray-100 px-3 py-1.5 text-sm text-gray-700">
+                        <MapPin className="h-3.5 w-3.5" aria-hidden="true" /> {a}
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-sm text-gray-500">The provider has not listed service areas.</p>
+                ))}
             </div>
+          </section>
+        </div>
 
-            {/* Sidebar */}
-            <div className="lg:col-span-2 order-1 lg:order-2">
-              <div className="lg:bg-gray-50 rounded-lg p-6 lg:m-6">
-                <div className="flex justify-between">
-                <div className="flex items-center gap-1 mb-2">
-                  <span className="text-2xl font-bold text-indigo-500">₹{serviceData?.visiting_charge}</span>
-                  <div
-                    onClick={handleTermsClick}
-                    className="cursor-pointer text-gray-400 hover:text-gray-600"
-                    title="View terms and conditions"
-                  >
-                    <CircleAlert className="h-4 w-4 mt-1" />
-                  </div>
-                </div>
-                <h3 className="text-gray-500 tracking-wide text-sm ">visiting charge</h3>
-                </div>
-
-                <div className="text-sm mb-5 space-y-2 tracking-wide">
-                  <div className="flex items-center gap-2">
-                    <Check className="h-4 w-4 text-indigo-500" />
-                    <span className="text-gray-700">Verified Provider</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Check className="h-4 w-4 text-indigo-500" />
-                    <span className="text-gray-700">Satisfaction Guaranteed</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Check className="h-4 w-4 text-indigo-500" />
-                    <span className="text-gray-700">Secure Payments</span>
-                  </div>
-                </div>
-
-                <div className="flex gap-2 w-full">
-                  <button
-                    onClick={handleGetService}
-                    className="py-2 w-full px-4 bg-indigo-500 hover:bg-indigo-700 text-white font-medium rounded-sm transition-colors">Book Now</button>
-
-                  <button onClick={handleChat}
-                    className="py-2 w-full px-4 border border-indigo-500 text-indigo-500 hover:bg-indigo-50 font-medium rounded-sm transition-colors">
-                    Contact Provider
-                  </button>
-                </div>
+        {/* Booking panel: sticky bar on phones, side card on desktop */}
+        <aside className="fixed md:sticky inset-x-0 bottom-0 md:bottom-auto z-30 md:z-auto border-t md:border border-gray-200 bg-white md:rounded-md p-4 md:p-5 md:self-start md:sticky md:top-36 bottom-safe">
+          <div className="flex md:block items-center gap-3">
+            <div className="flex-1 md:mb-4">
+              <p className="text-xs text-gray-500">Starting from</p>
+              <p className="text-xl font-bold text-gray-900">{formatPrice(service.visiting_charge)}</p>
+              <p className="hidden md:block text-xs text-gray-500">Visiting charge. Final price depends on the work needed.</p>
+            </div>
+            <div className="flex md:flex-col gap-2">
+              <div className="hidden sm:block">
+                <Button variant="secondary" icon={Zap} onClick={instant} className="md:w-full">
+                  Instant Service
+                </Button>
               </div>
+              <Button onClick={book} className="md:w-full px-6">
+                Book Now
+              </Button>
             </div>
           </div>
-        </div>
+          <button type="button" onClick={instant} className="sm:hidden mt-2 w-full text-center text-sm font-semibold text-indigo-600 py-1">
+            Need someone right now? Get Instant Service
+          </button>
+        </aside>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default ServiceProfilePage
+export default ServiceProfilePage;

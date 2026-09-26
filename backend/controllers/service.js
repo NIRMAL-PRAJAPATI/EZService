@@ -75,10 +75,19 @@ const getServicesByCategoryId = async (req,res)=>{
         const {id} = req.params;
         const services = await service.findAll({
             where: {category_id:id},
-            attributes: ['id','name', 'cover_image', 'visiting_charge', 'description', 'city', 'state', 'country', 'category_id','badge_status','created','experience','working_images',[
+            attributes: ['id','name', 'cover_image', 'visiting_charge', 'instant_visiting_charge', 'description', 'city', 'state', 'country', 'category_id','badge_status','created','experience','working_images',[
                 Sequelize.literal(`(SELECT AVG("rating") FROM "service_review" WHERE "service_review"."service_id" = "Service"."id")`),
                 'average_rating'
-              ]]
+              ]],
+            include: [{
+                model: ServiceCategory,
+                as: 'category',
+                attributes: ['name'],
+            },
+            {
+                model: providerInfo,
+                attributes: ['name','id']
+            }]
         })
 
         if(!services)

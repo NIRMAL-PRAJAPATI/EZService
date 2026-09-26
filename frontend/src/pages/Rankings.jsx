@@ -1,74 +1,73 @@
-import { useState } from "react"
-import { List, ChevronDown } from "lucide-react"
-// Fix the import paths to match your project structure
-import ServiceList from "../components/Rankings/ServiceList"
-import RankingCard from "../components/Rankings/Ranking-cards"
+import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { Trophy } from 'lucide-react';
+import api from '../config/axios-config';
+import ServiceImage from '../components/ui/ServiceImage';
+import Rating from '../components/ui/Rating';
+import { CardListSkeleton } from '../components/ui/Skeleton';
+import { EmptyState, ErrorState } from '../components/ui/States';
+import { formatPrice } from '../lib/format';
 
-const Rankings = () => {
-  const [isServiceListOpen, setIsServiceListOpen] = useState(false)
+/** Top-rated services, ranked by the average rating customers gave them. */
+function Rankings() {
+  const [services, setServices] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
-  const rankingsData = [
-    {
-      id: "premium-cleaning",
-      position: "1st",
-      name: "Premium Cleaning Services",
-      location: "Ahmedabad, Gujarat, India",
-      imageUrl: "https://c8.alamy.com/comp/DERFBR/colourful-indian-shop-in-puttaparthi-andhra-pradesh-india-DERFBR.jpg",
-      metrics: {
-        "Customer Satisfaction": "98%",
-        "Service Reliability": "95%",
-        "Response Time": "92%",
-      },
-    },
-    {
-      id: "ananta-plumbing",
-      position: "2nd",
-      name: "Ananta Plumbing Service",
-      location: "Ahmedabad, Gujarat, India",
-      imageUrl: "https://c8.alamy.com/comp/DERFBR/colourful-indian-shop-in-puttaparthi-andhra-pradesh-india-DERFBR.jpg",
-      metrics: {
-        "Customer Satisfaction": "98%",
-        "Service Reliability": "95%",
-        "Response Time": "92%",
-      },
-    },
-  ]
+  const load = () => {
+    setLoading(true);
+    setError(false);
+    api
+      .get('/services/?limit=100')
+      .then((res) => {
+        const rated = (res.data || []).filter((s) => Number(s.average_rating) > 0).sort((a, b) => Number(b.average_rating) - Number(a.average_rating));
+        setServices(rated.slice(0, 20));
+      })
+      .catch(() => setError(true))
+      .finally(() => setLoading(false));
+  };
+  useEffect(load, []);
 
   return (
-    <div className="bg-gray-50 min-h-screen">
-      <ServiceList isOpen={isServiceListOpen} onClose={() => setIsServiceListOpen(false)} />
+    <div className="max-w-2xl mx-auto px-4 md:px-0 py-5 md:py-8">
+      <h1 className="text-2xl md:text-3xl font-extrabold tracking-wide text-gray-900">Top-rated services</h1>
+      <p className="text-sm text-gray-500">Ranked by the average rating from completed bookings.</p>
 
-      <div className="max-w-7xl mx-auto p-2 z-0">
-        {/* Header Section */}
-        <div className="flex justify-between items-start sm:items-center mb-6">
-          <h1 className="text-xl sm:text-2xl font-bold text-gray-800">Service Rankings</h1>
-          <button
-            id="openServiceList"
-            onClick={() => setIsServiceListOpen(true)}
-            className="flex items-center border py-2 px-3 rounded tracking-wide bg-indigo-500 text-white"
-          >
-            <List className="mr-1 w-5 h-5" />
-            List
-          </button>
-        </div>
-
-        {/* Rankings List */}
-        <div className="space-y-4">
-          {rankingsData.map((ranking, index) => (
-            <RankingCard key={index} {...ranking} />
-          ))}
-        </div>
-
-        {/* Load More Button */}
-        <div className="flex justify-center mt-6">
-          <button className="flex items-center text-center text-indigo-500 font-semibold">
-            Load More
-            <ChevronDown className="ml-1 mt-0.5 w-4 h-4" />
-          </button>
-        </div>
+      <div className="mt-5">
+        {loading ? (
+          <CardListSkeleton count={4} />
+        ) : error ? (
+          <div className="rounded-md border border-gray-200 bg-white">
+            <ErrorState onRetry={load} />
+          </div>
+        ) : services.length === 0 ? (
+          <div className="rounded-md border border-gray-200 bg-white">
+            <EmptyState icon={Trophy} title="No ratings yet" description="Rankings appear once customers start rating completed services." actionLabel="Browse services" actionTo="/services" />
+          </div>
+        ) : (
+          <ol className="space-y-3">
+            {services.map((s, i) => (
+              <li key={s.id}>
+                <Link to={`/service/${s.id}`} className="flex items-center gap-3 rounded-md border border-gray-200 bg-white p-3 hover:border-indigo-300">
+                  <span className={`h-8 w-8 shrink-0 rounded-full flex items-center justify-center text-sm font-bold ${i < 3 ? 'bg-amber-100 text-amber-700' : 'bg-gray-100 text-gray-600'}`}>{i + 1}</span>
+                  <ServiceImage src={s.cover_image} alt={s.name} category={s.category?.name} className="h-14 w-14 shrink-0 rounded-sm" iconClassName="h-6 w-6" />
+                  <div className="min-w-0 flex-1">
+                    <p className="font-semibold text-gray-900 truncate">{s.name}</p>
+                    <p className="text-sm text-gray-500 truncate">
+                      {s.ProviderInfo?.name}
+                      {s.city ? ` · ${s.city}` : ''}
+                    </p>
+                    <Rating value={s.average_rating} />
+                  </div>
+                  <span className="text-sm font-semibold text-gray-900">{formatPrice(s.visiting_charge)}</span>
+                </Link>
+              </li>
+            ))}
+          </ol>
+        )}
       </div>
     </div>
-  )
+  );
 }
 
-export default Rankings
+export default Rankings;

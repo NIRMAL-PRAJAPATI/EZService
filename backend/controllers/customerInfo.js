@@ -17,7 +17,7 @@ const getCustomerInfo = async (req, res) => {
             return res.status(400).json({ message: "You are not a legetimate user" });
         }
 
-        const user = await User.findByPk(customerId);
+        const user = await User.findByPk(customerId, { attributes: { exclude: ['password'] } });
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
@@ -183,6 +183,9 @@ const updatePassword = async (req, res) => {
 
 const deleteCustomer = async (req, res) => {
     try {
+        if (req.role !== 'customer') {
+            return res.status(403).json({ message: "Access denied" });
+        }
         const deleted = await User.destroy({
             where: { id: req.userId }
         });

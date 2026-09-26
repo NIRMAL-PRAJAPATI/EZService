@@ -1,121 +1,29 @@
-import { Mail, Phone } from "lucide-react";
-import React from "react";
-import resources from "../resource";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import { motion } from "framer-motion";
+import { Link } from 'react-router-dom';
+import { Logo } from './Navbar';
 
+// Slim footer, desktop only (phones use the bottom navigation instead).
 const Footer = () => {
-    return (
-        <footer className="bg-gray-900 text-white pt-12 pb-5">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
-            <div className="col-span-2">
-            <img
-              src={resources.Logo.src}
-              className="h-8 w-8 mr-2 md:mt-2 mb-3"
-              alt="Logo"
-            />
-              <h3 className="text-lg font-semibold ">About Us</h3>
-              <p className="text-gray-400">
-                Connecting skilled service providers with customers looking for
-                quality services.
-              </p>
-            </div>
-            <div>
-              <h3 className="text-lg font-semibold mb-4">Company</h3>
-              <ul className="space-y-2">
-                <li>
-                  <a href="#" className="text-gray-500 hover:text-indigo-500">
-                    About Us
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="text-gray-500 hover:text-indigo-500">
-                    Investors
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="text-gray-500 hover:text-indigo-500">
-                    Career
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="text-gray-500 hover:text-indigo-500">
-                    Market
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="text-gray-500 hover:text-indigo-500">
-                    Contact Us
-                  </a>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
-              <ul className="space-y-2">
-                <li>
-                  <a href="#" className="text-gray-500 hover:text-indigo-500">
-                    Find Services
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="text-gray-500 hover:text-indigo-500">
-                    Become a Provider
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="text-gray-500 hover:text-indigo-500">
-                    How It Works
-                  </a>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="text-lg font-semibold mb-4">Categories</h3>
-              <ul className="space-y-2">
-                <li>
-                  <a href="#" className="text-gray-500 hover:text-indigo-500">
-                    Home Services
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="text-gray-500 hover:text-indigo-500">
-                    Professional Services
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="text-gray-500 hover:text-indigo-500">
-                    Health &amp; Fitness
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="text-gray-500 hover:text-indigo-500">
-                    Education
-                  </a>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="text-lg font-semibold mb-4">Contact</h3>
-              <ul className="space-y-2 text-gray-400">
-                <li className="flex items-center gap-2">
-                  <Mail className="h-4 w-4 mt-1" />support@ezservice.com
-                </li>
-                <li className="flex items-center gap-2">
-                  <Phone className="h-4 w-4 mt-1" />+1 (555) 123-4567
-                </li>
-              </ul>
-            </div>
-          </div>
-          <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
-            <p>© 2024 EZService. All rights reserved.</p>
-          </div>
+  return (
+    <footer className="hidden md:block border-t border-gray-200 bg-white mt-12">
+      <div className="max-w-6xl mx-auto px-6 py-8 flex flex-wrap items-start justify-between gap-8">
+        <div className="max-w-xs">
+          <Logo />
+          <p className="mt-2 text-sm text-gray-500">Book trusted local professionals for repairs, cleaning and more, in your city.</p>
         </div>
-      </footer>
-    );
-}
+        <nav aria-label="Footer" className="grid grid-cols-2 gap-x-12 gap-y-2 text-sm">
+          <Link to="/services" className="text-gray-600 hover:text-gray-900">All services</Link>
+          <Link to="/about" className="text-gray-600 hover:text-gray-900">About EZService</Link>
+          <Link to="/instant-service" className="text-gray-600 hover:text-gray-900">Instant service</Link>
+          <Link to="/complaint" className="text-gray-600 hover:text-gray-900">Help &amp; complaints</Link>
+          <Link to="/Rankings" className="text-gray-600 hover:text-gray-900">Top-rated services</Link>
+          <Link to="/provider/register" className="text-gray-600 hover:text-gray-900">Become a provider</Link>
+        </nav>
+      </div>
+      <div className="border-t border-gray-100">
+        <p className="max-w-6xl mx-auto px-6 py-4 text-xs text-gray-400">© {new Date().getFullYear()} EZService</p>
+      </div>
+    </footer>
+  );
+};
 
 export default Footer;
