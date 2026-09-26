@@ -4,7 +4,7 @@ import { MessageSquarePlus, ImagePlus, X, MessagesSquare, Trophy, LifeBuoy, Chev
 import UserReview from '../components/Explore/UserReview';
 import UserComp from '../components/Explore/UserComp';
 import ProviderSelect from '../components/Explore/ProviderSelect';
-import ProviderCard from '../components/service/ProviderCard';
+import ProviderCard from '../components/Service/ProviderCard';
 import BottomSheet from '../components/ui/BottomSheet';
 import Button from '../components/ui/Button';
 import OutlinedField from '../components/ui/OutlinedField';
