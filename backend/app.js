@@ -8,6 +8,7 @@ const { Server } = require('socket.io');
 const passport = require("passport");
 const ServiceRequest = require('./models/serviceRequest');
 require('./utilities/passport');
+require('./utilities/migrate')();
 
 // Initialize Socket.io
 const io = new Server(server, {

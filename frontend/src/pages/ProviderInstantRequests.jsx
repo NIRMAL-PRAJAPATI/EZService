@@ -1,6 +1,11 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Zap, MapPin, Clock, UserRound, Send, Radio } from 'lucide-react';
+import { Zap, MapPin, Clock, UserRound, Send, Radio, Settings2, Navigation } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { distanceKm, formatKm, locationText, directionsUrl } from '../lib/geo';
+import Switch from '../components/ui/Switch';
+import { SERVICES_CHANGED } from '../components/provider/GoOnlineSheet';
+import { getCategoryIcon } from '../lib/categories';
 import { io } from 'socket.io-client';
 import authApi from '../config/auth-config';
 import { ProviderPage } from '../components/layout/ProviderLayout';
@@ -13,6 +18,9 @@ import { formatPrice } from '../lib/format';
 
 const SOCKET_URL = import.meta.env.VITE_API_BACKEND_API || 'http://localhost:3000';
 const ETAS = ['5-10 minutes', '15-20 minutes', '30-45 minutes', '1 hour'];
+// A provider can send up to 3 offers for one customer request. A new request
+// (even from the same customer) has a new id, so it starts again at 3.
+const MAX_OFFERS = 3;
 
 // Requests arrive either from the REST API (DB rows) or live over the socket
 // (the payload the customer emitted). Normalise both into one shape.
@@ -24,7 +32,12 @@ const normalizeRequest = (r) => ({
   address: r.address,
   description: r.description,
   created: r.created || new Date().toISOString(),
+  lat: r.lat != null ? Number(r.lat) : null,
+  lng: r.lng != null ? Number(r.lng) : null,
 });
+
+// A service takes instant requests when it is active and switched on for Instant
+const isInstant = (s) => s.is_active !== false && s.instant_enabled !== false;
 
 const ProviderInstantRequests = () => {
   const availability = useAvailability();
@@ -34,9 +47,13 @@ const ProviderInstantRequests = () => {
   const [providerInfo, setProviderInfo] = useState(null);
   const [rating, setRating] = useState(null);
   const [selected, setSelected] = useState(null);
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [settingsError, setSettingsError] = useState('');
   const [offerData, setOfferData] = useState({ price: '', estimatedArrival: '15-20 minutes' });
   const [defaultPrice, setDefaultPrice] = useState('');
   const [offerAttempts, setOfferAttempts] = useState({});
+  const offerAttemptsRef = useRef({});
+  offerAttemptsRef.current = offerAttempts;
   const [error, setError] = useState('');
   const [toast, setToast] = useState('');
   const socket = useRef(null);
@@ -76,11 +93,16 @@ const ProviderInstantRequests = () => {
     ]).then(([statusResponse, servicesResponse]) => {
       const services = servicesResponse.data || [];
       setMyServices(services);
-      const categoryIds = [...new Set(services.map((s) => s.category_id).filter((id) => id != null))];
+      // Only categories of active services switched on for Instant Service
+      const categoryIds = [...new Set(services.filter(isInstant).map((s) => s.category_id).filter((id) => id != null))];
       if (statusResponse.data?.isOnline && categoryIds.length && socket.current) {
         socket.current.emit('providerJoin', categoryIds);
       }
     });
+
+    // Keep the service list in sync with changes made in "Verify your services"
+    const refreshServices = () => authApi.get('/provider/services').then((res) => setMyServices(res.data || [])).catch(() => {});
+    window.addEventListener(SERVICES_CHANGED, refreshServices);
 
     authApi
       .get('/service-requests/active')
@@ -98,18 +120,17 @@ const ProviderInstantRequests = () => {
       notify('Your offer was accepted! Check your orders.');
     });
 
+    // A decline doesn't use up an offer: only sending one does (counted in handleSubmitOffer)
     socket.current.on('offerDeclined', (data) => {
-      setOfferAttempts((prev) => {
-        if (!data.requestId || !data.serviceId) return prev;
-        const key = `${data.requestId}_${data.serviceId}`;
-        const attempts = (prev[key] || 0) + 1;
-        notify(attempts < 3 ? `Offer declined. You can send ${3 - attempts} more.` : 'Offer declined. No more offers allowed for this request.');
-        return { ...prev, [key]: attempts };
-      });
+      if (!data?.requestId || !data?.serviceId) return notify('Offer declined.');
+      const sent = offerAttemptsRef.current[`${data.requestId}_${data.serviceId}`] || 0;
+      const left = Math.max(0, MAX_OFFERS - sent);
+      notify(left > 0 ? `Offer declined. You can send ${left} more.` : 'Offer declined. No more offers allowed for this request.');
     });
 
     return () => {
       clearTimeout(toastTimer.current);
+      window.removeEventListener(SERVICES_CHANGED, refreshServices);
       if (socket.current) {
         socket.current.off('newServiceRequest');
         socket.current.off('offerAccepted');
@@ -122,9 +143,39 @@ const ProviderInstantRequests = () => {
 
   // The provider's own service listing for a request's category (used for the
   // default price and as the service_id on the resulting order).
-  const serviceFor = (req) => myServices.find((s) => String(s.category_id) === String(req.categoryId));
+  const serviceFor = (req) => {
+    const inCategory = myServices.filter((s) => String(s.category_id) === String(req.categoryId));
+    return inCategory.find(isInstant) || inCategory[0];
+  };
+
+  // Instant Service settings: which services take live requests
+  const toggleInstant = (svc, value) => {
+    setSettingsError('');
+    setMyServices((list) => list.map((s) => (s.id === svc.id ? { ...s, instant_enabled: value } : s)));
+    authApi.patch(`/services/${svc.id}/flags`, { instant_enabled: value }).catch(() => {
+      setMyServices((list) => list.map((s) => (s.id === svc.id ? { ...s, instant_enabled: !value } : s)));
+      setSettingsError("Couldn't save. Please try again.");
+    });
+  };
+  const instantCount = myServices.filter(isInstant).length;
 
   const visible = useMemo(() => requests.filter((r) => r.id && !skipped.includes(r.id)), [requests, skipped]);
+
+  // One job at a time: no new offers while a trip is running
+  const [runningTrip, setRunningTrip] = useState(null);
+  useEffect(() => {
+    const check = () =>
+      authApi
+        .get('/orders/provider?all=true')
+        .then((res) => {
+          const list = Array.isArray(res.data) ? res.data : [];
+          setRunningTrip(list.find((o) => String(o.status).toUpperCase() === 'CONFIRMED' && (o.trip_status === 'ON_THE_WAY' || o.trip_status === 'ARRIVED')) || null);
+        })
+        .catch(() => {});
+    check();
+    const t = setInterval(check, 30000);
+    return () => clearInterval(t);
+  }, []);
 
   const attemptsFor = (req) => {
     const svc = serviceFor(req);
@@ -156,12 +207,15 @@ const ProviderInstantRequests = () => {
       service: { id: serviceId, name: svc?.name || selected.categoryName || 'Instant service' },
       price: parseFloat(offerData.price),
       estimatedArrival: offerData.estimatedArrival,
+      distanceKm: distanceKm(myPos, selected),
     };
 
-    setOfferAttempts((prev) => {
-      const key = `${selected.id}_${serviceId}`;
-      return { ...prev, [key]: (prev[key] || 0) + 1 };
-    });
+    const key = `${selected.id}_${serviceId}`;
+    if ((offerAttemptsRef.current[key] || 0) >= MAX_OFFERS) {
+      setSelected(null);
+      return notify('No more offers allowed for this request.');
+    }
+    setOfferAttempts((prev) => ({ ...prev, [key]: (prev[key] || 0) + 1 }));
 
     socket.current?.emit('serviceOffer', { requestId: selected.id, offer });
     setSelected(null);
@@ -169,10 +223,55 @@ const ProviderInstantRequests = () => {
   };
 
   const online = availability?.isOnline;
+  const myPos = availability?.position;
 
   return (
     <ProviderPage title="Instant requests" subtitle="Live requests from customers who need help now.">
       <InstantStatusToggle />
+
+      <button
+        type="button"
+        onClick={() => setSettingsOpen(true)}
+        className="mt-3 flex w-full items-center gap-3 rounded-md border border-gray-200 bg-white p-4 text-left hover:border-indigo-300"
+      >
+        <span className="h-10 w-10 shrink-0 rounded-sm bg-indigo-50 text-indigo-600 flex items-center justify-center">
+          <Settings2 className="h-5 w-5" aria-hidden="true" />
+        </span>
+        <span className="flex-1">
+          <span className="block font-semibold text-gray-900">Service settings</span>
+          <span className="block text-sm text-gray-500">
+            {instantCount} of {myServices.length} service{myServices.length === 1 ? '' : 's'} on for Instant Service
+          </span>
+        </span>
+      </button>
+
+      <BottomSheet open={settingsOpen} onClose={() => setSettingsOpen(false)} title="Instant Service settings">
+        <p className="text-sm text-gray-500 mb-3">Switch on the services you want live requests for when you go online.</p>
+        {myServices.length === 0 ? (
+          <p className="py-6 text-center text-sm text-gray-500">You haven't added any services yet.</p>
+        ) : (
+          <ul className="divide-y divide-gray-100 rounded-sm border border-gray-200">
+            {myServices.map((svc) => {
+              const Icon = getCategoryIcon(svc.category?.name || svc.name);
+              const inactive = svc.is_active === false;
+              return (
+                <li key={svc.id} className="flex items-center gap-3 p-3">
+                  <Icon className="h-5 w-5 shrink-0 text-indigo-500" aria-hidden="true" />
+                  <div className="min-w-0 flex-1">
+                    <p className="font-medium text-gray-900 truncate">{svc.name}</p>
+                    <p className="text-xs text-gray-500">
+                      {inactive ? 'Hidden service. Turn it on in My services first.' : `${svc.category?.name || ''} · instant ${formatPrice(svc.instant_visiting_charge ?? svc.visiting_charge)}`}
+                    </p>
+                  </div>
+                  <Switch checked={!inactive && svc.instant_enabled !== false} disabled={inactive} onChange={(v) => toggleInstant(svc, v)} label={`${svc.name} in Instant Service`} />
+                </li>
+              );
+            })}
+          </ul>
+        )}
+        {settingsError && <p className="mt-3 text-sm text-red-600" role="alert">{settingsError}</p>}
+        <p className="mt-3 text-xs text-gray-400">Changes apply straight away, even while you're online.</p>
+      </BottomSheet>
 
       <div aria-live="polite" className="sr-only">
         {toast}
@@ -189,6 +288,21 @@ const ProviderInstantRequests = () => {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {runningTrip && (
+        <div className="mt-4 flex items-start gap-3 rounded-md border border-amber-200 bg-amber-50 p-4" role="status">
+          <Navigation className="h-5 w-5 mt-0.5 shrink-0 text-amber-700" aria-hidden="true" />
+          <div className="flex-1">
+            <p className="font-semibold text-amber-800">You have a running trip</p>
+            <p className="text-sm text-amber-800">
+              Finish {runningTrip.Service?.name || 'your current job'} for {runningTrip.CustomerInfo?.name || 'the customer'} before taking a new request.
+            </p>
+          </div>
+          <Link to="/provider/trips" className="text-sm font-semibold text-amber-800 underline">
+            Open
+          </Link>
+        </div>
+      )}
 
       <section className="mt-6" aria-labelledby="requests-title">
         <h2 id="requests-title" className="text-lg font-bold tracking-wide text-gray-900 mb-3 flex items-center gap-2">
@@ -214,7 +328,7 @@ const ProviderInstantRequests = () => {
               {visible.map((req) => {
                 const attempts = attemptsFor(req);
                 const svc = serviceFor(req);
-                const maxed = attempts >= 3;
+                const maxed = attempts >= MAX_OFFERS;
                 return (
                   <motion.li
                     key={req.id}
@@ -234,13 +348,25 @@ const ProviderInstantRequests = () => {
                         {new Date(req.created).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}
                       </span>
                     </div>
-                    <h3 className="mt-2 text-xl font-bold text-gray-900">{req.categoryName || svc?.category?.name || svc?.name || 'Service request'}</h3>
+                    <div className="mt-2 flex items-start justify-between gap-3">
+                      <h3 className="text-xl font-bold text-gray-900">{req.categoryName || svc?.category?.name || svc?.name || 'Service request'}</h3>
+                      <span className="shrink-0 inline-flex items-center gap-1 rounded-sm bg-indigo-50 px-2 py-1 text-sm font-bold text-indigo-700" title="Straight-line distance from your live location">
+                        <MapPin className="h-4 w-4" aria-hidden="true" />
+                        {formatKm(distanceKm(myPos, req)) ? `${formatKm(distanceKm(myPos, req))} away` : req.lat == null ? 'No location' : 'Locating…'}
+                      </span>
+                    </div>
                     <ul className="mt-2 space-y-1.5 text-sm text-gray-700">
                       <li className="flex items-center gap-2">
                         <UserRound className="h-4 w-4 text-gray-400 shrink-0" aria-hidden="true" /> {req.customerName}
                       </li>
                       <li className="flex items-start gap-2">
-                        <MapPin className="h-4 w-4 mt-0.5 text-gray-400 shrink-0" aria-hidden="true" /> {req.address}
+                        <MapPin className="h-4 w-4 mt-0.5 text-gray-400 shrink-0" aria-hidden="true" />
+                        <span className="flex-1">{locationText(req)}</span>
+                        {directionsUrl(req) && (
+                          <a href={directionsUrl(req)} target="_blank" rel="noreferrer" className="shrink-0 text-sm font-semibold text-indigo-600">
+                            Directions
+                          </a>
+                        )}
                       </li>
                     </ul>
                     <div className="mt-3 rounded-sm bg-gray-50 px-3 py-2">
@@ -256,8 +382,8 @@ const ProviderInstantRequests = () => {
                       <Button variant="secondary" className="flex-1" onClick={() => setSkipped((s) => [...s, req.id])}>
                         Skip
                       </Button>
-                      <Button className="flex-[2]" icon={Send} onClick={() => openOffer(req)} disabled={maxed}>
-                        {maxed ? 'No offers left' : attempts > 0 ? `Send new offer (${3 - attempts} left)` : 'Send offer'}
+                      <Button className="flex-[2]" icon={Send} onClick={() => openOffer(req)} disabled={maxed || !!runningTrip}>
+                        {runningTrip ? 'Finish current trip first' : maxed ? 'No offers left' : attempts > 0 ? `Send new offer (${MAX_OFFERS - attempts} left)` : 'Send offer'}
                       </Button>
                     </div>
                   </motion.li>
@@ -284,7 +410,7 @@ const ProviderInstantRequests = () => {
               <p className="font-semibold text-gray-900">
                 {selected.categoryName || 'Service request'} · {selected.customerName}
               </p>
-              <p className="text-gray-600">{selected.address}</p>
+              <p className="text-gray-600">{locationText(selected)}{formatKm(distanceKm(myPos, selected)) ? ` · ${formatKm(distanceKm(myPos, selected))} away` : ''}</p>
               <p className="text-gray-600 mt-1">“{selected.description}”</p>
             </div>
 

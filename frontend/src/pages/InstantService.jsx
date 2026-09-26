@@ -1,7 +1,9 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
-import { MapPin, Clock, FileText, Zap, LogIn, BadgeIndianRupee, ChevronDown, ArrowLeft } from 'lucide-react';
+import { Clock, FileText, Zap, LogIn, BadgeIndianRupee, ChevronDown, ArrowLeft, LocateFixed, Map as MapIcon } from 'lucide-react';
+import { getCurrentPosition, formatKm, liveLocationLabel, pinnedLocationLabel } from '../lib/geo';
+import MapPicker from '../components/booking/MapPicker';
 import Lottie from 'lottie-react';
 import providerFindAnimation from '../assets/animation2.json';
 import { io } from 'socket.io-client';
@@ -15,9 +17,12 @@ import { Avatar } from '../components/ui/ServiceImage';
 import { EmptyState, InlineError } from '../components/ui/States';
 import { Skeleton } from '../components/ui/Skeleton';
 import { getCategoryIcon } from '../lib/categories';
-import { getSavedAddress, getCity } from '../lib/location';
 import { getAuthUser } from '../lib/auth';
 import { formatPrice } from '../lib/format';
+import { lockScroll } from '../lib/scrollLock';
+
+// Offers one provider can send for one customer request
+const MAX_OFFERS = 3;
 
 const SOCKET_URL = import.meta.env.VITE_API_BACKEND_API || 'http://localhost:3000';
 
@@ -29,7 +34,7 @@ const InstantService = () => {
   const isCustomer = user?.role === 'customer';
 
   const [formData, setFormData] = useState({
-    address: getSavedAddress() || getCity() || '',
+    address: '', // filled from the live location when the request is sent
     serviceType: searchParams.get('category') || '',
     description: '',
   });
@@ -46,6 +51,31 @@ const InstantService = () => {
   const [currentRequestId, setCurrentRequestId] = useState(null);
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [customerName, setCustomerName] = useState('');
+  // Live location (required so nearby professionals can see the distance)
+  const [coords, setCoords] = useState(null);
+  const [locating, setLocating] = useState(false);
+  const [locationError, setLocationError] = useState('');
+  // Where the service is needed: the customer's current location, or a spot picked on the map
+  const [locMode, setLocMode] = useState('current');
+  const [pinned, setPinned] = useState(null);
+  const [mapOpen, setMapOpen] = useState(false);
+  // The exact point sent with the request (and used for the order)
+  const [serviceCoords, setServiceCoords] = useState(null);
+
+  const shareLocation = () => {
+    setLocating(true);
+    setLocationError('');
+    return getCurrentPosition()
+      .then((c) => {
+        setCoords(c);
+        return c;
+      })
+      .catch((err) => {
+        setLocationError(err.message);
+        throw err;
+      })
+      .finally(() => setLocating(false));
+  };
   const socket = useRef(null);
   // Mirrors state that the socket listener (registered once per connection) needs
   // to read with up-to-date values, since its closure would otherwise go stale.
@@ -63,12 +93,9 @@ const InstantService = () => {
   // The search screen covers the whole page; stop the page behind it from scrolling.
   useEffect(() => {
     if (!searching) return undefined;
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
+    const unlockScroll = lockScroll();
     window.scrollTo(0, 0);
-    return () => {
-      document.body.style.overflow = prev;
-    };
+    return unlockScroll;
   }, [searching]);
 
   const connectSocket = useCallback(() => {
@@ -85,19 +112,15 @@ const InstantService = () => {
       // Ignore any offer that isn't for the request we're currently tracking
       if (!activeRequestId || offer.requestId !== activeRequestId) return;
 
-      // Respect the per provider+service attempt limit for this request
+      // Each provider can send at most 3 offers for this request (a new request starts again)
       if (offer.provider?.id && offer.service?.id) {
         const attemptKey = `${offer.provider.id}_${offer.service.id}`;
         const requestAttempts = offerAttemptsRef.current[activeRequestId] || {};
-        if ((requestAttempts[attemptKey] || 0) >= 3) {
-          s.emit('offerRejected', {
-            providerId: offer.provider.id,
-            serviceId: offer.service.id,
-            requestId: activeRequestId,
-            reason: 'MAX_ATTEMPTS_REACHED',
-          });
-          return;
-        }
+        const received = requestAttempts[attemptKey] || 0;
+        if (received >= MAX_OFFERS) return;
+        const next = { ...offerAttemptsRef.current, [activeRequestId]: { ...requestAttempts, [attemptKey]: received + 1 } };
+        offerAttemptsRef.current = next;
+        setOfferAttempts(next);
       }
 
       // One live offer per provider: a newer offer replaces the older one.
@@ -144,13 +167,21 @@ const InstantService = () => {
     setError('');
 
     if (!formData.serviceType) return setError('Please choose a service.');
-    if (!formData.address.trim()) return setError('Please add the address where you need the service.');
     if (formData.description.trim().length < 5) return setError('Please describe the problem in a few words.');
 
+    if (locMode === 'map' && !pinned) return setError('Please pick the service location on the map.');
+
     setLoading(true);
-    authApi
-      .post('/service-requests', formData)
-      .then((response) => {
+    // Current location: always send a fresh one. Map: send the pinned spot.
+    const where = locMode === 'map' ? Promise.resolve(pinned) : shareLocation();
+    where
+      .then((c) => {
+        setServiceCoords(c);
+        const address = locMode === 'map' ? pinnedLocationLabel(c) : liveLocationLabel(c);
+        setFormData((p) => ({ ...p, address }));
+        return authApi.post('/service-requests', { ...formData, address, lat: c.lat, lng: c.lng }).then((response) => ({ response, c, address }));
+      })
+      .then(({ response, c, address }) => {
         setLoading(false);
         setSearching(true);
         setSearchStartedAt(new Date());
@@ -167,10 +198,13 @@ const InstantService = () => {
           ...formData,
           categoryName: selectedType?.name,
           customerName,
+          address,
+          lat: c.lat,
+          lng: c.lng,
         });
       })
-      .catch(() => {
-        setError("We couldn't send your request. Please try again.");
+      .catch((err) => {
+        setError(err?.response?.data?.message || (err instanceof Error && !err.response ? 'Please share your live location to find a professional nearby.' : "We couldn't send your request. Please try again."));
         setLoading(false);
       });
   };
@@ -194,6 +228,8 @@ const InstantService = () => {
       service_id: selectedOffer.service.id,
       provider_id: selectedOffer.provider.id,
       location: formData.address,
+      lat: serviceCoords?.lat,
+      lng: serviceCoords?.lng,
       issue: formData.description,
       date: new Date().toISOString(),
       estimated_charge: selectedOffer.price,
@@ -224,19 +260,17 @@ const InstantService = () => {
     setOffers((prev) => prev.filter((o) => o.id !== offerId));
 
     if (currentRequestId && serviceId && socket.current) {
-      const attemptKey = `${providerId}_${serviceId}`;
-      const requestAttempts = offerAttempts[currentRequestId] || {};
-      const attempts = requestAttempts[attemptKey] || 0;
-
-      if (attempts >= 2) {
-        socket.current.emit('offerDeclined', { offerId, providerId, serviceId, requestId: currentRequestId, maxAttemptsReached: true });
-      } else {
-        setOfferAttempts((prev) => ({
-          ...prev,
-          [currentRequestId]: { ...prev[currentRequestId], [attemptKey]: attempts + 1 },
-        }));
-        socket.current.emit('offerDeclined', { offerId, providerId, serviceId, requestId: currentRequestId, attemptsRemaining: 2 - attempts });
-      }
+      // Declining doesn't count against the provider; only the offers they sent do
+      const received = (offerAttemptsRef.current[currentRequestId] || {})[`${providerId}_${serviceId}`] || 0;
+      const attemptsRemaining = Math.max(0, MAX_OFFERS - received);
+      socket.current.emit('offerDeclined', {
+        offerId,
+        providerId,
+        serviceId,
+        requestId: currentRequestId,
+        attemptsRemaining,
+        maxAttemptsReached: attemptsRemaining === 0,
+      });
     } else if (socket.current) {
       socket.current.emit('offerDeclined', { offerId, providerId });
     }
@@ -344,6 +378,7 @@ const InstantService = () => {
                         <div className="mt-3 flex items-center gap-2 rounded-sm bg-gray-50 px-3 py-2 text-sm text-gray-700">
                           <Clock className="h-4 w-4 text-indigo-500" aria-hidden="true" />
                           Arrives in <span className="font-semibold">{offer.estimatedArrival || 'about 30 min'}</span>
+                          {offer.distanceKm != null && <span className="ml-auto font-semibold text-gray-900">{formatKm(offer.distanceKm)} away</span>}
                         </div>
                         <div className="mt-3 flex gap-2">
                           <Button variant="secondary" className="flex-1" onClick={() => handleDeclineOffer(offer)}>
@@ -407,7 +442,9 @@ const InstantService = () => {
               <dl className="rounded-sm border border-gray-200 divide-y divide-gray-100 text-sm">
                 <div className="p-3">
                   <dt className="text-xs text-gray-500">Address</dt>
-                  <dd className="text-gray-900">{formData.address}</dd>
+                  <dd className="text-gray-900">
+                    {locMode === 'map' ? (pinned?.label ? `${pinned.label} (pinned on map)` : 'Your pinned location (map)') : `Your live location${coords ? ` (±${Math.max(5, Math.round(coords.accuracy || 0))} m)` : ''}`}
+                  </dd>
                 </div>
                 <div className="p-3">
                   <dt className="text-xs text-gray-500">Problem</dt>
@@ -479,10 +516,75 @@ const InstantService = () => {
         </section>
 
         <section aria-labelledby="where-title">
-          <h2 id="where-title" className="text-lg font-bold tracking-wide text-gray-900 mb-3">
+          <h2 id="where-title" className="text-lg font-bold tracking-wide text-gray-900 mb-1">
             Where do you need the service?
           </h2>
-          <OutlinedField as="textarea" rows={2} label="Address" icon={MapPin} name="address" value={formData.address} onChange={handleChange} placeholder="House / flat, street, area, city" autoComplete="street-address" />
+          <p className="text-sm text-gray-500 mb-3">Share where you are, or pick the spot on the map. No address to type.</p>
+
+          <div className="mb-3 grid grid-cols-2 gap-2" role="radiogroup" aria-label="Service location">
+            {[
+              { key: 'current', label: 'Current location', icon: LocateFixed },
+              { key: 'map', label: 'Choose on map', icon: MapIcon },
+            ].map(({ key, label, icon: Icon }) => (
+              <button
+                key={key}
+                type="button"
+                role="radio"
+                aria-checked={locMode === key}
+                onClick={() => {
+                  setLocMode(key);
+                  setLocationError('');
+                  if (key === 'map' && !pinned) setMapOpen(true);
+                }}
+                className={`flex items-center justify-center gap-2 rounded-sm border px-3 py-2.5 text-sm font-semibold ${
+                  locMode === key ? 'border-indigo-500 bg-indigo-50 text-indigo-700' : 'border-gray-200 bg-white text-gray-700 hover:border-gray-300'
+                }`}
+              >
+                <Icon className="h-4 w-4" aria-hidden="true" /> {label}
+              </button>
+            ))}
+          </div>
+
+          {locMode === 'map' ? (
+            <div className={`flex items-center gap-3 rounded-sm border p-3 ${pinned ? 'border-green-200 bg-green-50' : 'border-gray-200 bg-white'}`}>
+              <MapIcon className={`h-5 w-5 shrink-0 ${pinned ? 'text-green-600' : 'text-indigo-500'}`} aria-hidden="true" />
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-semibold text-gray-900 line-clamp-2">{pinned ? pinned.label || 'Location pinned on map' : 'Pick the spot on the map'}</p>
+                <p className="text-xs text-gray-500">
+                  {pinned ? `${pinned.lat.toFixed(5)}, ${pinned.lng.toFixed(5)} · the professional gets directions to this pin.` : 'Required. Move the map to put the pin where you need the service.'}
+                </p>
+              </div>
+              <Button variant={pinned ? 'secondary' : 'primary'} size="sm" onClick={() => setMapOpen(true)}>
+                {pinned ? 'Change' : 'Open map'}
+              </Button>
+            </div>
+          ) : (
+          <div className={`flex items-center gap-3 rounded-sm border p-3 ${coords ? 'border-green-200 bg-green-50' : 'border-gray-200 bg-white'}`}>
+            <LocateFixed className={`h-5 w-5 shrink-0 ${coords ? 'text-green-600' : 'text-indigo-500'}`} aria-hidden="true" />
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-semibold text-gray-900">{coords ? 'Live location shared' : 'Share your live location'}</p>
+              <p className="text-xs text-gray-500">
+                {coords ? `Accurate to about ${Math.max(5, Math.round(coords.accuracy || 0))} m. Professionals see how far away you are.` : 'Required. Professionals use it for directions and distance.'}
+              </p>
+            </div>
+            <Button variant={coords ? 'secondary' : 'primary'} size="sm" onClick={() => shareLocation().catch(() => {})} loading={locating}>
+              {coords ? 'Update' : 'Share'}
+            </Button>
+          </div>
+          )}
+          {locationError && <p className="mt-2 text-sm text-red-600" role="alert">{locationError}</p>}
+          <MapPicker
+            open={mapOpen}
+            initial={pinned || (coords ? { lat: coords.lat, lng: coords.lng } : null)}
+            onClose={() => {
+              setMapOpen(false);
+              if (!pinned) setLocMode('current');
+            }}
+            onConfirm={(c) => {
+              setPinned(c);
+              setMapOpen(false);
+            }}
+          />
         </section>
 
         <section aria-labelledby="problem-title">

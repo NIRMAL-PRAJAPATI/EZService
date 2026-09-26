@@ -13,7 +13,11 @@ const ProviderInfo = sequelize3.define('ProviderInfo', {
   state: DataTypes.STRING,
   country: DataTypes.STRING,
   created: DataTypes.DATE,
-  is_online: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false }
+  is_online: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
+  // Last live location shared while online
+  last_lat: DataTypes.DOUBLE,
+  last_lng: DataTypes.DOUBLE,
+  location_updated: DataTypes.DATE
 }, {
   tableName: 'provider_info',
   timestamps: false,

@@ -38,7 +38,10 @@ const ServiceRequest = sequelize.define('ServiceRequest', {
   expires_at: {
     type: DataTypes.DATE,
     allowNull: false
-  }
+  },
+  // Customer's live location when the request was made
+  lat: DataTypes.DOUBLE,
+  lng: DataTypes.DOUBLE
 }, {
   tableName: 'service_request',
   timestamps: false

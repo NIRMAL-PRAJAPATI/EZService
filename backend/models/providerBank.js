@@ -11,9 +11,11 @@ const ProviderBank = sequelize6.define('ProviderBank', {
   holder_name: DataTypes.STRING,
   account_number: DataTypes.BIGINT,
   account_type: DataTypes.STRING,
-  ifsc_code: DataTypes.BIGINT,
+  ifsc_code: DataTypes.STRING,
   bank_name: DataTypes.STRING,
-  branch: DataTypes.TEXT
+  branch: DataTypes.TEXT,
+  // UPI ID (VPA) the customer pays to, e.g. name@okhdfcbank
+  upi_id: DataTypes.STRING
 }, {
   tableName: 'provider_bank',
   timestamps: false

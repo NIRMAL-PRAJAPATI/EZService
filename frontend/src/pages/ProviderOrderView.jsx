@@ -8,7 +8,7 @@ import BookingTimeline from '../components/booking/BookingTimeline';
 import Button from '../components/ui/Button';
 import { PageSkeleton } from '../components/ui/Skeleton';
 import { ErrorState } from '../components/ui/States';
-import { normalizeStatus } from '../components/ui/StatusBadge';
+import { normalizeStatus, orderStage } from '../components/ui/StatusBadge';
 
 function ProviderOrderView() {
   const { orderId } = useParams();
@@ -29,7 +29,7 @@ function ProviderOrderView() {
   useEffect(load, [orderId]);
 
   const back = (
-    <Link to="/provider/orders" className="inline-flex items-center gap-1 text-sm font-semibold text-gray-600 hover:text-gray-900 mb-4">
+    <Link to="/provider/trips" className="inline-flex items-center gap-1 text-sm font-semibold text-gray-600 hover:text-gray-900 mb-4">
       <ArrowLeft className="h-4 w-4" aria-hidden="true" /> Orders
     </Link>
   );
@@ -52,11 +52,11 @@ function ProviderOrderView() {
       {back}
       <h1 className="text-2xl font-extrabold tracking-wide text-gray-900 mb-4">Order details</h1>
       <div className="space-y-4">
-        <ProviderOrderCard order={order} showDetailsLink={false} onUpdated={(_, status) => setOrder((o) => ({ ...o, status }))} />
+        <ProviderOrderCard order={order} showDetailsLink={false} onUpdated={(_, patch) => setOrder((o) => ({ ...o, ...patch }))} />
 
         <section className="rounded-md border border-gray-200 bg-white p-5">
           <h2 className="text-sm font-semibold text-gray-500 mb-3">Status</h2>
-          <BookingTimeline status={order.status} />
+          <BookingTimeline status={orderStage(order)} order={order} viewer="provider" />
         </section>
 
         <section className="rounded-md border border-gray-200 bg-white p-5">

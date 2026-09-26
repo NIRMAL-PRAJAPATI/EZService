@@ -43,7 +43,7 @@ const ServiceProfilePage = () => {
   useEffect(load, [id]);
 
   if (loading) return <PageSkeleton />;
-  if (error || !service) {
+  if (error || !service || service.is_active === false) {
     return (
       <>
         <PageHeader title="Service" />

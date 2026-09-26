@@ -4,7 +4,9 @@ import { ArrowLeft, ImagePlus, X, Plus, IndianRupee, Zap, MapPin, ListChecks, Ca
 import OutlinedField from '../ui/OutlinedField';
 import Button from '../ui/Button';
 import { InlineError } from '../ui/States';
+import Switch from '../ui/Switch';
 import { getCategoryIcon } from '../../lib/categories';
+import { lockScroll } from '../../lib/scrollLock';
 
 const EXPERIENCE = [
   { value: '1', label: '1+ year' },
@@ -28,6 +30,8 @@ export default function ServiceForm({ open, onClose, service, categories = [], o
   const [areas, setAreas] = useState([]);
   const [included, setIncluded] = useState([]);
   const [description, setDescription] = useState('');
+  const [instantEnabled, setInstantEnabled] = useState(true);
+  const [isActive, setIsActive] = useState(true);
   const [coverImage, setCoverImage] = useState(null);
   const [workingImages, setWorkingImages] = useState([]);
   const [errors, setErrors] = useState({});
@@ -44,6 +48,8 @@ export default function ServiceForm({ open, onClose, service, categories = [], o
     setAreas((service?.serviceLocations || []).filter(Boolean));
     setIncluded((service?.providedServices || []).filter(Boolean));
     setDescription(service?.description || '');
+    setInstantEnabled(service ? service.instantEnabled !== false : true);
+    setIsActive(service ? service.isActive !== false : true);
     setCoverImage(null);
     setWorkingImages([]);
     setErrors({});
@@ -54,11 +60,7 @@ export default function ServiceForm({ open, onClose, service, categories = [], o
   // Lock the page behind the form
   useEffect(() => {
     if (!open) return undefined;
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    return () => {
-      document.body.style.overflow = prev;
-    };
+    return lockScroll();
   }, [open]);
 
   const coverPreview = useMemo(() => (coverImage ? URL.createObjectURL(coverImage) : null), [coverImage]);
@@ -99,6 +101,8 @@ export default function ServiceForm({ open, onClose, service, categories = [], o
         working_images: workingImages,
         cover_image: coverImage,
         description: description.trim(),
+        instant_enabled: instantEnabled,
+        is_active: isActive,
         service_type: service?.service_type || 'HOME',
         badge_status: service?.badgeStatus || false,
         city: service?.city || '',
@@ -195,6 +199,27 @@ export default function ServiceForm({ open, onClose, service, categories = [], o
                 error={errors.instantCharge}
                 hint="Used as your default offer for instant requests."
               />
+            </div>
+          </Section>
+
+          <Section title="Availability" subtitle="Where customers can find this service.">
+            <div className="divide-y divide-gray-100 rounded-sm border border-gray-200">
+              <div className="flex items-center justify-between gap-4 p-4">
+                <div>
+                  <p className="font-medium text-gray-900 inline-flex items-center gap-1.5">
+                    <Zap className="h-4 w-4 text-indigo-500" aria-hidden="true" /> Include in Instant Service
+                  </p>
+                  <p className="text-sm text-gray-500">Receive live requests for this service when you go online.</p>
+                </div>
+                <Switch checked={instantEnabled} onChange={setInstantEnabled} label="Include in Instant Service" />
+              </div>
+              <div className="flex items-center justify-between gap-4 p-4">
+                <div>
+                  <p className="font-medium text-gray-900">Active</p>
+                  <p className="text-sm text-gray-500">Customers can see and book this service.</p>
+                </div>
+                <Switch checked={isActive} onChange={setIsActive} label="Active" />
+              </div>
             </div>
           </Section>
 

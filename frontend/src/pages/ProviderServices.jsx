@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import {
   CircleFadingPlus,
+  Zap,
   Trash,
   X,
   AlertTriangle,
@@ -8,6 +9,7 @@ import {
 import { ProviderPage } from '../components/layout/ProviderLayout';
 import ServiceImage from '../components/ui/ServiceImage';
 import ServiceForm from '../components/provider/ServiceForm';
+import Switch from '../components/ui/Switch';
 
 import authApi from '../config/auth-config';
 import api from "../config/axios-config"
@@ -80,6 +82,8 @@ function ServiceList() {
         providedServices: service.specifications || [],
         workingImages: service.working_images || [],
         badgeStatus: service.badge_status || false,
+        isActive: service.is_active !== false,
+        instantEnabled: service.instant_enabled !== false,
         service_type: service.service_type || 'HOME',
         city: service.city || '',
         state: service.state || '',
@@ -110,6 +114,17 @@ function ServiceList() {
     const service = services.find((s) => s.id === id);
     setServiceToEdit(service);
     setEditModalOpen(true);
+  };
+
+  // Active / Instant switches save immediately (optimistic, reverts on error)
+  const toggleFlag = (id, patch) => {
+    const toLocal = (p) => ({ ...(p.is_active !== undefined && { isActive: p.is_active }), ...(p.instant_enabled !== undefined && { instantEnabled: p.instant_enabled }) });
+    const before = services.find((s) => s.id === id);
+    setServices((list) => list.map((s) => (s.id === id ? { ...s, ...toLocal(patch) } : s)));
+    authApi.patch(`/services/${id}/flags`, patch).catch(() => {
+      setServices((list) => list.map((s) => (s.id === id ? { ...s, isActive: before.isActive, instantEnabled: before.instantEnabled } : s)));
+      alert("Couldn't update this service. Please try again.");
+    });
   };
 
   const handleDelete = (id) => {
@@ -182,6 +197,8 @@ function ServiceList() {
     
     // Add other fields
     formData.append('badge_status', editedService.badge_status || false);
+    formData.append('is_active', editedService.is_active !== false);
+    formData.append('instant_enabled', editedService.instant_enabled !== false);
     formData.append('city', editedService.city || providerProfile?.city || '');
     formData.append('state', editedService.state || providerProfile?.state || '');
     formData.append('country', editedService.country || providerProfile?.country || '');
@@ -214,7 +231,9 @@ function ServiceList() {
           city: editedService.city || '',
           state: editedService.state || '',
           country: editedService.country || '',
-          badge_status: false
+          badge_status: false,
+          isActive: editedService.is_active !== false,
+          instantEnabled: editedService.instant_enabled !== false
         };
         setServices([newService, ...services]);
       } else {
@@ -235,7 +254,9 @@ function ServiceList() {
             city: editedService.city || '',
             state: editedService.state || '',
             country: editedService.country || '',
-            badge_status: editedService.badge_status || false
+            badge_status: editedService.badge_status || false,
+            isActive: editedService.is_active !== false,
+            instantEnabled: editedService.instant_enabled !== false
           } : s
         );
         setServices(updatedServices);
@@ -282,22 +303,29 @@ function ServiceList() {
 
       <ul className="grid grid-cols-1 lg:grid-cols-2 gap-3">
         {filteredServices.map((service) => (
-          <li key={service.id} className="rounded-md border border-gray-200 bg-white p-4">
+          <li key={service.id} className={`rounded-md border bg-white p-4 ${service.isActive ? 'border-gray-200' : 'border-dashed border-gray-300 opacity-80'}`}>
             <div className="flex gap-3">
               <ServiceImage src={service.coverImage} alt={service.name} category={service.category} className="h-20 w-20 shrink-0 rounded-sm" />
               <div className="min-w-0 flex-1">
                 <div className="flex items-start justify-between gap-2">
                   <h3 className="font-semibold text-gray-900 leading-snug line-clamp-2">{service.name}</h3>
-                  <span className="shrink-0 inline-flex items-center gap-1 rounded-sm bg-green-50 px-2 py-0.5 text-xs font-semibold text-green-700">
-                    <span className="h-1.5 w-1.5 rounded-full bg-green-500" aria-hidden="true" /> Active
-                  </span>
+                  <label className="shrink-0 inline-flex items-center gap-2 text-xs font-semibold text-gray-600">
+                    {service.isActive ? 'Active' : 'Hidden'}
+                    <Switch size="sm" checked={service.isActive} label={`${service.name} visible to customers`} onChange={(v) => toggleFlag(service.id, { is_active: v })} />
+                  </label>
                 </div>
                 <p className="text-sm text-indigo-600">{service.category}</p>
                 <p className="mt-1 text-sm text-gray-700">
                   <span className="font-semibold text-gray-900">₹{service.visitingCharge}</span> visit
                   {service.instantServiceCharge ? <> · <span className="font-semibold text-gray-900">₹{service.instantServiceCharge}</span> instant</> : null}
                 </p>
-                {service.badgeStatus && <p className="text-xs font-semibold text-green-700 mt-0.5">Verified</p>}
+                <p className="mt-1 flex flex-wrap gap-1.5 text-xs font-semibold">
+                  <span className={`inline-flex items-center gap-1 rounded-sm px-1.5 py-0.5 ${service.instantEnabled ? 'bg-indigo-50 text-indigo-700' : 'bg-gray-100 text-gray-500'}`}>
+                    <Zap className="h-3 w-3" aria-hidden="true" /> {service.instantEnabled ? 'Instant on' : 'Instant off'}
+                  </span>
+                  {service.badgeStatus && <span className="rounded-sm bg-green-50 px-1.5 py-0.5 text-green-700">Verified</span>}
+                </p>
+                {!service.isActive && <p className="mt-1 text-xs text-gray-500">Hidden from customers. Switch on to take bookings again.</p>}
               </div>
             </div>
             {service.description && <p className="mt-3 text-sm text-gray-600 line-clamp-2">{service.description}</p>}

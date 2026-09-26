@@ -11,6 +11,7 @@ function ProfileInfo() {
         ifsc_code: "",
         bank_name: "",
         branch: "",
+        upi_id: "",
     });
 
     const [alert, setAlert] = useState({
@@ -26,7 +27,12 @@ function ProfileInfo() {
                 setLoading(true);
                 const response = await authApi.get("/provider/bank");
                 console.log(response.data);
-                setFormData(response.data);
+                // Missing values come back as null; keep every input controlled
+                setFormData((prev) => {
+                    const next = { ...prev };
+                    Object.keys(prev).forEach((k) => { next[k] = response.data?.[k] ?? ""; });
+                    return next;
+                });
             } catch (error) {
                 console.error("Error fetching bank details:", error);
                 setAlert({
@@ -74,7 +80,7 @@ function ProfileInfo() {
             } catch (error) {
                 setAlert({
                     title: "Error in Profile Update !",
-                    description: "Something gone wrong to update profile try again after sometimes.",
+                    description: error.response?.data?.message || "Something gone wrong to update profile try again after sometimes.",
                     status: true,
                     buttonText: "Ok",
                     onClose: handleClose,
@@ -134,8 +140,8 @@ function ProfileInfo() {
                                     name="account_number"
                                     value={formData.account_number}
                                     onChange={handleChange}
-                                    disabled={true}
-                                    className={`block w-full tracking-wide border-b border-gray-300 pl-1 text-lg sm:text-[16px] text-gray-600 outline-none`}
+                                    disabled={!isEditing}
+                                    className={`block w-full tracking-wide border-b border-gray-300 pl-1 text-lg sm:text-[16px] ${isEditing ? "text-gray-800 border-gray-400" : "text-gray-600"} outline-none`}
                                 />
                             </div>
 
@@ -147,8 +153,8 @@ function ProfileInfo() {
                                     name="account_type"
                                     value={formData.account_type}
                                     onChange={handleChange}
-                                    disabled={true}
-                                    className={`block w-full tracking-wide border-b border-gray-300 pl-1 text-lg sm:text-[16px] text-gray-600 outline-none`}
+                                    disabled={!isEditing}
+                                    className={`block w-full tracking-wide border-b border-gray-300 pl-1 text-lg sm:text-[16px] ${isEditing ? "text-gray-800 border-gray-400" : "text-gray-600"} outline-none`}
                                 />
                             </div>
 
@@ -160,8 +166,8 @@ function ProfileInfo() {
                                     name="ifsc_code"
                                     value={formData.ifsc_code}
                                     onChange={handleChange}
-                                    disabled={true}
-                                    className={`block w-full tracking-wide border-b border-gray-300 pl-1 text-lg sm:text-[16px] text-gray-600 outline-none`}
+                                    disabled={!isEditing}
+                                    className={`block w-full tracking-wide border-b border-gray-300 pl-1 text-lg sm:text-[16px] ${isEditing ? "text-gray-800 border-gray-400" : "text-gray-600"} outline-none`}
                                 />
                             </div>
 
@@ -173,9 +179,25 @@ function ProfileInfo() {
                                     name="bank_name"
                                     value={formData.bank_name}
                                     onChange={handleChange}
-                                    disabled={true}
-                                    className={`block w-full tracking-wide border-b border-gray-300 pl-1 text-lg sm:text-[16px] text-gray-600 outline-none`}
+                                    disabled={!isEditing}
+                                    className={`block w-full tracking-wide border-b border-gray-300 pl-1 text-lg sm:text-[16px] ${isEditing ? "text-gray-800 border-gray-400" : "text-gray-600"} outline-none`}
                                 />
+                            </div>
+
+                            {/* UPI ID: customers pay to this when the provider picks UPI */}
+                            <div className="col-span-6 sm:col-span-4">
+                                <label className="block text-sm font-semibold text-gray-700">UPI ID</label>
+                                <input
+                                    type="text"
+                                    name="upi_id"
+                                    value={formData.upi_id}
+                                    onChange={handleChange}
+                                    disabled={!isEditing}
+                                    placeholder="name@okhdfcbank"
+                                    autoCapitalize="off"
+                                    className={`block w-full tracking-wide border-b border-gray-300 pl-1 text-lg sm:text-[16px] ${isEditing ? "text-gray-800 border-gray-400" : "text-gray-600"} outline-none`}
+                                />
+                                <p className="mt-1 text-xs text-gray-500">Customers scan a QR code for this UPI ID when you choose UPI payment.</p>
                             </div>
 
                             {/* Branch */}
@@ -186,8 +208,8 @@ function ProfileInfo() {
                                     name="branch"
                                     value={formData.branch}
                                     onChange={handleChange}
-                                    disabled={true}
-                                    className={`block w-full tracking-wide border-b border-gray-300 pl-1 text-lg sm:text-[16px] text-gray-600 outline-none`}
+                                    disabled={!isEditing}
+                                    className={`block w-full tracking-wide border-b border-gray-300 pl-1 text-lg sm:text-[16px] ${isEditing ? "text-gray-800 border-gray-400" : "text-gray-600"} outline-none`}
                                 />
                             </div>
                         </div>

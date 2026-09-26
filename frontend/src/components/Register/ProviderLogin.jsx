@@ -30,7 +30,7 @@ const LoginForm = () => {
     }).then((response) => {
       localStorage.setItem('token', response.data.token)
       localStorage.setItem('user', JSON.stringify(response.data.provider))
-      navigate(returnTo || '/provider/dashboard', { replace: true })
+      navigate(returnTo || '/provider/trips', { replace: true })
     }).catch((error) => {
       setErrorMessage(error.response?.data?.message || "We couldn't log you in. Please try again.");
     }).finally(() => setSubmitting(false));

@@ -3,6 +3,12 @@ const ServiceCategory = require('../models/serviceCategory');
 const providerInfo = require("../models/providerInfo")
 const {getRatingsFromServiceId} = require("./serviceReview")
 const Sequelize = require("../db")
+const { Op } = require('sequelize')
+const syncProviderRooms = require('../utilities/providerRooms')
+
+// Customers only ever see active services
+const ACTIVE = { is_active: { [Op.ne]: false } }
+const toBool = (v, fallback) => (v === undefined || v === null || v === '' ? fallback : v === true || v === 'true')
 
 const getServices = async (req, res) => {
     try {
@@ -23,6 +29,7 @@ const getServices = async (req, res) => {
                 model: providerInfo,
                 attributes: ['name','id']
             }],
+            where: ACTIVE,
             limit:limit
         })
 
@@ -55,7 +62,7 @@ const getVerifiedServices = async (req, res)=>{
             }
           ],
             limit:limit,
-            where: {'badge_status':true}
+            where: {'badge_status':true, ...ACTIVE}
         })
 
         if(!services){
@@ -74,7 +81,7 @@ const getServicesByCategoryId = async (req,res)=>{
     try{
         const {id} = req.params;
         const services = await service.findAll({
-            where: {category_id:id},
+            where: {category_id:id, ...ACTIVE},
             attributes: ['id','name', 'cover_image', 'visiting_charge', 'instant_visiting_charge', 'description', 'city', 'state', 'country', 'category_id','badge_status','created','experience','working_images',[
                 Sequelize.literal(`(SELECT AVG("rating") FROM "service_review" WHERE "service_review"."service_id" = "Service"."id")`),
                 'average_rating'
@@ -175,7 +182,9 @@ const updateService = async (req, res)=>{
             state: data.state || service_.state,
             country: data.country || service_.country,
             category_id: data.category_id,
-            service_type: data.service_type
+            service_type: data.service_type,
+            is_active: toBool(data.is_active, service_.is_active),
+            instant_enabled: toBool(data.instant_enabled, service_.instant_enabled)
         };
         
         // Only update images if new files are provided
@@ -203,6 +212,7 @@ const updateService = async (req, res)=>{
         }
         
         await service_.update(payload)
+        await syncProviderRooms(req.app.get('io'), userId)
 
         res.status(200).json({
             message: "Service Updated Successfully",
@@ -272,11 +282,14 @@ const createService = async (req, res) => {
       country: data.country || "",
       category_id: data.category_id,
       service_type: data.service_type,
+      is_active: toBool(data.is_active, true),
+      instant_enabled: toBool(data.instant_enabled, true),
       provider_id: userId,
       created: new Date()
     };
     
     const newService = await service.create(payload);
+    await syncProviderRooms(req.app.get('io'), userId);
     
     res.status(201).json({
       message: "Service Created Successfully",
@@ -329,4 +342,26 @@ const deleteService = async (req, res)=>{
     }
 }
 
-module.exports = {getServices, getVerifiedServices, getServicesByCategoryId, getServiceById, updateService, createService, deleteService};
+// Provider switches a service on/off, or in/out of Instant Service
+const updateServiceFlags = async (req, res) => {
+    try {
+        const { userId, role } = req;
+        if (role !== 'provider') return res.status(403).json({ message: 'Unauthorized Action' });
+        const service_ = await service.findOne({ where: { id: req.params.id, provider_id: userId } });
+        if (!service_) return res.status(404).json({ message: 'Service not found' });
+
+        const patch = {};
+        if (typeof req.body.is_active === 'boolean') patch.is_active = req.body.is_active;
+        if (typeof req.body.instant_enabled === 'boolean') patch.instant_enabled = req.body.instant_enabled;
+        if (!Object.keys(patch).length) return res.status(400).json({ message: 'Nothing to update' });
+
+        await service_.update(patch);
+        await syncProviderRooms(req.app.get('io'), userId);
+        res.status(200).json({ id: service_.id, is_active: service_.is_active, instant_enabled: service_.instant_enabled });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
+}
+
+module.exports = {updateServiceFlags, getServices, getVerifiedServices, getServicesByCategoryId, getServiceById, updateService, createService, deleteService};

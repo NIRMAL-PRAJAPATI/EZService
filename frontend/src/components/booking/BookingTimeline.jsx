@@ -1,16 +1,54 @@
 import { Check, X } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { normalizeStatus } from '../ui/StatusBadge';
+import { formatPrice } from '../../lib/format';
+import { paymentLabel } from '../../lib/payment';
 
 // Only the states the backend actually records are shown.
-const STEPS = [
-  { key: 'PENDING', title: 'Booking placed', text: 'Waiting for the provider to confirm.' },
-  { key: 'CONFIRMED', title: 'Provider confirmed', text: 'Your professional will visit at the booked time.' },
-  { key: 'COMPLETED', title: 'Service completed', text: 'Rate your experience to help others.' },
-];
+const STEPS = {
+  customer: [
+    { key: 'PENDING', title: 'Booking placed', text: 'Waiting for the provider to confirm.' },
+    { key: 'CONFIRMED', title: 'Provider confirmed', text: 'The provider will start the trip at the booked time.' },
+    { key: 'ON_THE_WAY', title: 'Provider on the way', text: 'Your professional has started the trip to your location.' },
+    { key: 'ARRIVED', title: 'Reached your location', text: 'Your professional is at your place and working on it.' },
+    { key: 'PAID', title: 'Payment', text: '' },
+    { key: 'COMPLETED', title: 'Service completed', text: 'Rate your experience to help others.' },
+  ],
+  provider: [
+    { key: 'PENDING', title: 'Booking placed', text: 'Accept or decline this booking.' },
+    { key: 'CONFIRMED', title: 'You confirmed', text: 'Start the trip at the booked time.' },
+    { key: 'ON_THE_WAY', title: 'On the way', text: "You're travelling to the customer's location." },
+    { key: 'ARRIVED', title: "Reached customer's location", text: 'Finish the work, then take the payment.' },
+    { key: 'PAID', title: 'Payment', text: '' },
+    { key: 'COMPLETED', title: 'Service completed', text: 'This job is done.' },
+  ],
+};
 
-export default function BookingTimeline({ status }) {
-  const current = normalizeStatus(status);
+// Text for the payment step, from the order's payment fields
+const paymentStep = (order, state, viewer) => {
+  const mode = order?.payment_mode;
+  const amount = formatPrice(order?.estimated_charge || order?.Service?.visiting_charge);
+  if (state === 'done') return { title: 'Payment successful', text: mode ? `${amount} · ${paymentLabel(mode)}` : undefined, showText: true };
+  if (state !== 'current') return { title: 'Payment' };
+  if (order?.payment_status === 'CUSTOMER_PAID') {
+    return { title: 'Payment sent', text: viewer === 'provider' ? 'Check the money reached you, then end the trip.' : 'Waiting for the provider to confirm they received it.' };
+  }
+  return {
+    title: 'Payment',
+    text: mode === 'CASH' ? `Pay ${amount} in cash.` : mode ? `Waiting for ${amount} by ${paymentLabel(mode)}.` : undefined,
+  };
+};
+
+/**
+ * status: the order stage (orderStage(order)).
+ * order: optional, adds the payment step details. viewer: 'customer' | 'provider'.
+ */
+export default function BookingTimeline({ status, order, viewer = 'customer' }) {
+  let current = normalizeStatus(status);
+  // Once the provider has asked for payment, the payment step is the live one
+  if (current === 'ARRIVED' && order?.payment_mode) current = 'PAID';
+  // Bookings completed before payments were recorded have no payment step
+  const steps = (STEPS[viewer] || STEPS.customer).filter((s) => s.key !== 'PAID' || !(current === 'COMPLETED' && order && !order.payment_mode));
 
   if (current === 'CANCELLED') {
     return (
@@ -21,12 +59,16 @@ export default function BookingTimeline({ status }) {
     );
   }
 
-  const currentIndex = Math.max(0, STEPS.findIndex((s) => s.key === current));
+  const currentIndex = Math.max(0, steps.findIndex((s) => s.key === current));
   return (
     <ol>
-      {STEPS.map((step, i) => {
+      {steps.map((step, i) => {
         const state = i < currentIndex || current === 'COMPLETED' ? 'done' : i === currentIndex ? 'current' : 'upcoming';
-        return <TimelineItem key={step.key} title={step.title} text={state === 'current' ? step.text : undefined} state={state} last={i === STEPS.length - 1} />;
+        if (step.key === 'PAID') {
+          const p = paymentStep(order, state, viewer);
+          return <TimelineItem key={step.key} title={p.title} text={state === 'current' || p.showText ? p.text : undefined} state={state} last={i === steps.length - 1} />;
+        }
+        return <TimelineItem key={step.key} title={step.title} text={state === 'current' ? step.text : undefined} state={state} last={i === steps.length - 1} />;
       })}
     </ol>
   );
