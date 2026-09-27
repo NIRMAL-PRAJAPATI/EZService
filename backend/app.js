@@ -152,6 +152,6 @@ io.on('connection', (socket) => {
 // });
 
 // Use server.listen instead of app.listen for Socket.io
-server.listen(3000, '0.0.0.0',()=>{
-        console.log("server is running ")
+server.listen(process.env.PORT || 3000, '0.0.0.0',()=>{
+        console.log("server is running on port " + (process.env.PORT || 3000))
 });
