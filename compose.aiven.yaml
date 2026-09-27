@@ -1,0 +1,14 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      # Secrets (DATABASE_URL, JWT_SECRET, TWILIO_*, GOOGLE_*) are set as
+      # environment variables on the app in the Aiven Console, not here.
+
+volumes: {}
