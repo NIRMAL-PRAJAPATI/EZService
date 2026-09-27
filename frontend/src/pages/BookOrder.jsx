@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
+import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { addDays, format, isToday, setHours, setMinutes, startOfHour, addHours } from 'date-fns';
-import { Zap, CalendarDays, MapPin, Plus, Check, Clock, FileText, LogIn } from 'lucide-react';
+import { MapPin, Plus, Check, Clock, FileText, LogIn } from 'lucide-react';
 import api from '../config/axios-config';
 import authApi from '../config/auth-config';
 import PageHeader from '../components/ui/PageHeader';
@@ -30,7 +30,6 @@ const BookOrderPage = () => {
   const [loadError, setLoadError] = useState(false);
   const [step, setStep] = useState(0);
   const [issue, setIssue] = useState('');
-  const [when, setWhen] = useState(null); // 'now' | 'later'
   const [day, setDay] = useState(0); // offset from today
   const [hour, setHour] = useState(null);
   const [addresses, setAddresses] = useState(() => {
@@ -64,9 +63,9 @@ const BookOrderPage = () => {
   const earliest = addHours(startOfHour(new Date()), 2);
   const slotsForDay = SLOT_HOURS.map((h) => setMinutes(setHours(days[day], h), 0)).filter((d) => !isToday(d) || d >= earliest);
 
-  const visitDate = when === 'now' ? new Date() : hour !== null ? setMinutes(setHours(days[day], hour), 0) : null;
+  const visitDate = hour !== null ? setMinutes(setHours(days[day], hour), 0) : null;
 
-  const canContinue = [issue.trim().length >= 5, when === 'now' || (when === 'later' && visitDate), !!address.trim(), true][step];
+  const canContinue = [issue.trim().length >= 5, !!visitDate, !!address.trim(), true][step];
 
   const next = () => {
     setError('');
@@ -121,7 +120,7 @@ const BookOrderPage = () => {
     );
   }
   if (loading) return <PageSkeleton />;
-  if (!serviceId || loadError || !service) {
+  if (!serviceId || loadError || !service || service.is_active === false) {
     return (
       <>
         <PageHeader title="Book a service" />
@@ -185,14 +184,14 @@ const BookOrderPage = () => {
 
             {step === 1 && (
               <section>
-                <h2 className="text-lg font-bold tracking-wide text-gray-900 mb-3">When do you need it?</h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <ChoiceCard active={when === 'now'} onClick={() => setWhen('now')} icon={Zap} title="As soon as possible" text="The provider confirms and comes today." />
-                  <ChoiceCard active={when === 'later'} onClick={() => setWhen('later')} icon={CalendarDays} title="Schedule for later" text="Pick a day and time that suits you." />
-                </div>
+                <h2 className="text-lg font-bold tracking-wide text-gray-900">When should the provider come?</h2>
+                <p className="text-sm text-gray-500 mb-4">
+                  Pick a date and time. Need help right now? Use{' '}
+                  <Link to={`/instant-service${service.category_id ? `?category=${service.category_id}` : ''}`} className="font-medium text-indigo-600">Instant Service</Link> instead.
+                </p>
 
-                {when === 'later' && (
-                  <div className="mt-6 space-y-5">
+                {(
+                  <div className="space-y-5">
                     <div>
                       <h3 className="text-sm font-semibold text-gray-900 mb-2">Select date</h3>
                       <div className="flex gap-2 overflow-x-auto no-scrollbar -mx-4 px-4">
@@ -215,7 +214,7 @@ const BookOrderPage = () => {
                       </div>
                     </div>
                     <div>
-                      <h3 className="text-sm font-semibold text-gray-900 mb-2">Select time</h3>
+                      <h3 className="text-sm font-semibold text-gray-900 mb-2">Select time <span className="font-normal text-gray-500">(approximate time the provider will arrive)</span></h3>
                       {slotsForDay.length === 0 ? (
                         <p className="text-sm text-gray-500">No more slots today. Please pick another day.</p>
                       ) : (
@@ -312,7 +311,7 @@ const BookOrderPage = () => {
                       <p className="text-sm text-gray-600">{service.ProviderInfo?.name}</p>
                     </div>
                   </div>
-                  <SummaryRow icon={Clock} label="When" value={when === 'now' ? 'As soon as possible (today)' : formatDateTime(visitDate)} onEdit={() => setStep(1)} />
+                  <SummaryRow icon={Clock} label="When" value={`${formatDateTime(visitDate)} (approx.)`} onEdit={() => setStep(1)} />
                   <SummaryRow icon={MapPin} label="Where" value={address} onEdit={() => setStep(2)} />
                   <SummaryRow icon={FileText} label="Problem" value={issue} onEdit={() => setStep(0)} />
                   <div className="p-4 space-y-1.5">
@@ -358,25 +357,6 @@ const BookOrderPage = () => {
     </div>
   );
 };
-
-function ChoiceCard({ active, onClick, icon: Icon, title, text }) {
-  return (
-    <button
-      type="button"
-      aria-pressed={active}
-      onClick={onClick}
-      className={`flex items-start gap-3 rounded-md border p-4 text-left transition-colors ${active ? 'border-indigo-500 bg-indigo-50/60' : 'border-gray-200 bg-white hover:border-gray-300'}`}
-    >
-      <span className={`h-10 w-10 shrink-0 rounded-sm flex items-center justify-center ${active ? 'bg-indigo-500 text-white' : 'bg-gray-100 text-gray-600'}`}>
-        <Icon className="h-5 w-5" aria-hidden="true" />
-      </span>
-      <span>
-        <span className="block font-semibold text-gray-900">{title}</span>
-        <span className="block text-sm text-gray-500">{text}</span>
-      </span>
-    </button>
-  );
-}
 
 function SummaryRow({ icon: Icon, label, value, onEdit }) {
   return (

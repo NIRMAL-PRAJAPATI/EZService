@@ -34,6 +34,7 @@ router.get('/:id/category', controllers.getServicesByCategoryId)
 router.get('/:id', controllers.getServiceById)
 router.post("/", verifyToken, upload.fields([{name: 'cover_image', maxCount: 1}, {name: 'working_images', maxCount: 20}]), controllers.createService)
 router.put("/:id", verifyToken, upload.fields([{name: 'cover_image', maxCount: 1}, {name: 'working_images', maxCount: 20}]), controllers.updateService)
+router.patch("/:id/flags", verifyToken, controllers.updateServiceFlags)
 router.delete("/:id", verifyToken, controllers.deleteService)
 router.delete("/:id", verifyToken, controllers.deleteService)
 

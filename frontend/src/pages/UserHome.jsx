@@ -150,7 +150,7 @@ function UserHome() {
       {/* How it works */}
       <section className="mt-10" aria-labelledby="how-title">
         <h2 id="how-title" className="text-lg md:text-xl font-bold tracking-wide text-gray-900 mb-3">
-          How EZService works
+          How KnockNow works
         </h2>
         <ol className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           {[
@@ -182,7 +182,7 @@ function UserHome() {
             </span>
             <span className="flex-1">
               <span className="block font-semibold text-gray-900">Are you a service professional?</span>
-              <span className="block text-sm text-gray-500">Join EZService and get bookings in your city.</span>
+              <span className="block text-sm text-gray-500">Join KnockNow and get bookings in your city.</span>
             </span>
             <ChevronRight className="h-5 w-5 text-gray-400" aria-hidden="true" />
           </Link>

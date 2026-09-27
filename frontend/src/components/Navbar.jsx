@@ -5,9 +5,9 @@ import LocationSelector from './LocationSelector';
 import { getAuthUser } from '../lib/auth';
 
 export const Logo = ({ className = '' }) => (
-  <Link to="/" className={`flex items-center gap-2 shrink-0 ${className}`} aria-label="EZService home">
+  <Link to="/" className={`flex items-center gap-2 shrink-0 ${className}`} aria-label="KnockNow home">
     <img src={resources.Logo.src} className="h-7 w-7" alt="" />
-    <span className="text-lg font-bold tracking-tight text-gray-900">EZService</span>
+    <span className="text-lg font-bold tracking-tight text-gray-900">KnockNow</span>
   </Link>
 );
 

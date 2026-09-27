@@ -1,9 +1,11 @@
-import { CheckCircle2, Clock, XCircle, BadgeCheck, CircleDot } from 'lucide-react';
+import { CheckCircle2, Clock, XCircle, BadgeCheck, CircleDot, Navigation, MapPinCheck } from 'lucide-react';
 
 // Customer-facing wording for the order statuses stored in the database.
 export const ORDER_STATUS = {
   PENDING: { label: 'Waiting for provider', tone: 'amber', icon: Clock },
   CONFIRMED: { label: 'Provider confirmed', tone: 'green', icon: CheckCircle2 },
+  ON_THE_WAY: { label: 'Provider on the way', tone: 'indigo', icon: Navigation },
+  ARRIVED: { label: 'Provider arrived', tone: 'green', icon: MapPinCheck },
   COMPLETED: { label: 'Completed', tone: 'indigo', icon: BadgeCheck },
   CANCELLED: { label: 'Cancelled', tone: 'red', icon: XCircle },
 };
@@ -12,6 +14,8 @@ export const ORDER_STATUS = {
 export const PROVIDER_ORDER_STATUS = {
   PENDING: { label: 'New request', tone: 'amber', icon: Clock },
   CONFIRMED: { label: 'Accepted', tone: 'green', icon: CheckCircle2 },
+  ON_THE_WAY: { label: 'On the way', tone: 'indigo', icon: Navigation },
+  ARRIVED: { label: 'At location', tone: 'green', icon: MapPinCheck },
   COMPLETED: { label: 'Completed', tone: 'indigo', icon: BadgeCheck },
   CANCELLED: { label: 'Cancelled', tone: 'red', icon: XCircle },
 };
@@ -29,6 +33,14 @@ const TONES = {
   red: 'bg-red-50 text-red-700 ring-red-600/20',
   indigo: 'bg-indigo-50 text-indigo-700 ring-indigo-600/20',
   gray: 'bg-gray-100 text-gray-700 ring-gray-500/20',
+};
+
+// Where a booking is right now, including the provider's trip progress.
+// Returns PENDING, CONFIRMED, ON_THE_WAY, ARRIVED, COMPLETED or CANCELLED.
+export const orderStage = (order) => {
+  const status = normalizeStatus(order?.status);
+  if (status === 'CONFIRMED' && (order?.trip_status === 'ON_THE_WAY' || order?.trip_status === 'ARRIVED')) return order.trip_status;
+  return status;
 };
 
 export const normalizeStatus = (status) => {

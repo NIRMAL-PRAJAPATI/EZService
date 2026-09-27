@@ -24,7 +24,7 @@ function Growth() {
                     <div className="text-center">
                         <p className="text-indigo-500 text-md">Fullfilled Services</p>
                         <h2 className="text-3xl md:text-5xl font-extrabold mb-1" data-val={500}>64</h2>
-                        <p className="text-gray-500 text-sm">by EZService till now</p>
+                        <p className="text-gray-500 text-sm">by KnockNow till now</p>
                     </div>
                     {/* Ratings */}
                     <div className="text-center">

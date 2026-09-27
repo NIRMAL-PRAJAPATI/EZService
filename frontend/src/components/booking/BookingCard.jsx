@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { ChevronRight } from 'lucide-react';
-import StatusBadge from '../ui/StatusBadge';
+import StatusBadge, { orderStage } from '../ui/StatusBadge';
 import ServiceImage from '../ui/ServiceImage';
 import { formatDateTime, formatPrice } from '../../lib/format';
 
@@ -13,7 +13,7 @@ export default function BookingCard({ order }) {
       className="block rounded-md border border-gray-200 bg-white p-4 hover:border-indigo-300 transition-colors"
     >
       <div className="flex items-start justify-between gap-3">
-        <StatusBadge status={order.status} size="lg" />
+        <StatusBadge status={orderStage(order)} size="lg" />
         <span className="text-base font-semibold text-gray-900">{formatPrice(amount)}</span>
       </div>
       <div className="mt-3 flex gap-3">

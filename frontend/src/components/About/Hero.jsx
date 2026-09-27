@@ -22,7 +22,7 @@ function Hero() {
                   <span className="block text-indigo-500-600">
                     Our{" "}
                     <span className="text-indigo-500 tracking-wide">
-                      EZService
+                      KnockNow
                     </span>
                   </span>
                 </h1>

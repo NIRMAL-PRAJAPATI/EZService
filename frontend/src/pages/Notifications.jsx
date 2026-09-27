@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Bell, CheckCircle2, Clock, XCircle, BadgeCheck, MessageSquareWarning, ChevronRight, LogIn } from 'lucide-react';
+import { Bell, CheckCircle2, Clock, XCircle, BadgeCheck, MessageSquareWarning, ChevronRight, LogIn, Navigation, MapPinCheck } from 'lucide-react';
 import authApi from '../config/auth-config';
 import ProfileNav from '../components/Profile/user/ProfileNav';
 import { CardListSkeleton } from '../components/ui/Skeleton';
 import { EmptyState, ErrorState } from '../components/ui/States';
-import { normalizeStatus } from '../components/ui/StatusBadge';
+import { orderStage } from '../components/ui/StatusBadge';
 import { getAuthUser } from '../lib/auth';
 import { formatDateTime } from '../lib/format';
 
@@ -13,6 +13,8 @@ import { formatDateTime } from '../lib/format';
 const ORDER_NOTE = {
   PENDING: { icon: Clock, tone: 'bg-amber-50 text-amber-700', text: (o) => `Booking placed. Waiting for ${o.ProviderInfo?.name || 'the provider'} to confirm.` },
   CONFIRMED: { icon: CheckCircle2, tone: 'bg-green-50 text-green-700', text: (o) => `${o.ProviderInfo?.name || 'Your provider'} confirmed your booking.` },
+  ON_THE_WAY: { icon: Navigation, tone: 'bg-indigo-50 text-indigo-700', text: (o) => `${o.ProviderInfo?.name || 'Your provider'} is on the way.` },
+  ARRIVED: { icon: MapPinCheck, tone: 'bg-green-50 text-green-700', text: (o) => `${o.ProviderInfo?.name || 'Your provider'} has reached your location.` },
   COMPLETED: { icon: BadgeCheck, tone: 'bg-indigo-50 text-indigo-700', text: () => 'Service completed. Tap to rate your experience.' },
   CANCELLED: { icon: XCircle, tone: 'bg-red-50 text-red-700', text: () => 'This booking was cancelled.' },
 };
@@ -34,7 +36,7 @@ export default function Notifications() {
     ])
       .then(([orders, complaints]) => {
         const fromOrders = (Array.isArray(orders) ? orders : []).map((o) => {
-          const status = normalizeStatus(o.status);
+          const status = orderStage(o);
           const meta = ORDER_NOTE[status] || ORDER_NOTE.PENDING;
           return {
             key: `o-${o.order_id}`,
@@ -42,7 +44,7 @@ export default function Notifications() {
             text: meta.text(o),
             icon: meta.icon,
             tone: meta.tone,
-            when: o.updated || o.created || o.date,
+            when: o.trip_updated || o.updated || o.created || o.date,
             to: `/orders/${o.order_id}/view`,
           };
         });

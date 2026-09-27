@@ -57,7 +57,7 @@ function Login() {
                 <main className="flex items-center justify-center md:justify-between border-dashed w-full border-indigo-500 md:border-2 md:m-10 md:p-10 lg:m-10 lg:p-20 rounded-lg bg-white">
                     <div className="mx-2 mt-10 w-[550px] hidden md:block">
                         <h1 className="text-5xl font-bold tracking-wide">Get Any Service at Your<span className="bg-indigo-500 text-white"> Doorsteps</span></h1>
-                        <p className="text-gray-500 mt-4 mr-10">Welcome to EZService, your trusted doorstep service provider. We bring convenience to your home with fast, reliable, and professional solutions. Book now and enjoy hassle-free services at your doorstep!</p>
+                        <p className="text-gray-500 mt-4 mr-10">Welcome to KnockNow, your trusted doorstep service provider. We bring convenience to your home with fast, reliable, and professional solutions. Book now and enjoy hassle-free services at your doorstep!</p>
                     </div>
                     <div className="max-w-md w-full">
                         <div className="text-center">

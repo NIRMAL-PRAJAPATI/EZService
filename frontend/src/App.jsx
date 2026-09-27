@@ -40,6 +40,7 @@ const LoginForm = lazy(() => import('./components/Register/ProviderLogin'));
 const Dashboard = lazy(() => import('./pages/ProviderDashboard'));
 const ProviderProfile = lazy(() => import('./pages/ProviderProfile'));
 const ProviderReview = lazy(() => import('./pages/ProviderReview'));
+const ProviderCalendar = lazy(() => import('./pages/ProviderCalendar'));
 const ProviderOrder = lazy(() => import('./pages/ProviderOrder'));
 const ProviderOrderView = lazy(() => import('./pages/ProviderOrderView'));
 const ProviderComplaint = lazy(() => import('./pages/ProviderComplaint'));
@@ -87,7 +88,9 @@ function App() {
 
         {/* Provider app */}
         <Route path="/provider" element={<ProviderLayout />}>
-          <Route index element={<Navigate to="/provider/dashboard" replace />} />
+          <Route index element={<Navigate to="/provider/trips" replace />} />
+          <Route path="trips" element={<ProviderOrder />} />
+          <Route path="calendar" element={<ProviderCalendar />} />
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="orders" element={<ProviderOrder />} />
           <Route path="orders/:orderId/view" element={<ProviderOrderView />} />

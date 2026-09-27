@@ -61,7 +61,11 @@ const Service = sequelize4.define('Service', {
     type: DataTypes.INTEGER,
     references: { model: 'service_category', key: 'id' } // ✅ correct (table name string)
   },
-  service_type: DataTypes.STRING
+  service_type: DataTypes.STRING,
+  // Customers only see active services
+  is_active: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: true },
+  // Included in Instant Service requests when the provider is online
+  instant_enabled: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: true }
 }, {
   tableName: 'service',
   timestamps: false

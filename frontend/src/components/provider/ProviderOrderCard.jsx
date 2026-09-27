@@ -1,20 +1,25 @@
 import { useState } from 'react';
 import { MapPin, Calendar, UserRound } from 'lucide-react';
+import TripControls from './TripControls';
 import authApi from '../../config/auth-config';
-import StatusBadge, { PROVIDER_ORDER_STATUS, normalizeStatus } from '../ui/StatusBadge';
+import StatusBadge, { PROVIDER_ORDER_STATUS, normalizeStatus, orderStage } from '../ui/StatusBadge';
 import Button from '../ui/Button';
 import { ConfirmSheet } from '../ui/BottomSheet';
 import { formatDateTime, formatPrice, shortOrderId } from '../../lib/format';
+import { paymentLabel } from '../../lib/payment';
+import { locationText } from '../../lib/geo';
 
 /**
  * One order on the provider side, with the next action:
- *  PENDING → Accept / Decline, CONFIRMED → Mark completed.
+ *  PENDING → Accept / Decline
+ *  CONFIRMED → 1. Start trip → 2. Reached location → 3. Complete service
  */
 export default function ProviderOrderCard({ order, onUpdated, showDetailsLink = true }) {
   const [busy, setBusy] = useState('');
-  const [confirm, setConfirm] = useState(null); // 'decline' | 'complete'
+  const [confirm, setConfirm] = useState(null); // 'decline'
   const [error, setError] = useState('');
   const status = normalizeStatus(order.status);
+  const stage = orderStage(order);
   const amount = order.estimated_charge || order.Service?.visiting_charge;
 
   const update = (apiStatus, nextStatus) => {
@@ -24,11 +29,12 @@ export default function ProviderOrderCard({ order, onUpdated, showDetailsLink = 
       .put(`/orders/${order.order_id}/status`, { status: apiStatus })
       .then(() => {
         setConfirm(null);
-        onUpdated?.(order.order_id, nextStatus);
+        onUpdated?.(order.order_id, { status: nextStatus });
       })
       .catch((err) => setError(err.response?.data?.message || "Couldn't update this order. Please try again."))
       .finally(() => setBusy(''));
   };
+
 
   return (
     <article className={`rounded-md border bg-white p-4 ${status === 'PENDING' ? 'border-amber-200' : 'border-gray-200'}`}>
@@ -39,7 +45,8 @@ export default function ProviderOrderCard({ order, onUpdated, showDetailsLink = 
         </div>
         <div className="text-right shrink-0">
           <p className="text-lg font-bold text-gray-900">{formatPrice(amount)}</p>
-          <StatusBadge status={status} map={PROVIDER_ORDER_STATUS} />
+          <StatusBadge status={stage} map={PROVIDER_ORDER_STATUS} />
+          {status === 'COMPLETED' && order.payment_mode && <p className="mt-1 text-xs text-gray-500">Paid by {paymentLabel(order.payment_mode)}</p>}
         </div>
       </div>
 
@@ -52,7 +59,7 @@ export default function ProviderOrderCard({ order, onUpdated, showDetailsLink = 
         </li>
         {order.location && (
           <li className="flex items-start gap-2">
-            <MapPin className="h-4 w-4 mt-0.5 text-gray-400 shrink-0" aria-hidden="true" /> <span className="line-clamp-2">{order.location}</span>
+            <MapPin className="h-4 w-4 mt-0.5 text-gray-400 shrink-0" aria-hidden="true" /> <span className="line-clamp-2">{locationText(order)}</span>
           </li>
         )}
       </ul>
@@ -75,13 +82,9 @@ export default function ProviderOrderCard({ order, onUpdated, showDetailsLink = 
             </Button>
           </>
         )}
-        {status === 'CONFIRMED' && (
-          <Button variant="success" className="flex-1" onClick={() => setConfirm('complete')} disabled={!!busy}>
-            Mark as completed
-          </Button>
-        )}
+        {status === 'CONFIRMED' && <TripControls order={order} onUpdated={onUpdated} />}
         {showDetailsLink && (
-          <Button variant="ghost" to={`/provider/orders/${order.order_id}/view`} className={status === 'PENDING' || status === 'CONFIRMED' ? '' : 'flex-1'}>
+          <Button variant="ghost" to={`/provider/orders/${order.order_id}/view`} className={status === 'PENDING' ? '' : status === 'CONFIRMED' ? 'w-full' : 'flex-1'}>
             Details
           </Button>
         )}
@@ -97,17 +100,7 @@ export default function ProviderOrderCard({ order, onUpdated, showDetailsLink = 
         onConfirm={() => update('rejected', 'CANCELLED')}
         loading={busy === 'rejected'}
       />
-      <ConfirmSheet
-        open={confirm === 'complete'}
-        onClose={() => setConfirm(null)}
-        title="Mark as completed?"
-        description="Only do this once the work is finished. The customer will be asked to rate the service."
-        confirmLabel="Yes, completed"
-        cancelLabel="Not yet"
-        variant="primary"
-        onConfirm={() => update('COMPLETED', 'COMPLETED')}
-        loading={busy === 'COMPLETED'}
-      />
     </article>
   );
 }
+

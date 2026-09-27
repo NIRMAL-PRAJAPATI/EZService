@@ -14,10 +14,13 @@ const createServiceRequest = async (req, res) => {
       return res.status(403).json({ message: 'Only customers can create service requests' });
     }
     
-    const { serviceType, address, description } = req.body;
+    const { serviceType, address, description, lat, lng } = req.body;
     
-    if (!serviceType || !address || !description) {
+    if (!serviceType || !description) {
       return res.status(400).json({ message: 'Missing required fields' });
+    }
+    if (!isFinite(Number(lat)) || !isFinite(Number(lng)) || lat === null || lng === null || lat === '' || lng === '') {
+      return res.status(400).json({ message: 'Please share your live location to request instant service' });
     }
     
     // Set expiration time to 30 minutes from now
@@ -26,8 +29,11 @@ const createServiceRequest = async (req, res) => {
     const serviceRequest = await ServiceRequest.create({
       customer_id: userId,
       service_type_id: serviceType,
-      address,
+      // The live location is the service location; the text is just a label
+      address: address && String(address).trim() ? address : `Live location (${Number(lat).toFixed(5)}, ${Number(lng).toFixed(5)})`,
       description,
+      lat: Number(lat),
+      lng: Number(lng),
       status: 'PENDING',
       created: new Date(),
       expires_at: expiresAt
@@ -95,7 +101,7 @@ const getActiveServiceRequests = async (req, res) => {
     const serviceRequests = await ServiceRequest.findAll({
       where: {
         status: 'PENDING',
-        service_type_id: services.map(service => service.category_id),
+        service_type_id: services.filter(s => s.is_active !== false && s.instant_enabled !== false).map(s => s.category_id),
         expires_at: {
           [Op.gt]: now
         }

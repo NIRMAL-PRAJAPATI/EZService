@@ -15,6 +15,7 @@ router.get('/stats', verifyToken, Controller.getDashboardStats);
 router.get('/basic-stats', verifyToken, Controller.getProviderStats);
 router.get('/online-status', verifyToken, Controller.getOnlineStatus);
 router.patch('/online-status', verifyToken, Controller.updateOnlineStatus);
+router.patch('/location', verifyToken, Controller.updateProviderLocation);
 router.get('/search', Controller.searchProviders);
 router.post('/register', Controller.registerProvider);
 router.post('/login', Controller.loginProvider);

@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { X } from 'lucide-react';
+import { lockScroll } from '../../lib/scrollLock';
 
 /**
  * Bottom sheet on phones, centred dialog from `sm` upwards.
@@ -23,15 +24,14 @@ export default function BottomSheet({ open, onClose, title, children, footer, si
       if (e.key === 'Escape' && dismissibleRef.current) onCloseRef.current?.();
     };
     document.addEventListener('keydown', onKey);
-    const prevOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
+    const unlockScroll = lockScroll();
     // Move focus into the sheet once, when it opens (not if a field already has focus).
     const t = setTimeout(() => {
       if (panelRef.current && !panelRef.current.contains(document.activeElement)) panelRef.current.focus();
     }, 50);
     return () => {
       document.removeEventListener('keydown', onKey);
-      document.body.style.overflow = prevOverflow;
+      unlockScroll();
       clearTimeout(t);
     };
   }, [open]);

@@ -1,12 +1,13 @@
 import { NavLink, Link } from 'react-router-dom';
-import { LayoutDashboard, ClipboardList, Zap, Wrench, MessageSquareWarning, UserRound, LogOut } from 'lucide-react';
+import { LayoutDashboard, Navigation, CalendarDays, Zap, Wrench, MessageSquareWarning, UserRound, LogOut } from 'lucide-react';
 import resources from '../../resource';
 import InstantStatusToggle from './InstantStatusToggle';
 import { logout } from '../../lib/auth';
 
 export const PROVIDER_NAV = [
+  { to: '/provider/trips', label: 'Running trip', short: 'Trip', icon: Navigation },
   { to: '/provider/dashboard', label: 'Dashboard', short: 'Home', icon: LayoutDashboard },
-  { to: '/provider/orders', label: 'Orders', short: 'Orders', icon: ClipboardList },
+  { to: '/provider/calendar', label: 'Calendar', short: 'Calendar', icon: CalendarDays, desktopOnly: true },
   { to: '/provider/instant-requests', label: 'Instant requests', short: 'Requests', icon: Zap },
   { to: '/provider/services', label: 'My services', short: 'Services', icon: Wrench },
   { to: '/provider/complaints', label: 'Complaints', short: 'Complaints', icon: MessageSquareWarning, desktopOnly: true },
@@ -23,9 +24,9 @@ const DashboardHeader = () => {
       {/* Top bar */}
       <header className="fixed inset-x-0 top-0 z-40 h-14 bg-white border-b border-gray-200 text-gray-900">
         <div className="h-full px-4 lg:pl-6 flex items-center gap-3">
-          <Link to="/provider/dashboard" className="flex items-center gap-2">
+          <Link to="/provider/trips" className="flex items-center gap-2">
             <img src={resources.Logo.src} className="h-6 w-6" alt="" />
-            <span className="font-bold">EZService</span>
+            <span className="font-bold">KnockNow</span>
             <span className="ml-1 rounded-sm bg-indigo-50 px-1.5 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-indigo-600">Partner</span>
           </Link>
           <div className="ml-auto">

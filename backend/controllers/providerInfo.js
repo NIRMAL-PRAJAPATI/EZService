@@ -8,8 +8,10 @@ const CustomerComplaint = require('../models/customerComplaint');
 const { Op, literal } = require('sequelize');
 const sequelize = require('../db');
 const CustomerInfo = require('../models/customerInfo');
+const { hasRunningTrip, goOfflineForTrip } = require('../utilities/runningTrip');
 const Service = require('../models/service');
 const ServiceCategory = require('../models/serviceCategory');
+const syncProviderRooms = require('../utilities/providerRooms');
 
 const searchProviders = async (req, res) => {
     try {
@@ -70,7 +72,8 @@ const getProviderBank = async (req, res) => {
         }
         const provider = await provider_bank.findByPk(providerId);
         if (!provider) {
-            return res.status(404).json({ message: 'Provider not found' });
+            // No bank details saved yet: return an empty form instead of an error
+            return res.status(200).json({ holder_name: '', account_number: '', account_type: '', ifsc_code: '', bank_name: '', branch: '', upi_id: '' });
         }
         res.status(200).json(provider);
     }catch(e){
@@ -372,29 +375,24 @@ const updateOnlineStatus = async (req, res) => {
       return res.status(404).json({ message: 'Provider not found' });
     }
 
-    await provider.update({ is_online: isOnline });
+    const { lat, lng } = req.body;
+    const hasLocation = isFinite(Number(lat)) && isFinite(Number(lng)) && lat !== null && lng !== null && lat !== '' && lng !== '';
+    if (isOnline && !hasLocation) {
+      return res.status(400).json({ message: 'Share your live location to go online' });
+    }
+    if (isOnline && (await hasRunningTrip(providerId))) {
+      return res.status(409).json({ code: 'TRIP_RUNNING', message: 'You have a running trip. Finish it before going online for Instant Service.' });
+    }
+
+    await provider.update({
+      is_online: isOnline,
+      ...(hasLocation && { last_lat: Number(lat), last_lng: Number(lng), location_updated: new Date() })
+    });
 
     // Reflect the change immediately on any socket connections this provider
     // already has open (e.g. the instant-requests page), instead of waiting
     // for the next reconnect/page load.
-    const io = req.app.get('io');
-    if (io) {
-      const providerServices = await Service.findAll({
-        where: { provider_id: providerId },
-        attributes: ['category_id']
-      });
-      const rooms = [...new Set(
-        providerServices.map(s => s.category_id).filter(id => id != null)
-      )].map(id => `service-${id}`);
-
-      if (rooms.length) {
-        if (isOnline) {
-          io.in(`provider-${providerId}`).socketsJoin(rooms);
-        } else {
-          io.in(`provider-${providerId}`).socketsLeave(rooms);
-        }
-      }
-    }
+    await syncProviderRooms(req.app.get('io'), providerId);
 
     res.status(200).json({
       message: `Instant service status is now ${isOnline ? 'ON' : 'OFF'}`,
@@ -427,7 +425,14 @@ const getOnlineStatus = async (req, res) => {
       return res.status(404).json({ message: 'Provider not found' });
     }
     
-    res.status(200).json({ isOnline: provider.is_online || false });
+    // Instant Service is always off while a trip is running
+    const tripRunning = await hasRunningTrip(providerId);
+    if (tripRunning && provider.is_online) {
+      await goOfflineForTrip(req.app.get('io'), providerId);
+      return res.status(200).json({ isOnline: false, tripRunning });
+    }
+
+    res.status(200).json({ isOnline: provider.is_online || false, tripRunning });
   } catch (e) {
     console.error('Error fetching online status:', e);
     res.status(500).json({ message: 'Internal server error' });
@@ -607,6 +612,8 @@ const updateProviderPassword = async (req, res) => {
     }
 };
 
+const UPI_ID_PATTERN = /^[\w.\-]{2,256}@[a-zA-Z][a-zA-Z0-9]{1,64}$/;
+
 // Create or update the provider's bank details.
 const updateProviderBank = async (req, res) => {
     try {
@@ -614,9 +621,19 @@ const updateProviderBank = async (req, res) => {
             return res.status(403).json({ message: 'Access denied' });
         }
         const { holder_name, account_number, account_type, ifsc_code, bank_name, branch } = req.body;
+        const upi_id = String(req.body.upi_id || '').trim();
+        if (upi_id && !UPI_ID_PATTERN.test(upi_id)) {
+            return res.status(400).json({ message: 'Enter a valid UPI ID, for example name@okhdfcbank' });
+        }
         const [bank] = await provider_bank.upsert({
             provider_id: req.userId,
-            holder_name, account_number, account_type, ifsc_code, bank_name, branch
+            holder_name,
+            account_number: account_number === '' ? null : account_number,
+            account_type,
+            ifsc_code: ifsc_code ? String(ifsc_code).trim().toUpperCase() : null,
+            bank_name,
+            branch,
+            upi_id: upi_id || null
         });
         res.status(200).json(bank);
     } catch (e) {
@@ -625,4 +642,20 @@ const updateProviderBank = async (req, res) => {
     }
 };
 
-module.exports = {updateProviderInfo, updateProviderPassword, updateProviderBank, getProviderProfile, getProviderWithServices, getProviderStats, getDashboardStats, registerProvider, loginProvider, getProviderOrders, getProviderServices, getProviderBank, updateOnlineStatus, getOnlineStatus, searchProviders}
+// Provider's live location while online (sent every minute or so by the app)
+const updateProviderLocation = async (req, res) => {
+  try {
+    if (req.role !== 'provider') return res.status(403).json({ message: 'Access denied' });
+    const { lat, lng } = req.body;
+    if (!isFinite(Number(lat)) || !isFinite(Number(lng)) || lat === null || lng === null) {
+      return res.status(400).json({ message: 'lat and lng are required' });
+    }
+    await Provider.update({ last_lat: Number(lat), last_lng: Number(lng), location_updated: new Date() }, { where: { id: req.userId } });
+    res.status(200).json({ ok: true });
+  } catch (e) {
+    console.error('Error updating provider location:', e);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+module.exports = {updateProviderLocation, updateProviderInfo, updateProviderPassword, updateProviderBank, getProviderProfile, getProviderWithServices, getProviderStats, getDashboardStats, registerProvider, loginProvider, getProviderOrders, getProviderServices, getProviderBank, updateOnlineStatus, getOnlineStatus, searchProviders}

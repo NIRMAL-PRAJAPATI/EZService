@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { ChevronRight, MessageSquareWarning, Star, Wrench, LogOut } from "lucide-react";
+import { ChevronRight, MessageSquareWarning, Star, Wrench, LogOut, CalendarDays } from "lucide-react";
 import Profileinfo from "../components/Profile/provider/ProfileInfo";
 import ProfileBank from "../components/Profile/provider/ProfileBank";
 import LogoutDelete from "../components/Profile/provider/ProfileLogDel";
@@ -10,6 +10,7 @@ import { logout } from "../lib/auth";
 import ThemeSwitcher from "../components/ThemeSwitcher";
 
 const LINKS = [
+  { to: '/provider/calendar', label: 'Calendar', icon: CalendarDays },
   { to: '/provider/services', label: 'Services & prices', icon: Wrench },
   { to: '/provider/complaints', label: 'Complaints', icon: MessageSquareWarning },
   { to: '/provider/reviews', label: 'Reviews', icon: Star },

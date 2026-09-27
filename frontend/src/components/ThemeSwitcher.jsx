@@ -35,7 +35,7 @@ export default function ThemeSwitcher() {
                 id === 'dark' ? 'border-[#3d404d] bg-[#1a1b20]' : id === 'light' ? 'border-[#e5e7eb] bg-[#ffffff]' : 'border-[#9ca3af] bg-[linear-gradient(135deg,#ffffff_50%,#1a1b20_50%)]'
               }`}
             >
-              <span className="h-2 w-6 rounded-sm bg-[#6366f1]" />
+              <span className="h-2 w-6 rounded-sm bg-[var(--brand)]" />
               <span className={`h-1.5 w-4 rounded-sm ${id === 'dark' ? 'bg-[#3d404d]' : 'bg-[#e5e7eb]'}`} />
             </span>
             <span className="inline-flex items-center gap-1.5">
